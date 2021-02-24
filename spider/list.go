@@ -42,15 +42,15 @@ func GetList(form form.Form) {
 
 		}
 
+		//详情页面并发同步锁
+		var wait sync.WaitGroup
+
 		//查找列表中的a链接
 		doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
 
 			href := ""
 
 			isFind := false
-
-			//详情页面并发同步锁
-			var wait sync.WaitGroup
 
 			//a链接是列表的情况
 			if form.ListHrefSelector == "" {
@@ -83,6 +83,10 @@ func GetList(form form.Form) {
 
 		})
 
+		wait.Wait()
+
 	}
+
+	println("执行完毕")
 
 }
