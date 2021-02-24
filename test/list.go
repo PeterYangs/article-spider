@@ -12,13 +12,13 @@ func main() {
 
 		Host:             "https://www.ccaaka.com",
 		Channel:          "/cate/32.html?page=[PAGE]",
-		Limit:            30,
+		Limit:            5,
 		PageStart:        2,
 		ListSelector:     "body > section > div > div > div.col-md-7.col-xs-12.article-container > div",
 		ListHrefSelector: "div.col-md-8.col-xs-8 > a",
 		DetailFields:     map[string]form.Field{"title": {Types: fileTypes.SingleField, SingleSelector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div > h3"}},
 	}
 
-	spider.GetList(f)
+	spider.Start(f)
 
 }
