@@ -1,6 +1,7 @@
 package spider
 
 import (
+	"article-spider/fileTypes"
 	"article-spider/form"
 	"fmt"
 	"github.com/PeterYangs/tools"
@@ -9,7 +10,7 @@ import (
 	"sync"
 )
 
-//爬取列表
+//爬取详情
 func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup) {
 
 	defer wait.Done()
@@ -35,6 +36,18 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup) {
 
 	}
 
-	fmt.Println(doc)
+	for field, item := range form.DetailFields {
+
+		switch item.Types {
+
+		case fileTypes.SingleField:
+
+			v := doc.Find(item.SingleSelector).Text()
+
+			fmt.Println(field + "----" + v)
+
+		}
+
+	}
 
 }
