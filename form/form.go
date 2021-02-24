@@ -3,6 +3,7 @@ package form
 import (
 	"article-spider/fileTypes"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"sync"
 )
 
 type Form struct {
@@ -15,6 +16,7 @@ type Form struct {
 	DetailFields     map[string]Field       //详情页面字段选择器
 	ExcelFile        *excelize.File         //excel表格对象
 	Storage          chan map[string]string //存储爬取数据 ["title"]="文章标题"
+	ExcelWait        *sync.WaitGroup
 }
 
 type Field struct {

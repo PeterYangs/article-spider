@@ -7,6 +7,8 @@ import (
 
 func WriteExcel(form form.Form) {
 
+	defer form.ExcelWait.Done()
+
 	row := 2
 
 	array := make(map[string]string)
