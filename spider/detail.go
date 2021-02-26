@@ -11,9 +11,19 @@ import (
 )
 
 //爬取详情
-func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup) {
+func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMaxChan chan int) {
 
-	defer wait.Done()
+	defer func(detailMaxChan chan int, max int) {
+
+		if max != 0 {
+
+			<-detailMaxChan
+
+		}
+
+		wait.Done()
+
+	}(detailMaxChan, form.DetailMaxCoroutine)
 
 	//获取详情页面html
 	html, err := tools.GetWithString(detailUrl)

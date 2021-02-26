@@ -45,6 +45,9 @@ func GetList(form form.Form) {
 		//详情页面并发同步锁
 		var wait sync.WaitGroup
 
+		//控制详情页面最大并发数管道
+		detailMaxChan := make(chan int, form.DetailMaxCoroutine)
+
 		//查找列表中的a链接
 		doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
 
@@ -76,8 +79,15 @@ func GetList(form form.Form) {
 
 				wait.Add(1)
 
+				//控制最大并发
+				if form.DetailMaxCoroutine != 0 {
+
+					detailMaxChan <- 1
+
+				}
+
 				//根据列表的长度开启协程爬取详情页
-				go GetDetail(form, href, &wait)
+				go GetDetail(form, href, &wait, detailMaxChan)
 
 			}
 
