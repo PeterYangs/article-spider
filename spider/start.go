@@ -16,15 +16,16 @@ func Start(form form.Form) {
 	// 设置工作簿的默认工作表
 	f.SetActiveSheet(f.NewSheet("Sheet1"))
 
-	//赋值
+	//Excel文件对象赋值
 	form.ExcelFile = f
 
-	//管道初始化
+	//数据存储管道初始化
 	storage := make(chan map[string]string, 10)
 
 	//管道赋值
 	form.Storage = storage
 
+	//excel等待锁
 	var excelWait sync.WaitGroup
 
 	form.ExcelWait = &excelWait
