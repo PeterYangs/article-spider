@@ -17,6 +17,8 @@ func GetHref(href string, host string) string {
 
 		href = host + href
 
+		break
+
 	case case2:
 
 		//获取当前网址的协议
@@ -24,8 +26,15 @@ func GetHref(href string, host string) string {
 
 		href = res[1] + ":" + href
 
+		break
+
 	case case3:
 
+		break
+
+	default:
+
+		href = host + "/" + href
 	}
 
 	return href

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/satori/go.uuid"
+	"os"
 	"sync"
 )
 
@@ -21,6 +22,9 @@ func Start(form form.Form) {
 
 	//数据存储管道初始化
 	storage := make(chan map[string]string, 10)
+
+	//创建图片文件夹
+	os.Mkdir("image", 766)
 
 	//管道赋值
 	form.Storage = storage

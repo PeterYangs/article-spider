@@ -1,11 +1,13 @@
 package spider
 
 import (
+	"article-spider/common"
 	"article-spider/fileTypes"
 	"article-spider/form"
 	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
+	uuid "github.com/satori/go.uuid"
 	"strings"
 	"sync"
 )
@@ -55,6 +57,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 		switch item.Types {
 
+		//单个文字字段
 		case fileTypes.SingleField:
 
 			v := doc.Find(item.SingleSelector).Text()
@@ -62,6 +65,38 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 			fmt.Println(v)
 
 			res[field] = v
+
+			break
+
+		//单个图片
+		case fileTypes.SingleImage:
+
+			imgUrl, imgBool := doc.Find(item.SingleSelector).Attr("src")
+
+			if imgBool == false {
+
+				fmt.Println("图片选择器未找到")
+
+				break
+
+			}
+
+			//获取完整链接
+			imgUrl = common.GetHref(imgUrl, form.Host)
+
+			imgName := "image/" + uuid.NewV4().String() + "." + tools.GetExtensionName(imgUrl)
+
+			imgErr := tools.DownloadImage(imgUrl, imgName)
+
+			if imgErr != nil {
+
+				fmt.Println(imgErr)
+
+			}
+
+			res[field] = imgName
+
+			break
 
 		}
 
