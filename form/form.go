@@ -23,7 +23,7 @@ type Form struct {
 
 type Field struct {
 	Types          fileTypes.FieldTypes
-	SingleSelector string
+	SingleSelector string //单一选择器
 	ImagePrefix    string //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
 	ImageDir       string //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100]
 }

@@ -69,6 +69,60 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 			break
 
+		//只爬html（不包括图片）
+		case fileTypes.OnlyHtml:
+
+			v, err := doc.Find(item.SingleSelector).Html()
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			res[field] = v
+
+			break
+
+		//爬取html，包括图片
+		case fileTypes.HtmlWithImage:
+
+			v, err := doc.Find(item.SingleSelector).Html()
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(v))
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
+
+				img, b := selection.Attr("src")
+
+				if b == true {
+
+					//panic(img)
+
+					panic(common.GetHref(img, form.Host))
+
+				}
+
+			})
+
 		//单个图片
 		case fileTypes.SingleImage:
 
@@ -128,3 +182,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	form.Storage <- res
 
 }
+
+//func DownImg(form form.Form,url)  {
+//
+//}
