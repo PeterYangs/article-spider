@@ -8,6 +8,7 @@ import (
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
+	"log"
 	"strings"
 	"sync"
 )
@@ -84,17 +85,38 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 			//获取完整链接
 			imgUrl = common.GetHref(imgUrl, form.Host)
 
-			imgName := "image/" + uuid.NewV4().String() + "." + tools.GetExtensionName(imgUrl)
+			//生成随机名称
+			uuidString := uuid.NewV4().String()
 
-			imgErr := tools.DownloadImage(imgUrl, imgName)
+			dir := ""
+
+			if item.ImageDir != "" {
+
+				//获取图片文件夹
+				dir = common.GetDir(item.ImageDir)
+
+				//设置文件夹
+				err := tools.MkDirDepth("image/" + dir)
+
+				if err != nil {
+
+					log.Println(err)
+
+					//return
+				}
+			}
+
+			imgName := (common.If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
+
+			imgErr := tools.DownloadImage(imgUrl, "image/"+imgName)
 
 			if imgErr != nil {
 
-				fmt.Println(imgErr)
+				log.Println(imgErr)
 
 			}
 
-			res[field] = imgName
+			res[field] = (common.If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
 
 			break
 
