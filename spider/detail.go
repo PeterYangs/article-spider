@@ -89,7 +89,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 		//爬取html，包括图片
 		case fileTypes.HtmlWithImage:
 
-			v, err := doc.Find(item.SingleSelector).Html()
+			html, err := doc.Find(item.SingleSelector).Html()
 
 			if err != nil {
 
@@ -99,7 +99,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 			}
 
-			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(v))
+			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
 			if err != nil {
 
@@ -115,13 +115,15 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 				if b == true {
 
-					//panic(img)
+					imgName := DownImg(form, img, item)
 
-					panic(common.GetHref(img, form.Host))
+					html = strings.Replace(html, img, imgName, 1)
 
 				}
 
 			})
+
+			res[field] = html
 
 		//单个图片
 		case fileTypes.SingleImage:
@@ -136,41 +138,9 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 			}
 
-			//获取完整链接
-			imgUrl = common.GetHref(imgUrl, form.Host)
+			imgName := DownImg(form, imgUrl, item)
 
-			//生成随机名称
-			uuidString := uuid.NewV4().String()
-
-			dir := ""
-
-			if item.ImageDir != "" {
-
-				//获取图片文件夹
-				dir = common.GetDir(item.ImageDir)
-
-				//设置文件夹
-				err := tools.MkDirDepth("image/" + dir)
-
-				if err != nil {
-
-					log.Println(err)
-
-					//return
-				}
-			}
-
-			imgName := (common.If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
-
-			imgErr := tools.DownloadImage(imgUrl, "image/"+imgName)
-
-			if imgErr != nil {
-
-				log.Println(imgErr)
-
-			}
-
-			res[field] = (common.If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
+			res[field] = imgName
 
 			break
 
@@ -183,6 +153,42 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 }
 
-//func DownImg(form form.Form,url)  {
-//
-//}
+func DownImg(form form.Form, url string, item form.Field) string {
+
+	//获取完整链接
+	imgUrl := common.GetHref(url, form.Host)
+
+	//生成随机名称
+	uuidString := uuid.NewV4().String()
+
+	dir := ""
+
+	if item.ImageDir != "" {
+
+		//获取图片文件夹
+		dir = common.GetDir(item.ImageDir)
+
+		//设置文件夹
+		err := tools.MkDirDepth("image/" + dir)
+
+		if err != nil {
+
+			log.Println(err)
+
+			//return
+		}
+	}
+
+	imgName := (common.If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
+
+	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName)
+
+	if imgErr != nil {
+
+		log.Println(imgErr)
+
+	}
+
+	return (common.If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
+
+}

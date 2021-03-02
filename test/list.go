@@ -20,7 +20,7 @@ func main() {
 			"title":   {Types: fileTypes.SingleField, SingleSelector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div > h3"},
 			"html":    {Types: fileTypes.OnlyHtml, SingleSelector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div"},
 			"image":   {Types: fileTypes.SingleImage, SingleSelector: "body > section > div > div > div.col-md-3 > div > div.qrcode-panel.common-panel > div:nth-child(1) > img", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
-			"content": {Types: fileTypes.HtmlWithImage, SingleSelector: "#detail-content"},
+			"content": {Types: fileTypes.HtmlWithImage, SingleSelector: "#detail-content", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
 		},
 	}
 
