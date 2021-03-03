@@ -2,7 +2,7 @@
 
 安装
 
-git clone
+git clone https://github.com/PeterYangs/article-spider.git
 
 开始使用
 
