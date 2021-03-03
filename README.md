@@ -42,7 +42,7 @@ func main() {
 
 Host:网站域名
 
-Channel：列表规则，[PAGE]替换页面
+Channel：列表规则，[PAGE]替换页码
 
 Limit：最大爬取页码
 
