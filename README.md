@@ -9,21 +9,35 @@ git clone
 **爬取文字**
 
 ```
+package main
 
-    f := form.Form{
-    Host:             "https://www.weixz.com",
-    Channel:          "/gamexz/list_[PAGE]-0.html",
-    Limit:            5,
-    PageStart:        1,
-    ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
-    ListHrefSelector: "div.GameListIcon > a",
-    DetailFields: map[string]form.Field{
-    "title":   {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"article-spider/spider"
+)
 
-    },
-    }
+func main() {
 
-    spider.Start(f)
+	f := form.Form{
+
+		Host:             "https://www.weixz.com",
+		Channel:          "/gamexz/list_[PAGE]-0.html",
+		Limit:            5,
+		PageStart:        1,
+		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
+		ListHrefSelector: "div.GameListIcon > a",
+		DetailFields: map[string]form.Field{
+			"title":   {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+
+		},
+	}
+
+	spider.Start(f)
+
+
+}
+
 ```
 
 Host:网站域名
@@ -46,20 +60,69 @@ ListHrefSelector：详情页选择器，key为Excel表头
 
 ```
 
-    f := form.Form{
+package main
 
-    Host:             "https://www.weixz.com",
-    Channel:          "/gamexz/list_[PAGE]-0.html",
-    Limit:            5,
-    PageStart:        1,
-    ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
-    ListHrefSelector: "div.GameListIcon > a",
-    DetailFields: map[string]form.Field{
-    "title":   {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
-    "image":{Types: fileTypes.SingleImage,SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoIcon > img",ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"article-spider/spider"
+)
 
-    },
-    }
+func main() {
 
-    spider.Start(f)
+	f := form.Form{
+
+		Host:             "https://www.weixz.com",
+		Channel:          "/gamexz/list_[PAGE]-0.html",
+		Limit:            5,
+		PageStart:        1,
+		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
+		ListHrefSelector: "div.GameListIcon > a",
+		DetailFields: map[string]form.Field{
+			"title":   {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+			"image":{Types: fileTypes.SingleImage,SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoIcon > img",ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+
+		},
+	}
+
+	spider.Start(f)
+
+
+}
 ```
+
+**爬取富文本(html,可以将内容中的图片下载出来并替换原链接)**
+
+```	
+package main
+
+import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"article-spider/spider"
+)
+
+func main() {
+
+	f := form.Form{
+
+		Host:             "https://www.weixz.com",
+		Channel:          "/gamexz/list_[PAGE]-0.html",
+		Limit:            5,
+		PageStart:        1,
+		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
+		ListHrefSelector: "div.GameListIcon > a",
+		DetailFields: map[string]form.Field{
+			"title":   {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+                        "html": {Types: fileTypes.HtmlWithImage, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentTexts > div.mobileGamesContentText", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+		},
+	}
+
+	spider.Start(f)
+
+
+}
+	
+	
+```
+
