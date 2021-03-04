@@ -22,7 +22,9 @@ func GetList(form form.Form) {
 		listUrl := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
 		//获取html页面
-		html, err := tools.GetWithString(listUrl)
+		html, err := tools.GetToString(listUrl, tools.HttpSetting{})
+
+		//panic(html)
 
 		if err != nil {
 

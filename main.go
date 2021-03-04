@@ -20,7 +20,7 @@ func main() {
 			"title": {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
 		},
 	}
-
+	//body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentImgs > div.mobileGamesContentImg > div > div.swiper-wrapper > div.swiper-slide.swiper-slide-prev > img
 	spider.Start(f)
 
 }

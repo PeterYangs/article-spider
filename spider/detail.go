@@ -29,7 +29,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	}(detailMaxChan, form.DetailMaxCoroutine)
 
 	//获取详情页面html
-	html, err := tools.GetWithString(detailUrl)
+	html, err := tools.GetToString(detailUrl, tools.HttpSetting{})
 
 	if err != nil {
 

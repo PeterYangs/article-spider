@@ -12,6 +12,12 @@ github.com/PeterYangs/tools v0.0.13 h1:EkxPEZfBM19Z1jzruZbqQ247sXmDK+S+LxmrbyB+J
 github.com/PeterYangs/tools v0.0.13/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
 github.com/PeterYangs/tools v0.0.14 h1:KewImqVyjwly3zV2VC5/vQo7h6izAcyWERYIUWUV9fA=
 github.com/PeterYangs/tools v0.0.14/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
+github.com/PeterYangs/tools v0.0.15 h1:qZo8BxzukAq9UNG6mMM64btpGulRUE0Gpxka6QC+3TY=
+github.com/PeterYangs/tools v0.0.15/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
+github.com/PeterYangs/tools v0.1.0 h1:yzZMA3WluB9qC+BQKcFZgtJwWHItqw8xL+Qb8XKfnPk=
+github.com/PeterYangs/tools v0.1.0/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
+github.com/PeterYangs/tools v0.1.1 h1:6kWyaFNAW2/mukETfbHo/+Bx49xuUUka1LGg8rS9tNM=
+github.com/PeterYangs/tools v0.1.1/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
 github.com/PuerkitoBio/goquery v1.6.1 h1:FgjbQZKl5HTmcn4sKBgvx8vv63nhyhIpv7lJpFGCWpk=
 github.com/PuerkitoBio/goquery v1.6.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/andybalholm/cascadia v1.1.0 h1:BuuO6sSfQNFRu1LppgbD25Hr2vLYW25JvxHs5zzsLTo=
