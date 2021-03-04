@@ -52,7 +52,7 @@ ListSelector：列表选择器
 
 ListHrefSelector：列表a标签选择器，相对于列表的选择器
 
-ListHrefSelector：详情页选择器，key为Excel表头
+DetailFields：详情页选择器，key为Excel表头
 
 <br/>
 
