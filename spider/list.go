@@ -99,6 +99,6 @@ func GetList(form form.Form) {
 
 	}
 
-	println("执行完毕")
+	fmt.Println("执行完毕")
 
 }
