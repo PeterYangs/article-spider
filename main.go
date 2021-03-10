@@ -17,7 +17,7 @@ func main() {
 		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
 		ListHrefSelector: "div.GameListIcon > a",
 		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, SingleSelector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+			"title": {Types: fileTypes.SingleField, Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
 		},
 	}
 	//body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentImgs > div.mobileGamesContentImg > div > div.swiper-wrapper > div.swiper-slide.swiper-slide-prev > img

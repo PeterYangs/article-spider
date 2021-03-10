@@ -78,7 +78,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 		//单个文字字段
 		case fileTypes.SingleField:
 
-			v := doc.Find(item.SingleSelector).Text()
+			v := doc.Find(item.Selector).Text()
 
 			fmt.Println(v)
 
@@ -89,7 +89,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 		//只爬html（不包括图片）
 		case fileTypes.OnlyHtml:
 
-			v, err := doc.Find(item.SingleSelector).Html()
+			v, err := doc.Find(item.Selector).Html()
 
 			if err != nil {
 
@@ -106,7 +106,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 		//爬取html，包括图片
 		case fileTypes.HtmlWithImage:
 
-			html, err := doc.Find(item.SingleSelector).Html()
+			html, err := doc.Find(item.Selector).Html()
 
 			if err != nil {
 
@@ -145,11 +145,11 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 		//单个图片
 		case fileTypes.SingleImage:
 
-			imgUrl, imgBool := doc.Find(item.SingleSelector).Attr("src")
+			imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
 
 			if imgBool == false {
 
-				fmt.Println("图片选择器未找到")
+				fmt.Println("SingleImage图片选择器未找到")
 
 				break
 
@@ -160,6 +160,35 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 			res[field] = imgName
 
 			break
+
+		//多个图片
+		case fileTypes.ListImages:
+
+			imgList := ""
+
+			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+
+				imgUrl, imgBool := selection.Attr("src")
+
+				if imgBool == false {
+
+					fmt.Println("ListImages图片选择器未找到")
+
+				} else {
+
+					imgName := DownImg(form, imgUrl, item)
+
+					//imgList=append(imgList, imgName)
+
+					imgList += imgName + ","
+
+				}
+
+				//fmt.Println(imgName)
+
+			})
+
+			res[field] = imgList
 
 		}
 

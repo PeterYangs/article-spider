@@ -8,6 +8,7 @@ import (
 
 func main() {
 
+	//爬多图
 	f := form.Form{
 
 		Host:             "https://www.duote.com",
@@ -17,8 +18,9 @@ func main() {
 		ListSelector:     "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",
 		ListHrefSelector: " a",
 		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, Selector: "body > div.wrap.mt_5 > div > div.main-left-box > div.down-box > div.soft-name > div > h1"},
+			"list_img": {Types: fileTypes.ListImages, Selector: ".print-box img"},
 		},
+		DetailMaxCoroutine: 1,
 	}
 
 	spider.Start(f)
