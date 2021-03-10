@@ -17,7 +17,8 @@ type Form struct {
 	ExcelFile          *excelize.File         //excel表格对象
 	Storage            chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	ExcelWait          *sync.WaitGroup
-	DetailMaxCoroutine int //爬取详情页最大协程数，默认按照列表的长度
+	DetailMaxCoroutine int  //爬取详情页最大协程数，默认按照列表的长度
+	DisableAutoCoding  bool //是否关闭自动转码
 
 }
 

@@ -31,6 +31,23 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	//获取详情页面html
 	html, err := tools.GetToString(detailUrl, tools.HttpSetting{})
 
+	//自动转码
+	if form.DisableAutoCoding == false {
+
+		html, err = common.DealCoding(html)
+
+		if err != nil {
+
+			fmt.Println(err)
+
+			return
+
+		}
+
+	}
+
+	//panic(html)
+
 	if err != nil {
 
 		fmt.Println(err)

@@ -24,7 +24,20 @@ func GetList(form form.Form) {
 		//获取html页面
 		html, err := tools.GetToString(listUrl, tools.HttpSetting{})
 
-		//panic(html)
+		//自动转码
+		if form.DisableAutoCoding == false {
+
+			html, err = common.DealCoding(html)
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				continue
+
+			}
+
+		}
 
 		if err != nil {
 

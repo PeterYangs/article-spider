@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/PeterYangs/tools"
+	"github.com/PuerkitoBio/goquery"
 	"regexp"
 	"strconv"
 	"strings"
@@ -85,4 +86,36 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 		return trueVal
 	}
 	return falseVal
+}
+
+//解决编码问题
+func DealCoding(html string) (string, error) {
+
+	code, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+	if err != nil {
+
+		return html, err
+	}
+
+	//contentType, _ :=code.Find("meta[http-equiv=\"content-type\"]").Attr("content")
+
+	contentType, _ := code.Find("meta[charset]").Attr("charset")
+
+	//转小写
+	contentType = strings.ToLower(contentType)
+
+	switch contentType {
+
+	case "gbk":
+
+		html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+
+	case "gb2312":
+
+		html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+
+	}
+
+	return html, nil
 }

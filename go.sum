@@ -18,10 +18,16 @@ github.com/PeterYangs/tools v0.1.0 h1:yzZMA3WluB9qC+BQKcFZgtJwWHItqw8xL+Qb8XKfnP
 github.com/PeterYangs/tools v0.1.0/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
 github.com/PeterYangs/tools v0.1.1 h1:6kWyaFNAW2/mukETfbHo/+Bx49xuUUka1LGg8rS9tNM=
 github.com/PeterYangs/tools v0.1.1/go.mod h1:jAwINKBb0sW3u6ITS6Ae99GqprgUqUz2mHUL2+ElIAE=
+github.com/PeterYangs/tools v0.1.2 h1:xU00Y5AwYhWjZPKf0laoEYPT1gOHBKpU/vS/+HtTfyI=
+github.com/PeterYangs/tools v0.1.2/go.mod h1:VMrlLNpXOuQBkHmZjH7HPMUFMd9JyvT/amjxICvlOfQ=
+github.com/PeterYangs/tools v0.1.3 h1:NpkhU+gSWfZ8TvSRzN1FEkfWXADFYQKs5O9KvHvloYU=
+github.com/PeterYangs/tools v0.1.3/go.mod h1:VMrlLNpXOuQBkHmZjH7HPMUFMd9JyvT/amjxICvlOfQ=
 github.com/PuerkitoBio/goquery v1.6.1 h1:FgjbQZKl5HTmcn4sKBgvx8vv63nhyhIpv7lJpFGCWpk=
 github.com/PuerkitoBio/goquery v1.6.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/andybalholm/cascadia v1.1.0 h1:BuuO6sSfQNFRu1LppgbD25Hr2vLYW25JvxHs5zzsLTo=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
+github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 h1:OYA+5W64v3OgClL+IrOD63t4i/RW7RqrAVl9LTZ9UqQ=
+github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394/go.mod h1:Q8n74mJTIgjX4RBBcHnJ05h//6/k6foqmgE45jTQtxg=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/kr/pretty v0.2.1 h1:Fmg33tUaq4/8ym9TJN1x7sLJnHVwhP33CNkpYV/7rwI=
