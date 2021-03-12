@@ -1,8 +1,13 @@
 package common
 
 import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
+	uuid "github.com/satori/go.uuid"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -118,4 +123,319 @@ func DealCoding(html string) (string, error) {
 	}
 
 	return html, nil
+}
+
+//func ResolveSelectorCommon(form form.Form, doc interface{}, selector map[string]form.Field,types string) map[string]string {
+//
+//
+//	var res = make(map[string]string)
+//
+//	doc:=interface{}
+//
+//	if types =="doc" {
+//
+//		doc_=doc.(goquery.Document)
+//	}
+//
+//
+//	//解析详情页面选择器
+//	for field, item := range selector {
+//
+//		switch item.Types {
+//
+//		//单个文字字段
+//		case fileTypes.SingleField:
+//
+//			v := doc_.Find(item.Selector).Text()
+//
+//			fmt.Println(v)
+//
+//			res[field] = v
+//
+//			break
+//
+//		//只爬html（不包括图片）
+//		case fileTypes.OnlyHtml:
+//
+//			v, err := doc.Find(item.Selector).Html()
+//
+//			if err != nil {
+//
+//				fmt.Println(err)
+//
+//				break
+//
+//			}
+//
+//			res[field] = v
+//
+//			break
+//
+//		//爬取html，包括图片
+//		case fileTypes.HtmlWithImage:
+//
+//			html, err := doc.Find(item.Selector).Html()
+//
+//			if err != nil {
+//
+//				fmt.Println(err)
+//
+//				break
+//
+//			}
+//
+//			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+//
+//			if err != nil {
+//
+//				fmt.Println(err)
+//
+//				break
+//
+//			}
+//
+//			htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
+//
+//				img, b := selection.Attr("src")
+//
+//				if b == true {
+//
+//					imgName := DownImg(form, img, item)
+//
+//					html = strings.Replace(html, img, imgName, 1)
+//
+//				}
+//
+//			})
+//
+//			res[field] = html
+//
+//		//单个图片
+//		case fileTypes.SingleImage:
+//
+//			imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
+//
+//			if imgBool == false {
+//
+//				fmt.Println("SingleImage图片选择器未找到")
+//
+//				break
+//
+//			}
+//
+//			imgName := DownImg(form, imgUrl, item)
+//
+//			res[field] = imgName
+//
+//			break
+//
+//		//多个图片
+//		case fileTypes.ListImages:
+//
+//			imgList := ""
+//
+//			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+//
+//				imgUrl, imgBool := selection.Attr("src")
+//
+//				if imgBool == false {
+//
+//					fmt.Println("ListImages图片选择器未找到")
+//
+//				} else {
+//
+//					imgName := DownImg(form, imgUrl, item)
+//
+//					//imgList=append(imgList, imgName)
+//
+//					imgList += imgName + ","
+//
+//				}
+//
+//				//fmt.Println(imgName)
+//
+//			})
+//
+//			res[field] = imgList
+//
+//		}
+//
+//	}
+//
+//	return res
+//
+//
+//}
+
+//解析选择器
+func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]form.Field) map[string]string {
+
+	var res = make(map[string]string)
+
+	//解析详情页面选择器
+	for field, item := range selector {
+
+		switch item.Types {
+
+		//单个文字字段
+		case fileTypes.SingleField:
+
+			v := doc.Find(item.Selector).Text()
+
+			fmt.Println(v)
+
+			res[field] = v
+
+			break
+
+		//只爬html（不包括图片）
+		case fileTypes.OnlyHtml:
+
+			v, err := doc.Find(item.Selector).Html()
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			res[field] = v
+
+			break
+
+		//爬取html，包括图片
+		case fileTypes.HtmlWithImage:
+
+			html, err := doc.Find(item.Selector).Html()
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+			if err != nil {
+
+				fmt.Println(err)
+
+				break
+
+			}
+
+			htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
+
+				img, b := selection.Attr("src")
+
+				if b == true {
+
+					imgName := DownImg(form, img, item)
+
+					html = strings.Replace(html, img, imgName, 1)
+
+				}
+
+			})
+
+			res[field] = html
+
+		//单个图片
+		case fileTypes.SingleImage:
+
+			imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
+
+			if imgBool == false {
+
+				fmt.Println("SingleImage图片选择器未找到")
+
+				break
+
+			}
+
+			imgName := DownImg(form, imgUrl, item)
+
+			res[field] = imgName
+
+			break
+
+		//多个图片
+		case fileTypes.ListImages:
+
+			imgList := ""
+
+			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+
+				imgUrl, imgBool := selection.Attr("src")
+
+				if imgBool == false {
+
+					fmt.Println("ListImages图片选择器未找到")
+
+				} else {
+
+					imgName := DownImg(form, imgUrl, item)
+
+					//imgList=append(imgList, imgName)
+
+					imgList += imgName + ","
+
+				}
+
+				//fmt.Println(imgName)
+
+			})
+
+			res[field] = imgList
+
+		}
+
+	}
+
+	return res
+
+}
+
+func DownImg(form form.Form, url string, item form.Field) string {
+
+	//获取完整链接
+	imgUrl := GetHref(url, form.Host)
+
+	//生成随机名称
+	uuidString := uuid.NewV4().String()
+
+	dir := ""
+
+	if item.ImageDir != "" {
+
+		//获取图片文件夹
+		dir = GetDir(item.ImageDir)
+
+		//设置文件夹
+		err := tools.MkDirDepth("image/" + dir)
+
+		if err != nil {
+
+			log.Println(err)
+
+			//return
+		}
+	}
+
+	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
+
+	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName)
+
+	if imgErr != nil {
+
+		log.Println(imgErr)
+
+	}
+
+	return (If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
+
 }

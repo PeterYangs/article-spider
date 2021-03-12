@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -99,6 +100,27 @@ func GetList(form form.Form) {
 
 					detailMaxChan <- 1
 
+				}
+
+				//doc, err := goquery.NewDocumentFromReader(s)
+
+				t, err := s.Html()
+
+				if err != nil {
+
+					log.Println(err)
+
+					return
+
+				}
+
+				tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(t))
+
+				res := common.ResolveSelector(form, tempDoc, form.ListFields)
+
+				if len(res) != 0 {
+
+					form.StorageTemp = res
 				}
 
 				//根据列表的长度开启协程爬取详情页
