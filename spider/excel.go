@@ -15,8 +15,21 @@ func WriteExcel(form form.Form) {
 
 	index := 0
 
-	//设置表头
+	var headerList []string
+
+	//合并表头
 	for i, _ := range form.DetailFields {
+
+		headerList = append(headerList, i)
+	}
+
+	for i, _ := range form.ListFields {
+
+		headerList = append(headerList, i)
+	}
+
+	//设置表头
+	for _, i := range headerList {
 
 		headName, arrayTemp := setHeader(i, index, array)
 

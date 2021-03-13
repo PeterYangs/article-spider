@@ -18,7 +18,10 @@ func main() {
 		ListSelector:     "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",
 		ListHrefSelector: " a",
 		DetailFields: map[string]form.Field{
-			"list_img": {Types: fileTypes.ListImages, Selector: ".print-box img"},
+			"title": {Types: fileTypes.SingleField, Selector: "body > div.wrap.mt_5 > div > div.main-left-box > div.down-box > div.soft-name > div > h1"},
+		},
+		ListFields: map[string]form.Field{
+			"img": {Types: fileTypes.SingleImage, Selector: "a > img"},
 		},
 		DetailMaxCoroutine: 1,
 	}
