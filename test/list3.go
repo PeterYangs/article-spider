@@ -8,7 +8,6 @@ import (
 
 func main() {
 
-	//爬多图
 	f := form.Form{
 
 		Host:             "https://www.duote.com",
