@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <script src="/static/vue.js"></script>
+    <script src="/static/index.js"></script>
+    <script src="/static/axios.min.js"></script>
+
+    <style>
+
+        .el-input {
+
+            width: 600px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="app">
+
+    <div style="display: flex;">
+
+
+        <div style="flex: 1">
+
+            <el-form ref="form">
+
+                <el-form-item label="网站域名">
+                    <el-input></el-input>
+                </el-form-item>
+
+                <el-form-item label="栏目链接">
+                    <el-input></el-input>
+                </el-form-item>
+
+                <el-form-item label="爬取最大页码">
+                    <el-input></el-input>
+                </el-form-item>
+
+                <el-form-item label="起始页码">
+                    <el-input></el-input>
+                </el-form-item>
+
+
+                <el-form-item label="列表选择器">
+                    <el-input></el-input>
+                </el-form-item>
+
+                <el-form-item label="列表A链接选择器">
+                    <el-input></el-input>
+                </el-form-item>
+
+
+            </el-form>
+
+        </div>
+
+        <div style="flex: 1">
+
+            <el-button type="primary" size="small">添加列表选择器</el-button>
+
+        </div>
+
+        <div style="flex: 1">
+            <el-button type="success" size="small">添加详情选择器</el-button>
+
+        </div>
+
+    </div>
+
+
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+        <span>这是一段信息</span>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+</div>
+
+</body>
+
+
+<script>
+
+    new Vue({
+        el: "#app",
+        data: {},
+        methods: {}
+    });
+
+</script>
+
+
+</html>
