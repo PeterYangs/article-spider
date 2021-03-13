@@ -25,6 +25,16 @@ func GetList(form form.Form) {
 		//获取html页面
 		html, err := tools.GetToString(listUrl, tools.HttpSetting{})
 
+		html, err = common.DealCoding(html)
+
+		if err != nil {
+
+			fmt.Println(err)
+
+			continue
+
+		}
+
 		//自动转码
 		if form.DisableAutoCoding == false {
 
@@ -129,6 +139,8 @@ func GetList(form form.Form) {
 					go GetDetail(form, href, &wait, detailMaxChan)
 
 				} else {
+
+					//panic("")
 
 					//只爬列表
 
