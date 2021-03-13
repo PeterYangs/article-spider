@@ -103,12 +103,10 @@ func DealCoding(html string) (string, error) {
 		return html, err
 	}
 
-	//contentType, _ :=code.Find("meta[http-equiv=\"content-type\"]").Attr("content")
-
 	contentType, _ := code.Find("meta[charset]").Attr("charset")
 
 	//转小写
-	contentType = strings.ToLower(contentType)
+	contentType = strings.TrimSpace(strings.ToLower(contentType))
 
 	switch contentType {
 
@@ -122,150 +120,33 @@ func DealCoding(html string) (string, error) {
 
 	}
 
+	contentType, _ = code.Find("meta[http-equiv=\"Content-Type\"]").Attr("content")
+
+	//捕获编码
+	r, _ := regexp.Compile(`charset=(.*)`)
+
+	re := r.FindAllStringSubmatch(contentType, 1)
+
+	if len(re) > 0 {
+
+		c := re[0][1]
+
+		switch c {
+
+		case "gbk":
+
+			html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+
+		case "gb2312":
+
+			html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+
+		}
+
+	}
+
 	return html, nil
 }
-
-//func ResolveSelectorCommon(form form.Form, doc interface{}, selector map[string]form.Field,types string) map[string]string {
-//
-//
-//	var res = make(map[string]string)
-//
-//	doc:=interface{}
-//
-//	if types =="doc" {
-//
-//		doc_=doc.(goquery.Document)
-//	}
-//
-//
-//	//解析详情页面选择器
-//	for field, item := range selector {
-//
-//		switch item.Types {
-//
-//		//单个文字字段
-//		case fileTypes.SingleField:
-//
-//			v := doc_.Find(item.Selector).Text()
-//
-//			fmt.Println(v)
-//
-//			res[field] = v
-//
-//			break
-//
-//		//只爬html（不包括图片）
-//		case fileTypes.OnlyHtml:
-//
-//			v, err := doc.Find(item.Selector).Html()
-//
-//			if err != nil {
-//
-//				fmt.Println(err)
-//
-//				break
-//
-//			}
-//
-//			res[field] = v
-//
-//			break
-//
-//		//爬取html，包括图片
-//		case fileTypes.HtmlWithImage:
-//
-//			html, err := doc.Find(item.Selector).Html()
-//
-//			if err != nil {
-//
-//				fmt.Println(err)
-//
-//				break
-//
-//			}
-//
-//			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-//
-//			if err != nil {
-//
-//				fmt.Println(err)
-//
-//				break
-//
-//			}
-//
-//			htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
-//
-//				img, b := selection.Attr("src")
-//
-//				if b == true {
-//
-//					imgName := DownImg(form, img, item)
-//
-//					html = strings.Replace(html, img, imgName, 1)
-//
-//				}
-//
-//			})
-//
-//			res[field] = html
-//
-//		//单个图片
-//		case fileTypes.SingleImage:
-//
-//			imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
-//
-//			if imgBool == false {
-//
-//				fmt.Println("SingleImage图片选择器未找到")
-//
-//				break
-//
-//			}
-//
-//			imgName := DownImg(form, imgUrl, item)
-//
-//			res[field] = imgName
-//
-//			break
-//
-//		//多个图片
-//		case fileTypes.ListImages:
-//
-//			imgList := ""
-//
-//			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
-//
-//				imgUrl, imgBool := selection.Attr("src")
-//
-//				if imgBool == false {
-//
-//					fmt.Println("ListImages图片选择器未找到")
-//
-//				} else {
-//
-//					imgName := DownImg(form, imgUrl, item)
-//
-//					//imgList=append(imgList, imgName)
-//
-//					imgList += imgName + ","
-//
-//				}
-//
-//				//fmt.Println(imgName)
-//
-//			})
-//
-//			res[field] = imgList
-//
-//		}
-//
-//	}
-//
-//	return res
-//
-//
-//}
 
 //解析选择器
 func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]form.Field) map[string]string {
