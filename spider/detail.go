@@ -55,13 +55,13 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 	//panic(html)
 
-	if err != nil {
-
-		fmt.Println(err)
-
-		return
-
-	}
+	//if err != nil {
+	//
+	//	fmt.Println(err)
+	//
+	//	return
+	//
+	//}
 
 	//加载
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))

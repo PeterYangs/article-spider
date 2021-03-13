@@ -50,13 +50,13 @@ func GetList(form form.Form) {
 
 		}
 
-		if err != nil {
-
-			fmt.Println(err)
-
-			continue
-
-		}
+		//if err != nil {
+		//
+		//	fmt.Println(err)
+		//
+		//	continue
+		//
+		//}
 
 		//goquery加载html
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
