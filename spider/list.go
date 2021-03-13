@@ -93,15 +93,6 @@ func GetList(form form.Form) {
 
 				href = common.GetHref(href, form.Host)
 
-				wait.Add(1)
-
-				//控制最大并发
-				if form.DetailMaxCoroutine != 0 {
-
-					detailMaxChan <- 1
-
-				}
-
 				//doc, err := goquery.NewDocumentFromReader(s)
 
 				t, err := s.Html()
@@ -123,8 +114,27 @@ func GetList(form form.Form) {
 					form.StorageTemp = res
 				}
 
-				//根据列表的长度开启协程爬取详情页
-				go GetDetail(form, href, &wait, detailMaxChan)
+				if len(form.DetailFields) > 0 {
+
+					wait.Add(1)
+
+					//控制最大并发
+					if form.DetailMaxCoroutine != 0 {
+
+						detailMaxChan <- 1
+
+					}
+
+					//根据列表的长度开启协程爬取详情页
+					go GetDetail(form, href, &wait, detailMaxChan)
+
+				} else {
+
+					//只爬列表
+
+					form.Storage <- res
+
+				}
 
 			}
 

@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	//爬多图
+	//爬gbk网页
 	f := form.Form{
 
 		Host:             "http://ly.8090.com",
