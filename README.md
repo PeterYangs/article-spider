@@ -238,7 +238,7 @@ func main() {
 
 **web面板**
 
-打开dist下的exe文件运行
+打开dist下的exe文件运行，监听8089端口
 
 ![avatar](/web/static/web.png)
 
