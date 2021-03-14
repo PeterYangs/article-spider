@@ -33,7 +33,7 @@
                     <el-input v-model="item.host"></el-input>
                 </el-form-item>
 
-                <el-form-item label="栏目链接" >
+                <el-form-item label="栏目链接">
                     <el-input v-model="item.channel"></el-input>
                 </el-form-item>
 
@@ -63,13 +63,17 @@
 
         <div style="flex: 1">
 
-            <el-button type="primary" size="small" @click="openList()">添加列表选择器</el-button>
+            <el-button type="primary" size="small" @click="openAlert(1)">添加列表选择器</el-button>
 
+
+            <div v-for="(v,i)  in item.listFields">
+                <pre>{{v}}</pre>
+            </div>
 
         </div>
 
         <div style="flex: 1">
-            <el-button type="success" size="small" @click="openList()">添加详情选择器</el-button>
+            <el-button type="success" size="small" @click="openAlert(2)">添加详情选择器</el-button>
 
 
             <div v-for="(v,i)  in item.detailFields">
@@ -147,20 +151,33 @@
                 pageStart: "",
                 listSelector: "",
                 listHrefSelector: "",
-                detailFields: {}
+                detailFields: {},
+                listFields: {}
 
             },
+            //弹窗类型，1是列表，2是详情
             type: 1
         },
         methods: {
 
-            openList() {
+            openAlert(type) {
+
+                //
+                this.type = type
 
                 this.showAlert = true;
             },
             add() {
 
-                this.item.detailFields[this.alertItem.name] = this.clone(this.alertItem)
+                if (this.type === 1) {
+
+                    this.item.listFields[this.alertItem.name] = this.clone(this.alertItem)
+
+                } else if (this.type === 2) {
+
+                    this.item.detailFields[this.alertItem.name] = this.clone(this.alertItem)
+                }
+
 
                 this.showAlert = false
 
@@ -175,8 +192,8 @@
                     method: "post",
                     url: "/submit",
                     data: this.item,
-                    // headers: {'Content-Type': 'application/x-www-form-urlencoded',}
-                }).then(() => {
+                }).then((re) => {
+
 
                 })
 

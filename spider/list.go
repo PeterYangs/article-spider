@@ -164,6 +164,12 @@ func GetList(form form.Form) {
 
 	}
 
-	fmt.Println("执行完毕")
+	//b:=true
+	//
+	//b_:=&b
+	//
+	//form.IsFinish=b_
+
+	form.IsFinish <- true
 
 }

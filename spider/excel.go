@@ -2,9 +2,11 @@ package spider
 
 import (
 	"article-spider/form"
+	"fmt"
 	"strconv"
 )
 
+//写入excel表
 func WriteExcel(form form.Form) {
 
 	defer form.ExcelWait.Done()
@@ -41,17 +43,45 @@ func WriteExcel(form form.Form) {
 
 	}
 
+	isFinish := false
+
 	//写入
 	for v := range form.Storage {
 
-		//fmt.Println(v)
+		//fmt.Println(form.IsFinish)
 
-		for ii, vv := range v {
+		select {
 
-			form.ExcelFile.SetCellValue("Sheet1", getHeader(ii, array)+strconv.Itoa(row), vv)
+		case <-form.IsFinish:
+
+			//fmt.Println("1111111111")
+
+			isFinish = true
+
+		default:
+
+			indexs := 0
+
+			for ii, vv := range v {
+
+				if indexs == 0 {
+
+					fmt.Println(vv)
+				}
+
+				form.ExcelFile.SetCellValue("Sheet1", getHeader(ii, array)+strconv.Itoa(row), vv)
+
+				indexs++
+			}
+
+			row++
+
 		}
 
-		row++
+		if isFinish == true && len(form.Storage) == 0 {
+
+			close(form.Storage)
+		}
 
 	}
 

@@ -163,7 +163,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			v := doc.Find(item.Selector).Text()
 
-			fmt.Println(v)
+			//fmt.Println(v)
 
 			res[field] = v
 

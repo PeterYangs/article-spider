@@ -41,13 +41,15 @@ func Start(form form.Form) {
 
 	form.ExcelWait.Add(1)
 
+	form.IsFinish = make(chan bool)
+
 	//协程写入Excel
 	go WriteExcel(form)
 
 	//爬取列表
 	GetList(form)
 
-	close(form.Storage)
+	//close(form.Storage)
 
 	//等待管道处理完excel写入
 	form.ExcelWait.Wait()
@@ -61,5 +63,7 @@ func Start(form form.Form) {
 		fmt.Println(err)
 
 	}
+
+	fmt.Println("执行完毕")
 
 }

@@ -45,10 +45,6 @@ func StartWeb() {
 			return
 		}
 
-		//fmt.Println(json)
-		//
-		//context.JSON(200, gin.H{"data": post})
-
 		limit, err := strconv.Atoi(json["limit"].(string))
 
 		if err != nil {
@@ -67,6 +63,7 @@ func StartWeb() {
 			return
 		}
 
+		//解析列表选择器和详情选择器
 		detailFields := make(map[string]form.Field)
 
 		for i, v := range (json["detailFields"]).(map[string]interface{}) {
@@ -78,6 +75,17 @@ func StartWeb() {
 			detailFields[i] = form.Field{Types: fileTypes.FieldTypes((types).(float64)), Selector: (item["selector"]).(string)}
 		}
 
+		listFields := make(map[string]form.Field)
+
+		for i, v := range (json["listFields"]).(map[string]interface{}) {
+
+			item := v.(map[string]interface{})
+
+			types := item["types"]
+
+			listFields[i] = form.Field{Types: fileTypes.FieldTypes((types).(float64)), Selector: (item["selector"]).(string)}
+		}
+
 		f := form.Form{
 			Host:             (json["host"]).(string),
 			Channel:          (json["channel"]).(string),
@@ -86,15 +94,8 @@ func StartWeb() {
 			ListSelector:     (json["listSelector"]).(string),
 			ListHrefSelector: (json["listHrefSelector"]).(string),
 			DetailFields:     detailFields,
+			ListFields:       listFields,
 		}
-
-		//fmt.Println(f)
-
-		//for i,v:=range f {
-		//
-		//
-		//
-		//}
 
 		go spider.Start(f)
 
