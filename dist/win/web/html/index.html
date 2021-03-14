@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <script src="/static/vue.js"></script>
+    <script src="/static/index.js"></script>
+    <script src="/static/axios.min.js"></script>
+
+    <style>
+
+        .el-input {
+
+            max-width: 600px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="app">
+
+    <div style="display: flex;">
+
+
+        <div style="flex: 1">
+
+            <el-form ref="form">
+
+                <el-form-item label="网站域名">
+                    <el-input v-model="item.host"></el-input>
+                </el-form-item>
+
+                <el-form-item label="栏目链接" >
+                    <el-input v-model="item.channel"></el-input>
+                </el-form-item>
+
+                <el-form-item label="爬取最大页码">
+                    <el-input v-model="item.limit"></el-input>
+                </el-form-item>
+
+                <el-form-item label="起始页码">
+                    <el-input v-model="item.pageStart"></el-input>
+                </el-form-item>
+
+
+                <el-form-item label="列表选择器">
+                    <el-input v-model="item.listSelector"></el-input>
+                </el-form-item>
+
+                <el-form-item label="列表A链接选择器">
+                    <el-input v-model="item.listHrefSelector"></el-input>
+                </el-form-item>
+
+
+                <el-button @click="submit()" type="primary">提交</el-button>
+
+            </el-form>
+
+        </div>
+
+        <div style="flex: 1">
+
+            <el-button type="primary" size="small" @click="openList()">添加列表选择器</el-button>
+
+
+        </div>
+
+        <div style="flex: 1">
+            <el-button type="success" size="small" @click="openList()">添加详情选择器</el-button>
+
+
+            <div v-for="(v,i)  in item.detailFields">
+                <pre>{{v}}</pre>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <el-dialog title="提示" :visible.sync="showAlert" width="30%" :close-on-click-modal="false">
+
+
+        <div>
+
+            <el-form ref="dialog" label-position="top">
+
+                <el-form-item label="表头名称">
+
+                    <el-input v-model="alertItem.name"/>
+                </el-form-item>
+
+                <el-form-item label="类型">
+                    <el-radio-group v-model="alertItem.types">
+                        <el-radio-button :label="0x00000">单字段</el-radio-button>
+                        <el-radio-button :label="0x00002">单图片</el-radio-button>
+                        <el-radio-button :label="0x00003">单html</el-radio-button>
+                        <el-radio-button :label="0x00004">富文本</el-radio-button>
+                        <el-radio-button :label="0x00005">多图片</el-radio-button>
+                    </el-radio-group>
+
+                </el-form-item>
+
+
+                <el-form-item label="选择器">
+
+                    <el-input v-model="alertItem.selector"/>
+
+                </el-form-item>
+
+
+            </el-form>
+
+
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="showAlert = false">取 消</el-button>
+            <el-button type="primary" @click="add()">确 定</el-button>
+        </span>
+    </el-dialog>
+
+
+</div>
+
+</body>
+
+
+<script>
+
+    new Vue({
+        el: "#app",
+        data: {
+            showAlert: false,
+            alertItem: {
+                types: 0x00000,
+                selector: "",
+                name: ""
+            },
+            item: {
+                host: "",
+                channel: '',
+                limit: "",
+                pageStart: "",
+                listSelector: "",
+                listHrefSelector: "",
+                detailFields: {}
+
+            },
+            type: 1
+        },
+        methods: {
+
+            openList() {
+
+                this.showAlert = true;
+            },
+            add() {
+
+                this.item.detailFields[this.alertItem.name] = this.clone(this.alertItem)
+
+                this.showAlert = false
+
+            },
+            clone(obj) {
+
+                return JSON.parse(JSON.stringify(obj))
+            },
+            submit() {
+
+                axios({
+                    method: "post",
+                    url: "/submit",
+                    data: this.item,
+                    // headers: {'Content-Type': 'application/x-www-form-urlencoded',}
+                }).then(() => {
+
+                })
+
+            }
+        }
+    });
+
+</script>
+
+
+</html>
