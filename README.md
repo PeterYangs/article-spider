@@ -240,6 +240,7 @@ func main() {
 
 打开dist下的exe文件运行
 
+![avatar](/web/static/web.png)
 
 
 
