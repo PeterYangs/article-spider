@@ -17,10 +17,10 @@ func main() {
 		ListSelector:     "body > section > div > div > div.col-md-7.col-xs-12.article-container > div",
 		ListHrefSelector: "div.col-md-8.col-xs-8 > a",
 		DetailFields: map[string]form.Field{
-			"title":   {Types: fileTypes.SingleField, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div > h3"},
-			"html":    {Types: fileTypes.OnlyHtml, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div"},
-			"image":   {Types: fileTypes.SingleImage, Selector: "body > section > div > div > div.col-md-3 > div > div.qrcode-panel.common-panel > div:nth-child(1) > img", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
-			"content": {Types: fileTypes.HtmlWithImage, Selector: "#detail-content", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+			"title": {Types: fileTypes.SingleField, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div > h3"},
+			//"html":    {Types: fileTypes.OnlyHtml, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div"},
+			//"image":   {Types: fileTypes.SingleImage, Selector: "body > section > div > div > div.col-md-3 > div > div.qrcode-panel.common-panel > div:nth-child(1) > img", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+			//"content": {Types: fileTypes.HtmlWithImage, Selector: "#detail-content", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
 		},
 	}
 

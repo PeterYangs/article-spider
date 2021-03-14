@@ -25,6 +25,14 @@ func GetList(form form.Form) {
 		//获取html页面
 		html, err := tools.GetToString(listUrl, tools.HttpSetting{})
 
+		if err != nil {
+
+			fmt.Println(err)
+
+			continue
+
+		}
+
 		html, err = common.DealCoding(html)
 
 		if err != nil {

@@ -24,7 +24,12 @@ func Start(form form.Form) {
 	storage := make(chan map[string]string, 10)
 
 	//创建图片文件夹
-	os.Mkdir("image", 766)
+	err := os.Mkdir("image", 766)
+
+	if err != nil {
+
+		fmt.Println(err)
+	}
 
 	//管道赋值
 	form.Storage = storage
@@ -49,7 +54,7 @@ func Start(form form.Form) {
 
 	uuidString := uuid.NewV4().String()
 
-	err := f.SaveAs(uuidString + ".xlsx")
+	err = f.SaveAs(uuidString + ".xlsx")
 
 	if err != nil {
 
