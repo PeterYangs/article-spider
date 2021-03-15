@@ -116,6 +116,26 @@
                 </el-form-item>
 
 
+                <template v-if="alertItem.types===0x00002||alertItem.types===0x00004||alertItem.types===0x00005">
+
+
+                    <el-form-item label="图片路径前缀">
+
+                        <el-input v-model="alertItem.imagePrefix"></el-input>
+
+                    </el-form-item>
+
+                    <el-form-item label="图片生成文件夹">
+
+                        <el-input v-model="alertItem.imageDir"></el-input>
+
+                    </el-form-item>
+
+
+                </template>
+
+
+
             </el-form>
 
 
@@ -142,7 +162,9 @@
             alertItem: {
                 types: 0x00000,
                 selector: "",
-                name: ""
+                name: "",
+                imagePrefix:"",
+                imageDir:""
             },
             item: {
                 host: "",
