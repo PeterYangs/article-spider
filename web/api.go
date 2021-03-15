@@ -1,7 +1,7 @@
 package web
 
 import (
-	"article-spider/fileTypes"
+	"article-spider/common"
 	"article-spider/form"
 	"article-spider/spider"
 	"fmt"
@@ -64,27 +64,9 @@ func StartWeb() {
 		}
 
 		//解析列表选择器和详情选择器
-		detailFields := make(map[string]form.Field)
+		detailFields := common.ResolveFields((json["detailFields"]).(map[string]interface{}))
 
-		for i, v := range (json["detailFields"]).(map[string]interface{}) {
-
-			item := v.(map[string]interface{})
-
-			types := item["types"]
-
-			detailFields[i] = form.Field{Types: fileTypes.FieldTypes((types).(float64)), Selector: (item["selector"]).(string)}
-		}
-
-		listFields := make(map[string]form.Field)
-
-		for i, v := range (json["listFields"]).(map[string]interface{}) {
-
-			item := v.(map[string]interface{})
-
-			types := item["types"]
-
-			listFields[i] = form.Field{Types: fileTypes.FieldTypes((types).(float64)), Selector: (item["selector"]).(string)}
-		}
+		listFields := common.ResolveFields((json["listFields"]).(map[string]interface{}))
 
 		f := form.Form{
 			Host:             (json["host"]).(string),

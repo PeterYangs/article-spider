@@ -320,3 +320,26 @@ func DownImg(form form.Form, url string, item form.Field) string {
 	return (If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
 
 }
+
+//解析字段
+func ResolveFields(field map[string]interface{}) map[string]form.Field {
+
+	fields := make(map[string]form.Field)
+
+	for i, v := range field {
+
+		item := v.(map[string]interface{})
+
+		types := item["types"]
+
+		fields[i] = form.Field{
+			Types:       fileTypes.FieldTypes((types).(float64)),
+			Selector:    (item["selector"]).(string),
+			ImagePrefix: item["imagePrefix"].(string),
+			ImageDir:    item["imageDir"].(string),
+		}
+	}
+
+	return fields
+
+}
