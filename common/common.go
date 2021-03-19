@@ -309,7 +309,7 @@ func DownImg(form form.Form, url string, item form.Field) string {
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
 
-	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName)
+	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName, form.HttpSetting)
 
 	if imgErr != nil {
 

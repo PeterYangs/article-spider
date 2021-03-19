@@ -4,6 +4,7 @@ import (
 	"article-spider/form"
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/tools"
 	"github.com/satori/go.uuid"
 	"os"
 	"sync"
@@ -34,6 +35,9 @@ func Start(form form.Form) {
 	//管道赋值
 	form.Storage = storage
 
+	//http设置初始化
+	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress}
+
 	//excel等待锁
 	var excelWait sync.WaitGroup
 
@@ -41,7 +45,7 @@ func Start(form form.Form) {
 
 	form.ExcelWait.Add(1)
 
-	form.IsFinish = make(chan bool)
+	form.IsFinish = make(chan bool, 1)
 
 	//协程写入Excel
 	go WriteExcel(form)

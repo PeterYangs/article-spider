@@ -3,37 +3,38 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
+	"net/url"
 	"time"
 )
 
 func main() {
-	proxyAddr := "http://127.0.0.1:4780/"
-	url := "https://www.google.com/"
+	proxyAddr := "socks5://127.0.0.1:4781"
+	//proxyAddr := "http://127.0.0.1:4780"
+	url := "https://store.shopping.yahoo.co.jp"
 	cli := NewHttpClient(proxyAddr)
 	data, _ := HttpGET(cli, url)
 	fmt.Println(string(data))
 }
 
 func NewHttpClient(proxyAddr string) *http.Client {
-	//proxy, err := url.Parse(proxyAddr)
+
+	//proxy := func(_ *http.Request) (*url.URL, error) {
+	//	return url.Parse(proxyAddr)
+	//}
+
+	//dialer, err := proxy.SOCKS5("tcp", proxyAddr, nil, proxy.Direct)
 	//if err != nil {
-	//	return nil
+	//	fmt.Fprintln(os.Stderr, "can't connect to the proxy:", err)
+	//	os.Exit(1)
 	//}
 
 	netTransport := &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		//Proxy: http.ProxyURL(proxy),
-		Dial: func(netw, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(netw, addr, time.Second*time.Duration(10))
-			if err != nil {
-				return nil, err
-			}
-			return c, nil
+		Proxy: func(r *http.Request) (*url.URL, error) {
+			return url.Parse(proxyAddr)
 		},
-		MaxIdleConnsPerHost:   10,                             //每个host最大空闲连接
-		ResponseHeaderTimeout: time.Second * time.Duration(5), //数据收发5秒超时
+		//MaxIdleConnsPerHost:   10,                             //每个host最大空闲连接
+		//ResponseHeaderTimeout: time.Second * time.Duration(5), //数据收发5秒超时
 	}
 
 	return &http.Client{

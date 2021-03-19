@@ -3,6 +3,7 @@ package form
 import (
 	"article-spider/fileTypes"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/tools"
 	"sync"
 )
 
@@ -22,6 +23,8 @@ type Form struct {
 	DetailMaxCoroutine int       //爬取详情页最大协程数，默认按照列表的长度
 	DisableAutoCoding  bool      //是否关闭自动转码
 	IsFinish           chan bool //通知excel已完成爬取
+	ProxyAddress       string    //代理地址
+	HttpSetting        tools.HttpSetting
 }
 
 type Field struct {

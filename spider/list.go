@@ -23,7 +23,7 @@ func GetList(form form.Form) {
 		listUrl := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
 		//获取html页面
-		html, err := tools.GetToString(listUrl, tools.HttpSetting{})
+		html, err := tools.GetToString(listUrl, form.HttpSetting)
 
 		if err != nil {
 
@@ -85,6 +85,36 @@ func GetList(form form.Form) {
 		//查找列表中的a链接
 		doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
 
+			//只爬列表
+			if len(form.DetailFields) <= 0 && len(form.ListFields) > 0 {
+
+				ts, err := s.Html()
+
+				if err != nil {
+
+					log.Println(err)
+
+					return
+
+				}
+
+				tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(ts))
+
+				if err != nil {
+
+					fmt.Println(err)
+
+					return
+				}
+
+				res := common.ResolveSelector(form, tempDoc, form.ListFields)
+
+				form.Storage <- res
+
+				return
+
+			}
+
 			href := ""
 
 			isFind := false
@@ -113,48 +143,53 @@ func GetList(form form.Form) {
 
 				//doc, err := goquery.NewDocumentFromReader(s)
 
-				t, err := s.Html()
+				//列表选择器不为空时
+				if len(form.ListFields) > 0 {
 
-				if err != nil {
+					t, err := s.Html()
 
-					log.Println(err)
+					if err != nil {
 
-					return
+						log.Println(err)
 
-				}
-
-				tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(t))
-
-				res := common.ResolveSelector(form, tempDoc, form.ListFields)
-
-				if len(res) != 0 {
-
-					form.StorageTemp = res
-				}
-
-				if len(form.DetailFields) > 0 {
-
-					wait.Add(1)
-
-					//控制最大并发
-					if form.DetailMaxCoroutine != 0 {
-
-						detailMaxChan <- 1
+						return
 
 					}
 
-					//根据列表的长度开启协程爬取详情页
-					go GetDetail(form, href, &wait, detailMaxChan)
+					tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(t))
 
-				} else {
+					res := common.ResolveSelector(form, tempDoc, form.ListFields)
 
-					//panic("")
+					if len(res) != 0 {
 
-					//只爬列表
-
-					form.Storage <- res
+						form.StorageTemp = res
+					}
 
 				}
+
+				//if len(form.DetailFields) > 0 {
+
+				wait.Add(1)
+
+				//控制最大并发
+				if form.DetailMaxCoroutine != 0 {
+
+					detailMaxChan <- 1
+
+				}
+
+				//根据列表的长度开启协程爬取详情页
+				go GetDetail(form, href, &wait, detailMaxChan)
+
+				//} else {
+				//
+				//	//panic("")
+				//
+				//	//只爬列表
+				//
+				//	form.Storage <- res
+				//
+				//}
 
 			}
 
@@ -169,7 +204,12 @@ func GetList(form form.Form) {
 	//b_:=&b
 	//
 	//form.IsFinish=b_
+	fmt.Println("gg")
+
+	fmt.Println(len(form.IsFinish))
 
 	form.IsFinish <- true
+
+	fmt.Println("gg2")
 
 }
