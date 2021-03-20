@@ -54,6 +54,10 @@
                     <el-input v-model="item.listHrefSelector"></el-input>
                 </el-form-item>
 
+                <el-form-item label="代理">
+                    <el-input v-model="item.proxyAddress"></el-input>
+                </el-form-item>
+
 
                 <el-button @click="submit()" type="primary">提交</el-button>
 
@@ -174,7 +178,8 @@
                 listSelector: "",
                 listHrefSelector: "",
                 detailFields: {},
-                listFields: {}
+                listFields: {},
+                proxyAddress:"",
 
             },
             //弹窗类型，1是列表，2是详情

@@ -77,6 +77,7 @@ func StartWeb() {
 			ListHrefSelector: (json["listHrefSelector"]).(string),
 			DetailFields:     detailFields,
 			ListFields:       listFields,
+			ProxyAddress:     (json["proxyAddress"]).(string),
 		}
 
 		go spider.Start(f)
