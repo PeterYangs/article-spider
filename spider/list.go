@@ -204,12 +204,12 @@ func GetList(form form.Form) {
 	//b_:=&b
 	//
 	//form.IsFinish=b_
-	fmt.Println("gg")
-
-	fmt.Println(len(form.IsFinish))
+	//fmt.Println("gg")
+	//
+	//fmt.Println(len(form.IsFinish))
 
 	form.IsFinish <- true
 
-	fmt.Println("gg2")
+	//fmt.Println("gg2")
 
 }

@@ -4,6 +4,7 @@ import (
 	"article-spider/form"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 //写入excel表
@@ -43,45 +44,49 @@ func WriteExcel(form form.Form) {
 
 	}
 
-	isFinish := false
+	//isFinish := false
+
+	go checkChan(form)
 
 	//写入
 	for v := range form.Storage {
 
 		//fmt.Println(form.IsFinish)
 
-		select {
+		//fmt.Println("1111111111")
+		//
+		//select {
+		//
+		//case <-form.IsFinish:
+		//
+		//
+		//
+		//	isFinish = true
+		//
+		//default:
 
-		case <-form.IsFinish:
+		indexs := 0
 
-			//fmt.Println("1111111111")
+		for ii, vv := range v {
 
-			isFinish = true
+			if indexs == 0 {
 
-		default:
-
-			indexs := 0
-
-			for ii, vv := range v {
-
-				if indexs == 0 {
-
-					fmt.Println(vv)
-				}
-
-				form.ExcelFile.SetCellValue("Sheet1", getHeader(ii, array)+strconv.Itoa(row), vv)
-
-				indexs++
+				fmt.Println(vv)
 			}
 
-			row++
+			form.ExcelFile.SetCellValue("Sheet1", getHeader(ii, array)+strconv.Itoa(row), vv)
 
+			indexs++
 		}
 
-		if isFinish == true && len(form.Storage) == 0 {
+		row++
 
-			close(form.Storage)
-		}
+		//}
+		//
+		//if isFinish == true && len(form.Storage) == 0 {
+		//
+		//	close(form.Storage)
+		//}
 
 	}
 
@@ -102,4 +107,28 @@ func setHeader(name string, index int, array map[string]string) (string, map[str
 func getHeader(name string, array map[string]string) string {
 
 	return array[name]
+}
+
+func checkChan(form form.Form) {
+
+	select {
+
+	case <-form.IsFinish:
+
+		for {
+
+			if len(form.Storage) == 0 {
+
+				close(form.Storage)
+
+				return
+
+			}
+
+			time.Sleep(500 * time.Millisecond)
+
+		}
+
+	}
+
 }
