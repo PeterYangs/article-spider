@@ -58,14 +58,6 @@ func GetList(form form.Form) {
 
 		}
 
-		//if err != nil {
-		//
-		//	fmt.Println(err)
-		//
-		//	continue
-		//
-		//}
-
 		//goquery加载html
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 		if err != nil {
@@ -181,16 +173,6 @@ func GetList(form form.Form) {
 				//根据列表的长度开启协程爬取详情页
 				go GetDetail(form, href, &wait, detailMaxChan)
 
-				//} else {
-				//
-				//	//panic("")
-				//
-				//	//只爬列表
-				//
-				//	form.Storage <- res
-				//
-				//}
-
 			}
 
 		})
@@ -199,17 +181,7 @@ func GetList(form form.Form) {
 
 	}
 
-	//b:=true
-	//
-	//b_:=&b
-	//
-	//form.IsFinish=b_
-	//fmt.Println("gg")
-	//
-	//fmt.Println(len(form.IsFinish))
-
+	//通知excel已完成
 	form.IsFinish <- true
-
-	//fmt.Println("gg2")
 
 }

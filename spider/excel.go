@@ -4,7 +4,6 @@ import (
 	"article-spider/form"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 //写入excel表
@@ -44,26 +43,10 @@ func WriteExcel(form form.Form) {
 
 	}
 
-	//isFinish := false
-
 	go checkChan(form)
 
 	//写入
 	for v := range form.Storage {
-
-		//fmt.Println(form.IsFinish)
-
-		//fmt.Println("1111111111")
-		//
-		//select {
-		//
-		//case <-form.IsFinish:
-		//
-		//
-		//
-		//	isFinish = true
-		//
-		//default:
 
 		indexs := 0
 
@@ -80,13 +63,6 @@ func WriteExcel(form form.Form) {
 		}
 
 		row++
-
-		//}
-		//
-		//if isFinish == true && len(form.Storage) == 0 {
-		//
-		//	close(form.Storage)
-		//}
 
 	}
 
@@ -109,25 +85,15 @@ func getHeader(name string, array map[string]string) string {
 	return array[name]
 }
 
+//检查是否已完成爬取
 func checkChan(form form.Form) {
 
 	select {
 
 	case <-form.IsFinish:
 
-		for {
-
-			if len(form.Storage) == 0 {
-
-				close(form.Storage)
-
-				return
-
-			}
-
-			time.Sleep(500 * time.Millisecond)
-
-		}
+		//关闭通道写入
+		close(form.Storage)
 
 	}
 

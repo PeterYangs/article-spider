@@ -21,8 +21,8 @@ func main() {
 			"price": {Types: fileTypes.SingleField, Selector: " div:nth-child(2) > div:nth-child(3) > div > div:nth-child(1) > span"},
 		},
 		DetailMaxCoroutine: 2,
-		//ProxyAddress: "socks5://127.0.0.1:4781",
-		ProxyAddress: "socks5://127.0.0.1:4777",
+		ProxyAddress:       "socks5://127.0.0.1:4781",
+		//ProxyAddress: "socks5://127.0.0.1:4777",
 	}
 
 	spider.Start(f)
