@@ -36,7 +36,7 @@ func Start(form form.Form) {
 	form.Storage = storage
 
 	//http设置初始化
-	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress}
+	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress, Header: form.HttpHeader}
 
 	//excel等待锁
 	var excelWait sync.WaitGroup
