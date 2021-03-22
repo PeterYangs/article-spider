@@ -307,7 +307,16 @@ func DownImg(form form.Form, url string, item form.Field) string {
 		}
 	}
 
-	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + tools.GetExtensionName(imgUrl)
+	ex, err := tools.GetExtensionName(imgUrl)
+
+	if err != nil {
+
+		ex = "png"
+	}
+
+	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
+
+	//panic(imgName)
 
 	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName, form.HttpSetting)
 
