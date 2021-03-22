@@ -88,7 +88,7 @@ func StartWeb() {
 
 				fmt.Println(err)
 
-				fmt.Println(connect.ConnectList)
+				//fmt.Println(connect.ConnectList)
 
 				return
 			}
