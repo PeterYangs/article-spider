@@ -86,6 +86,22 @@
 
         </div>
 
+        <div style="flex: 1;display: flex;flex-direction: column">
+
+            <div>日志</div>
+
+            <div style="overflow: scroll;flex: 1;max-height: 803px;" id="scroll">
+                <div v-for="v in this.log">
+                    {{v}}
+                </div>
+            </div>
+
+            <el-link v-if="filename" style="margin-top: 30px" :href="filename" type="primary"  target="_blank">下载</el-link>
+
+
+        </div>
+
+
     </div>
 
 
@@ -139,7 +155,6 @@
                 </template>
 
 
-
             </el-form>
 
 
@@ -167,8 +182,8 @@
                 types: 0x00000,
                 selector: "",
                 name: "",
-                imagePrefix:"",
-                imageDir:""
+                imagePrefix: "",
+                imageDir: ""
             },
             item: {
                 host: "",
@@ -179,11 +194,15 @@
                 listHrefSelector: "",
                 detailFields: {},
                 listFields: {},
-                proxyAddress:"",
+                proxyAddress: "",
+                uid: ""
 
             },
             //弹窗类型，1是列表，2是详情
-            type: 1
+            type: 1,
+            log: [],
+            logMax: 100,
+            filename:""
         },
         methods: {
 
@@ -215,6 +234,8 @@
             },
             submit() {
 
+                this.filename=""
+
                 axios({
                     method: "post",
                     url: "/submit",
@@ -224,7 +245,72 @@
 
                 })
 
+            },
+            open() {
+
+                this.ws.send(JSON.stringify({types: "registered"}))
+
+            },
+
+            logAdd(log) {
+
+                if (this.log.length >= this.logMax) {
+
+                    this.log.unshift()
+                }
+
+                this.log.push(log)
+
+                let div = document.getElementById('scroll');
+
+                div.scrollTop = div.scrollHeight;
+
+            },
+            message(ev) {
+
+                // switch (ev.data)
+
+                // console.log(ev.data)
+                let data = JSON.parse(ev.data)
+
+                switch (data.types) {
+
+                    case "registered":
+
+                        this.item.uid = data.data;
+
+                        break;
+
+                    case "log":
+
+                        this.logAdd(data.data)
+
+                        break
+
+                    case "finish":
+
+                        this.filename=data.data
+
+                        break
+
+
+                }
+
+
             }
+        },
+        created() {
+
+            let ws = new WebSocket("ws://127.0.0.1:8089/broadcast");
+
+            this.ws = ws;
+
+
+            ws.onopen = this.open;
+
+            ws.onmessage = this.message;
+
+
         }
     });
 

@@ -2,7 +2,6 @@ package spider
 
 import (
 	"article-spider/form"
-	"fmt"
 	"strconv"
 )
 
@@ -54,7 +53,11 @@ func WriteExcel(form form.Form) {
 
 			if indexs == 0 {
 
-				fmt.Println(vv)
+				//fmt.Println(vv)
+
+				//输出到通知管道
+				form.BroadcastChan <- map[string]string{"types": "log", "data": vv}
+
 			}
 
 			form.ExcelFile.SetCellValue("Sheet1", getHeader(ii, array)+strconv.Itoa(row), vv)

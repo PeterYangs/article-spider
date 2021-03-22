@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/vue.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+
+    <div v-for="v in list">{{v}}</div>
+
+    <div>
+        <input v-model="msg"/>
+    </div>
+
+    <div>
+        <button @click="send()">发送</button>
+    </div>
+
+</div>
+
+
+</body>
+
+<script>
+
+
+    new Vue({
+        el: "#app",
+        data: {
+
+            list: [],
+            msg: "",
+            ws:null
+
+        },
+        methods: {
+
+            open() {
+
+                console.log("连接成功");
+
+            },
+            message(ev) {
+
+
+                this.list.push(ev.data)
+
+            },
+            send(){
+
+                this.ws.send(this.msg)
+            },
+
+
+
+
+        },
+        created() {
+
+            let ws = new WebSocket("ws://127.0.0.1:8089/echo");
+
+            this.ws=ws;
+
+
+            ws.onopen = this.open;
+
+            ws.onmessage = this.message;
+
+
+        }
+
+
+    });
+
+
+</script>
+
+</html>

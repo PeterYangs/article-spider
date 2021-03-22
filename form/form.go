@@ -20,13 +20,14 @@ type Form struct {
 	Storage            chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	StorageTemp        map[string]string      //存储列表页数据
 	ExcelWait          *sync.WaitGroup
-	DetailMaxCoroutine int               //爬取详情页最大协程数，默认按照列表的长度
-	DisableAutoCoding  bool              //是否关闭自动转码
-	IsFinish           chan bool         //通知excel已完成爬取
-	ProxyAddress       string            //代理地址
-	HttpHeader         map[string]string //header
-	HttpSetting        tools.HttpSetting //全局http设置
-
+	DetailMaxCoroutine int                    //爬取详情页最大协程数，默认按照列表的长度
+	DisableAutoCoding  bool                   //是否关闭自动转码
+	IsFinish           chan bool              //通知excel已完成爬取
+	ProxyAddress       string                 //代理地址
+	HttpHeader         map[string]string      //header
+	HttpSetting        tools.HttpSetting      //全局http设置
+	Uid                string                 //可视化下的websocket的uid
+	BroadcastChan      chan map[string]string //广播管道
 }
 
 type Field struct {

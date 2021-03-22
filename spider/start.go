@@ -35,6 +35,9 @@ func Start(form form.Form) {
 	//管道赋值
 	form.Storage = storage
 
+	//日志管道初始化
+	form.BroadcastChan = make(chan map[string]string, 3)
+
 	//http设置初始化
 	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress, Header: form.HttpHeader}
 
@@ -50,6 +53,9 @@ func Start(form form.Form) {
 	//协程写入Excel
 	go WriteExcel(form)
 
+	//协程开启日志输出
+	go broadcast(form)
+
 	//爬取列表
 	GetList(form)
 
@@ -60,7 +66,14 @@ func Start(form form.Form) {
 
 	uuidString := uuid.NewV4().String()
 
-	err = f.SaveAs(uuidString + ".xlsx")
+	filename := "web/static/excel/" + uuidString + ".xlsx"
+
+	form.BroadcastChan <- map[string]string{"types": "finish", "data": "static/excel/" + uuidString + ".xlsx"}
+
+	//关闭通知管道
+	close(form.BroadcastChan)
+
+	err = f.SaveAs(filename)
 
 	if err != nil {
 
