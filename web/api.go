@@ -62,7 +62,19 @@ func StartWeb() {
 
 		var uid string
 
-		defer conn.Close()
+		defer func() {
+
+			err := conn.Close()
+
+			if err != nil {
+
+				fmt.Println(err)
+			}
+
+			//删除掉这个连接
+			connect.DeleteCon(uid)
+
+		}()
 
 		for {
 			// Read message from browser
@@ -75,6 +87,8 @@ func StartWeb() {
 			if err != nil {
 
 				fmt.Println(err)
+
+				fmt.Println(connect.ConnectList)
 
 				return
 			}
@@ -163,8 +177,8 @@ func StartWeb() {
 
 		//post:=context.Request.ParseForm
 		//
-		json := make(map[string]interface{}) //注意该结构接受的内容
-		err := context.BindJSON(&json)
+		json_ := make(map[string]interface{}) //注意该结构接受的内容
+		err := context.BindJSON(&json_)
 
 		if err != nil {
 
@@ -173,7 +187,7 @@ func StartWeb() {
 			return
 		}
 
-		limit, err := strconv.Atoi(json["limit"].(string))
+		limit, err := strconv.Atoi(json_["limit"].(string))
 
 		if err != nil {
 
@@ -182,7 +196,7 @@ func StartWeb() {
 			return
 		}
 
-		pageStart, err := strconv.Atoi(json["pageStart"].(string))
+		pageStart, err := strconv.Atoi(json_["pageStart"].(string))
 
 		if err != nil {
 
@@ -192,21 +206,21 @@ func StartWeb() {
 		}
 
 		//解析列表选择器和详情选择器
-		detailFields := common.ResolveFields((json["detailFields"]).(map[string]interface{}))
+		detailFields := common.ResolveFields((json_["detailFields"]).(map[string]interface{}))
 
-		listFields := common.ResolveFields((json["listFields"]).(map[string]interface{}))
+		listFields := common.ResolveFields((json_["listFields"]).(map[string]interface{}))
 
 		f := form.Form{
-			Host:             (json["host"]).(string),
-			Channel:          (json["channel"]).(string),
+			Host:             (json_["host"]).(string),
+			Channel:          (json_["channel"]).(string),
 			Limit:            limit,
 			PageStart:        pageStart,
-			ListSelector:     (json["listSelector"]).(string),
-			ListHrefSelector: (json["listHrefSelector"]).(string),
+			ListSelector:     (json_["listSelector"]).(string),
+			ListHrefSelector: (json_["listHrefSelector"]).(string),
 			DetailFields:     detailFields,
 			ListFields:       listFields,
-			ProxyAddress:     (json["proxyAddress"]).(string),
-			Uid:              (json["uid"]).(string),
+			ProxyAddress:     (json_["proxyAddress"]).(string),
+			Uid:              (json_["uid"]).(string),
 		}
 
 		go spider.Start(f)
@@ -217,6 +231,7 @@ func StartWeb() {
 
 }
 
+//跨域检查
 func checkOrigin(r *http.Request) bool {
 
 	return true
