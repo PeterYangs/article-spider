@@ -3,7 +3,6 @@ package common
 import (
 	"article-spider/fileTypes"
 	"article-spider/form"
-	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
@@ -203,7 +202,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			if err != nil {
 
-				fmt.Println(err)
+				ErrorLine(form, err.Error())
 
 				break
 
@@ -232,7 +231,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			if imgBool == false {
 
-				fmt.Println("SingleImage图片选择器未找到")
+				//fmt.Println("SingleImage图片选择器未找到")
+
+				ErrorLine(form, "SingleImage图片选择器未找到")
 
 				break
 
@@ -255,7 +256,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				if imgBool == false {
 
-					fmt.Println("ListImages图片选择器未找到")
+					//fmt.Println("ListImages图片选择器未找到")
+
+					ErrorLine(form, "ListImages图片选择器未找到")
 
 				} else {
 
