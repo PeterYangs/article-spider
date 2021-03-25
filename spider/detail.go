@@ -3,7 +3,6 @@ package spider
 import (
 	"article-spider/common"
 	"article-spider/form"
-	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
@@ -32,7 +31,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 	if err != nil {
 
-		fmt.Println(err)
+		common.ErrorLine(form, err.Error())
 
 		return
 
@@ -45,7 +44,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 		if err != nil {
 
-			fmt.Println(err)
+			common.ErrorLine(form, err.Error())
 
 			return
 
@@ -69,7 +68,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	if err != nil {
 		//log.Fatal(err)
 
-		fmt.Println(err)
+		common.ErrorLine(form, err.Error())
 
 		return
 

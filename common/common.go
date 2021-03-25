@@ -7,8 +7,8 @@ import (
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
-	"log"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -176,7 +176,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			if err != nil {
 
-				fmt.Println(err)
+				ErrorLine(form, err.Error())
 
 				break
 
@@ -193,7 +193,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			if err != nil {
 
-				fmt.Println(err)
+				ErrorLine(form, err.Error())
 
 				break
 
@@ -301,7 +301,7 @@ func DownImg(form form.Form, url string, item form.Field) string {
 
 		if err != nil {
 
-			log.Println(err)
+			ErrorLine(form, err.Error())
 
 			//return
 		}
@@ -322,8 +322,10 @@ func DownImg(form form.Form, url string, item form.Field) string {
 
 	if imgErr != nil {
 
-		log.Println(imgErr)
+		//log.Println(imgErr)
+		msg := imgErr.Error()
 
+		ErrorLine(form, msg)
 	}
 
 	return (If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
@@ -350,5 +352,18 @@ func ResolveFields(field map[string]interface{}) map[string]form.Field {
 	}
 
 	return fields
+
+}
+
+//错误日志
+func ErrorLine(form form.Form, msg string) {
+
+	_, f, l, _ := runtime.Caller(1)
+
+	fullMsg := msg + " in " + f + strconv.Itoa(l)
+
+	//fmt.Println("输出")
+
+	form.BroadcastChan <- map[string]string{"types": "error", "data": fullMsg}
 
 }

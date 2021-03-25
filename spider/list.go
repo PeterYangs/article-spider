@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -27,7 +26,9 @@ func GetList(form form.Form) {
 
 		if err != nil {
 
-			fmt.Println(err)
+			//fmt.Println(err)
+
+			common.ErrorLine(form, err.Error())
 
 			continue
 
@@ -37,7 +38,9 @@ func GetList(form form.Form) {
 
 		if err != nil {
 
-			fmt.Println(err)
+			//fmt.Println(err)
+
+			common.ErrorLine(form, err.Error())
 
 			continue
 
@@ -50,7 +53,7 @@ func GetList(form form.Form) {
 
 			if err != nil {
 
-				fmt.Println(err)
+				common.ErrorLine(form, err.Error())
 
 				continue
 
@@ -62,7 +65,7 @@ func GetList(form form.Form) {
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 		if err != nil {
 
-			fmt.Println(err)
+			common.ErrorLine(form, err.Error())
 
 			continue
 
@@ -84,7 +87,7 @@ func GetList(form form.Form) {
 
 				if err != nil {
 
-					log.Println(err)
+					common.ErrorLine(form, err.Error())
 
 					return
 
@@ -94,7 +97,7 @@ func GetList(form form.Form) {
 
 				if err != nil {
 
-					fmt.Println(err)
+					common.ErrorLine(form, err.Error())
 
 					return
 				}
@@ -142,7 +145,7 @@ func GetList(form form.Form) {
 
 					if err != nil {
 
-						log.Println(err)
+						common.ErrorLine(form, err.Error())
 
 						return
 
