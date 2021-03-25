@@ -54,6 +54,18 @@ ListHrefSelector：列表a标签选择器，相对于列表的选择器
 
 DetailFields：详情页选择器，key为Excel表头
 
+ListFields：  列表页元素选择器（如需要爬列表上的缩略图或者标题）
+
+DetailMaxCoroutine:详情页最大协程数量，默认和最大值都为列表详情页长度
+
+DisableAutoCoding：是否关闭自动转码（目前根据页面的meta将gbk转utf8）
+
+ProxyAddress：代理地址（你懂得）
+
+HttpHeader：http请求头部
+
+CustomExcelHeader：是否开启自定义excel头部
+
 <br/>
 
 **爬取图片**
