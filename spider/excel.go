@@ -2,6 +2,7 @@ package spider
 
 import (
 	"article-spider/form"
+	ff "article-spider/form"
 	"strconv"
 )
 
@@ -16,23 +17,27 @@ func WriteExcel(form form.Form) {
 
 	index := 0
 
-	var headerList []string
+	var headerList = make(map[string]ff.Field)
 
 	//合并表头
-	for i, _ := range form.DetailFields {
+	for i, v := range form.DetailFields {
 
-		headerList = append(headerList, i)
+		//headerList = append(headerList, i)
+
+		headerList[i] = v
 	}
 
-	for i, _ := range form.ListFields {
+	for i, v := range form.ListFields {
 
-		headerList = append(headerList, i)
+		//headerList = append(headerList, i)
+
+		headerList[i] = v
 	}
 
 	//设置表头
-	for _, i := range headerList {
+	for i, v := range headerList {
 
-		headName, arrayTemp := setHeader(i, index, array)
+		headName, arrayTemp := setHeader(i, index, array, v, form)
 
 		array = arrayTemp
 
@@ -72,15 +77,28 @@ func WriteExcel(form form.Form) {
 }
 
 // array ["title"]="A"
-func setHeader(name string, index int, array map[string]string) (string, map[string]string) {
+func setHeader(name string, index int, array map[string]string, item ff.Field, form ff.Form) (string, map[string]string) {
 
 	headerList := []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA"}
 
-	head := headerList[index]
+	if form.CustomExcelHeader {
 
-	array[name] = head
+		head := item.ExcelHeader
 
-	return head, array
+		array[name] = head
+
+		return head, array
+
+	} else {
+
+		head := headerList[index]
+
+		array[name] = head
+
+		return head, array
+
+	}
+
 }
 
 func getHeader(name string, array map[string]string) string {

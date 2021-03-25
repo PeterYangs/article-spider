@@ -56,6 +56,8 @@ func broadcast(form form.Form) {
 			//已完成
 			//con.WriteJSON(gin.H{"types": "finish", "data": message["data"]})
 
+			log.Println(message["data"])
+
 		case "error":
 
 			log.Println(message["data"])

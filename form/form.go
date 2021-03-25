@@ -28,6 +28,7 @@ type Form struct {
 	HttpSetting        tools.HttpSetting      //全局http设置
 	Uid                string                 //可视化下的websocket的uid
 	BroadcastChan      chan map[string]string //广播管道
+	CustomExcelHeader  bool                   //自定义Excel表格头部
 }
 
 type Field struct {
@@ -35,4 +36,5 @@ type Field struct {
 	Selector    string //选择器
 	ImagePrefix string //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
 	ImageDir    string //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100]
+	ExcelHeader string //excel表头，需要CustomExcelHeader为true,例：A
 }
