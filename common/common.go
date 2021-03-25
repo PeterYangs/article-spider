@@ -3,6 +3,7 @@ package common
 import (
 	"article-spider/fileTypes"
 	"article-spider/form"
+	ff "article-spider/form"
 	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
@@ -11,6 +12,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -153,6 +155,14 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 	var res = make(map[string]string)
 
+	//var resChan = make(chan map[string]string, 10)
+
+	var lock = sync.Mutex{}
+
+	var wait = sync.WaitGroup{}
+
+	//defer close(resChan)
+
 	//解析详情页面选择器
 	for field, item := range selector {
 
@@ -189,41 +199,76 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 		//爬取html，包括图片
 		case fileTypes.HtmlWithImage:
 
-			html, err := doc.Find(item.Selector).Html()
+			wait.Add(1)
 
-			if err != nil {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup) {
 
-				ErrorLine(form, err.Error())
+				defer wait.Done()
 
-				break
+				html, err := doc.Find(item.Selector).Html()
 
-			}
+				if err != nil {
 
-			htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+					ErrorLine(form, err.Error())
 
-			if err != nil {
-
-				fmt.Println(err)
-
-				break
-
-			}
-
-			htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
-
-				img, b := selection.Attr("src")
-
-				if b == true {
-
-					imgName := DownImg(form, img, item)
-
-					html = strings.Replace(html, img, imgName, 1)
+					return
 
 				}
 
-			})
+				htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
-			res[field] = html
+				if err != nil {
+
+					ErrorLine(form, err.Error())
+
+					return
+
+				}
+
+				var waitImg sync.WaitGroup
+
+				var imgList = sync.Map{}
+
+				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
+
+					img, b := selection.Attr("src")
+
+					if b == true {
+
+						waitImg.Add(1)
+
+						go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+
+							defer waitImg.Done()
+
+							imgName := DownImg(form, img, item)
+
+							imgList.Store(imgName, img)
+
+						}(&waitImg, &imgList)
+
+					}
+
+				})
+
+				waitImg.Wait()
+
+				//html = strings.Replace(html, img, imgName, 1)
+
+				imgList.Range(func(key, value interface{}) bool {
+
+					html = strings.Replace(html, value.(string), key.(string), 1)
+
+					return true
+				})
+
+				lock.Lock()
+				res[field] = html
+				lock.Unlock()
+
+				//resChan <- map[string]string{field:html}
+
+			}(doc, form, item, &lock, &wait)
 
 		//单个图片
 		case fileTypes.SingleImage:
@@ -277,6 +322,8 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 	}
 
+	wait.Wait()
+
 	return res
 
 }
@@ -326,6 +373,9 @@ func DownImg(form form.Form, url string, item form.Field) string {
 		msg := imgErr.Error()
 
 		ErrorLine(form, msg)
+
+		return url
+
 	}
 
 	return (If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName

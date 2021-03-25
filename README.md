@@ -285,6 +285,45 @@ func main() {
 
 ```
 
+**设置http的header**
+
+```
+
+package main
+
+import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"article-spider/spider"
+)
+
+func main() {
+
+	f := form.Form{
+
+		Host:             "https://www.doyo.cn",
+		Channel:          "/game/2-1-[PAGE].html",
+		Limit:            5,
+		PageStart:        1,
+		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
+		ListHrefSelector: " div > a:nth-child(1)",
+		DetailFields: map[string]form.Field{
+			"content": {Types: fileTypes.HtmlWithImage, Selector: "#hiddenDetail > div", ExcelHeader: "C"},
+		},
+		DetailMaxCoroutine: 5,
+		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+		
+	}
+
+	spider.Start(f)
+}
+
+
+
+```
+
+
+
 **自定义excel表头**
 
 ```
