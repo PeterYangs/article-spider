@@ -8,7 +8,6 @@ import (
 
 func main() {
 
-	//只爬列表
 	f := form.Form{
 
 		Host:             "https://www.doyo.cn",
@@ -24,14 +23,8 @@ func main() {
 			"screenshots": {Types: fileTypes.ListImages, Selector: "#slider3 > ul img", ExcelHeader: "D"},
 			"size":        {Types: fileTypes.SingleField, Selector: "body > div.game_wrap.w1200.clearfix > div.game_l > div.detail_info > div.info.clearfix > span:nth-child(1) > em", ExcelHeader: "E"},
 		},
-		//DetailFields: map[string]form.Field{
-		//	"title": {Types: fileTypes.SingleField, Selector: "#shpMain > div.gdColumns.gd3ColumnItem > div.gd3ColumnItem2 > div.mdItemName > p.elCatchCopy"},
-		//	"img":   {Types: fileTypes.SingleImage, Selector: "#itmbasic > div.elMain > ul > li.elPanel.isNew > a > img"},
-		//},
 		DetailMaxCoroutine: 5,
 		CustomExcelHeader:  true,
-		//ProxyAddress:       "socks5://127.0.0.1:4781",
-		//ProxyAddress: "socks5://127.0.0.1:4777",
 	}
 
 	spider.Start(f)
