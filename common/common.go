@@ -256,7 +256,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				imgList.Range(func(key, value interface{}) bool {
 
-					html = strings.Replace(html, value.(string), key.(string), 1)
+					html = strings.Replace(html, value.(string), key.(string), -1)
 
 					return true
 				})
@@ -307,33 +307,77 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 		//多个图片
 		case fileTypes.ListImages:
 
-			imgList := ""
+			//imgList := ""
 
-			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+			wait.Add(1)
 
-				imgUrl, imgBool := selection.Attr("src")
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
 
-				if imgBool == false {
+				defer wait.Done()
 
-					//fmt.Println("ListImages图片选择器未找到")
+				var waitImg sync.WaitGroup
 
-					ErrorLine(form, "ListImages图片选择器未找到")
+				var imgList = sync.Map{}
 
-				} else {
+				//sync.
 
-					imgName := DownImg(form, imgUrl, item)
+				doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
 
-					//imgList=append(imgList, imgName)
+					imgUrl, imgBool := selection.Attr("src")
 
-					imgList += imgName + ","
+					if imgBool == false {
 
-				}
+						//fmt.Println("ListImages图片选择器未找到")
 
-				//fmt.Println(imgName)
+						ErrorLine(form, "ListImages图片选择器未找到")
 
-			})
+					} else {
 
-			res[field] = imgList
+						waitImg.Add(1)
+
+						go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+
+							defer waitImg.Done()
+
+							imgName := DownImg(form, imgUrl, item)
+
+							//imgList=append(imgList, imgName)
+
+							//imgList += imgName + ","
+
+							imgList.Store(imgName, "")
+
+						}(&waitImg, &imgList)
+
+					}
+
+					//fmt.Println(imgName)
+
+				})
+
+				waitImg.Wait()
+
+				//html = strings.Replace(html, img, imgName, 1)
+
+				var strArray []string
+
+				imgList.Range(func(key, value interface{}) bool {
+
+					//html = strings.Replace(html, value.(string), key.(string), 1)
+
+					strArray = append(strArray, key.(string))
+
+					return true
+				})
+
+				lock.Lock()
+				resTemp := *res
+				resTemp[field] = tools.Join(",", strArray)
+				lock.Unlock()
+
+			}(doc, form, item, &lock, &wait, &res, field)
+
+			//res[field] = imgList
 
 		}
 
