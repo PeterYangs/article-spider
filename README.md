@@ -6,7 +6,7 @@ git clone https://github.com/PeterYangs/article-spider.git
 
 开始使用
 
-**爬取文字**
+**爬取文字(fileTypes.SingleField)**
 
 ```
 package main
@@ -68,7 +68,7 @@ CustomExcelHeader：是否开启自定义excel头部
 
 <br/>
 
-**爬取图片**
+**爬取图片(fileTypes.SingleImage)**
 
 ```
 
@@ -103,7 +103,7 @@ func main() {
 }
 ```
 
-**爬取富文本(html,可以将内容中的图片下载出来并替换原链接)**
+**爬取富文本(fileTypes.HtmlWithImage,可以将内容中的图片下载出来并替换原链接)**
 
 ```	
 package main
@@ -137,7 +137,7 @@ func main() {
 	
 	
 ```
-爬多图
+**爬多图(fileTypes.ListImages)**
 
 ```
 package main
@@ -172,7 +172,7 @@ func main() {
 
 ```
 
-爬列表元素
+**爬列表元素(ListFields)**
 
 ```
 
@@ -248,7 +248,7 @@ func main() {
 
 ```
 
-**代理**
+**代理(ProxyAddress)**
 
 ```
 package main
@@ -285,7 +285,7 @@ func main() {
 
 ```
 
-**设置http的header**
+**设置http的header(HttpHeader)**
 
 ```
 
@@ -324,7 +324,7 @@ func main() {
 
 
 
-**自定义excel表头**
+**自定义excel表头(ExcelHeader)**
 
 ```
 package main
