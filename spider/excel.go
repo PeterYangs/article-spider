@@ -60,6 +60,8 @@ func WriteExcel(form form.Form) {
 
 				//fmt.Println(vv)
 
+				//fmt.Println()
+
 				//输出到通知管道
 				form.BroadcastChan <- map[string]string{"types": "log", "data": vv}
 

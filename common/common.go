@@ -174,6 +174,12 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			//fmt.Println(v)
 
+			if item.ConversionFormatFunc != nil {
+
+				v = item.ConversionFormatFunc(v)
+
+			}
+
 			res[field] = v
 
 			break
@@ -187,7 +193,15 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				ErrorLine(form, err.Error())
 
+				res[field] = ""
+
 				break
+
+			}
+
+			if item.ConversionFormatFunc != nil {
+
+				v = item.ConversionFormatFunc(v)
 
 			}
 
@@ -261,6 +275,12 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 					return true
 				})
 
+				if item.ConversionFormatFunc != nil {
+
+					html = item.ConversionFormatFunc(html)
+
+				}
+
 				lock.Lock()
 				resTemp := *res
 				resTemp[field] = html
@@ -292,6 +312,16 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				}
 
 				imgName := DownImg(form, imgUrl, item)
+
+				//panic()
+
+				//fmt.Println(item.ConversionFormatFunc)
+
+				if item.ConversionFormatFunc != nil {
+
+					imgName = item.ConversionFormatFunc(imgName)
+
+				}
 
 				lock.Lock()
 				resTemp := *res
@@ -370,9 +400,17 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 					return true
 				})
 
+				array := tools.Join(",", strArray)
+
+				if item.ConversionFormatFunc != nil {
+
+					array = item.ConversionFormatFunc(array)
+
+				}
+
 				lock.Lock()
 				resTemp := *res
-				resTemp[field] = tools.Join(",", strArray)
+				resTemp[field] = array
 				lock.Unlock()
 
 			}(doc, form, item, &lock, &wait, &res, field)

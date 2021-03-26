@@ -30,12 +30,14 @@ type Form struct {
 	BroadcastChan      chan map[string]string //广播管道
 	CustomExcelHeader  bool                   //自定义Excel表格头部
 	BroadcastWait      *sync.WaitGroup        //通知通道处理完毕等待
+	DisableDebug       bool                   //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
 }
 
 type Field struct {
-	Types       fileTypes.FieldTypes
-	Selector    string //选择器
-	ImagePrefix string //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
-	ImageDir    string //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100]
-	ExcelHeader string //excel表头，需要CustomExcelHeader为true,例：A
+	Types                fileTypes.FieldTypes
+	Selector             string                   //选择器
+	ImagePrefix          string                   //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
+	ImageDir             string                   //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100]
+	ExcelHeader          string                   //excel表头，需要CustomExcelHeader为true,例：A
+	ConversionFormatFunc func(data string) string //转换格式函数
 }

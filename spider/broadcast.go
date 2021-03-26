@@ -40,19 +40,23 @@ func broadcast(form form.Form) {
 
 		}
 
-		switch message["types"] {
+		if form.DisableDebug == false {
 
-		case "log":
+			switch message["types"] {
 
-			fmt.Println(message["data"])
+			case "log":
 
-		case "finish":
+				fmt.Println(message["data"])
 
-			log.Println(message["data"])
+			case "finish":
 
-		case "error":
+				log.Println(message["data"])
 
-			log.Println(message["data"])
+			case "error":
+
+				log.Println(message["data"])
+
+			}
 
 		}
 
