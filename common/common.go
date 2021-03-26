@@ -4,7 +4,6 @@ import (
 	"article-spider/fileTypes"
 	"article-spider/form"
 	ff "article-spider/form"
-	"fmt"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
@@ -219,7 +218,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				if err != nil {
 
-				ErrorLine(form, err.Error())
+					ErrorLine(form, err.Error())
 
 					return
 
