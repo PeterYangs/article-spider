@@ -37,7 +37,7 @@ type Field struct {
 	Types                fileTypes.FieldTypes
 	Selector             string                   //选择器
 	ImagePrefix          string                   //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
-	ImageDir             string                   //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100]
+	ImageDir             string                   //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
 	ExcelHeader          string                   //excel表头，需要CustomExcelHeader为true,例：A
 	ConversionFormatFunc func(data string) string //转换格式函数
 }

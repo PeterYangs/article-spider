@@ -54,7 +54,7 @@ func GetHref(href string, host string) string {
 
 }
 
-func GetDir(path string) string {
+func GetDir(path string, singleFieldMap *sync.Map) string {
 
 	//替换时间格式
 	r1, _ := regexp.Compile(`\[date:(.*?)]`)
@@ -81,6 +81,66 @@ func GetDir(path string) string {
 		path = strings.Replace(path, v[0], strconv.FormatInt(tools.Mt_rand(int64(min), int64(max)), 10), -1)
 
 	}
+
+	//根据爬取文件给文件夹命名
+	r3, _ := regexp.Compile(`\[singleField:(.*?)]`)
+
+	singleField := r3.FindAllStringSubmatch(path, -1)
+
+	for i, v := range singleField {
+
+		field := ""
+
+		//ok:=false
+
+		if i == 0 {
+
+			times := 0
+
+			for {
+
+				field_, ok := singleFieldMap.Load(v[1])
+
+				if !ok {
+
+					time.Sleep(200 * time.Millisecond)
+
+					times++
+
+					if times >= 5 {
+
+						field = "timeout"
+
+						break
+					}
+
+				} else {
+
+					field = field_.(string)
+
+					//处理为空的情况
+					if field == "" {
+
+						field = "unknown"
+					}
+
+					break
+
+				}
+
+			}
+
+		}
+
+		path = strings.Replace(path, v[0], field, -1)
+
+	}
+
+	//panic(singleField)
+
+	//fmt.Println(singleField)
+	//
+	//panic("")
 
 	return path
 
@@ -160,7 +220,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 	var wait = sync.WaitGroup{}
 
-	//defer close(resChan)
+	var singleFieldMap = sync.Map{}
+
+	//defer close(singleFieldChan)
 
 	//解析详情页面选择器
 	for field, item := range selector {
@@ -179,6 +241,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				v = item.ConversionFormatFunc(v)
 
 			}
+
+			//singleFieldChan <- v
+			singleFieldMap.Store(field, v)
 
 			res[field] = v
 
@@ -214,7 +279,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			wait.Add(1)
 
-			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string, singleFieldMap *sync.Map) {
 
 				defer wait.Done()
 
@@ -250,15 +315,15 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 						waitImg.Add(1)
 
-						go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+						go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
 
 							defer waitImg.Done()
 
-							imgName := DownImg(form, img, item)
+							imgName := DownImg(form, img, item, singleFieldMap)
 
 							imgList.Store(imgName, img)
 
-						}(&waitImg, &imgList)
+						}(&waitImg, &imgList, singleFieldMap)
 
 					}
 
@@ -288,14 +353,14 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				//resChan <- map[string]string{field:html}
 
-			}(doc, form, item, &lock, &wait, &res, field)
+			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
 
 		//单个图片
 		case fileTypes.SingleImage:
 
 			wait.Add(1)
 
-			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string, singleFieldMap *sync.Map) {
 
 				defer wait.Done()
 
@@ -311,7 +376,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				}
 
-				imgName := DownImg(form, imgUrl, item)
+				imgName := DownImg(form, imgUrl, item, singleFieldMap)
 
 				//panic()
 
@@ -330,7 +395,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				//res[field] = imgName
 
-			}(doc, form, item, &lock, &wait, &res, field)
+			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
 
 			break
 
@@ -341,7 +406,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			wait.Add(1)
 
-			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string, singleFieldMap *sync.Map) {
 
 				defer wait.Done()
 
@@ -365,11 +430,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 						waitImg.Add(1)
 
-						go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+						go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
 
 							defer waitImg.Done()
 
-							imgName := DownImg(form, imgUrl, item)
+							imgName := DownImg(form, imgUrl, item, singleFieldMap)
 
 							//imgList=append(imgList, imgName)
 
@@ -377,7 +442,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 							imgList.Store(imgName, "")
 
-						}(&waitImg, &imgList)
+						}(&waitImg, &imgList, singleFieldMap)
 
 					}
 
@@ -413,7 +478,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				resTemp[field] = array
 				lock.Unlock()
 
-			}(doc, form, item, &lock, &wait, &res, field)
+			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
 
 			//res[field] = imgList
 
@@ -427,7 +492,8 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 }
 
-func DownImg(form form.Form, url string, item form.Field) string {
+//下载图片（包括生产文件夹）
+func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.Map) string {
 
 	//获取完整链接
 	imgUrl := GetHref(url, form.Host)
@@ -440,7 +506,7 @@ func DownImg(form form.Form, url string, item form.Field) string {
 	if item.ImageDir != "" {
 
 		//获取图片文件夹
-		dir = GetDir(item.ImageDir)
+		dir = GetDir(item.ImageDir, singleFieldMap)
 
 		//设置文件夹
 		err := tools.MkDirDepth("image/" + dir)

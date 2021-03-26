@@ -427,6 +427,47 @@ func conversion(data string) string {
 
 ```
 
+**根据某个单字段命名图片文件夹(\[singleField:title\])**
+
+
+```
+package main
+
+import (
+	"article-spider/fileTypes"
+	"article-spider/form"
+	"article-spider/spider"
+	"encoding/json"
+	"fmt"
+	"github.com/PeterYangs/tools"
+)
+
+func main() {
+
+	f := form.Form{
+
+		Host:             "https://www.doyo.cn",
+		Channel:          "/game/2-1-[PAGE].html",
+		Limit:            1,
+		PageStart:        1,
+		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
+		ListHrefSelector: " div > a:nth-child(1)",
+		DetailFields: map[string]form.Field{
+		
+			"title": {Types: fileTypes.SingleField, Selector: "body > div.game_wrap.w1200.clearfix > div.game_l > div.game_info > div.info > h1"},	
+			"screenshots": {Types: fileTypes.ListImages, Selector: "#slider3 > ul img", ExcelHeader: "D", ImageDir: "[singleField:title]"},
+		
+		},
+		DetailMaxCoroutine: 5,
+		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+
+	}
+
+	spider.Start(f)
+}
+
+
+```
 
 **web面板**
 
