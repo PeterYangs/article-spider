@@ -38,6 +38,13 @@ func Start(form form.Form) {
 	//日志管道初始化
 	form.BroadcastChan = make(chan map[string]string, 3)
 
+	//通知等待锁
+	var BroadcastWait sync.WaitGroup
+
+	form.BroadcastWait = &BroadcastWait
+
+	form.BroadcastWait.Add(1)
+
 	//http设置初始化
 	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress, Header: form.HttpHeader}
 
@@ -68,11 +75,16 @@ func Start(form form.Form) {
 
 	filename := "web/static/excel/" + uuidString + ".xlsx"
 
+	//发送excel路径
 	form.BroadcastChan <- map[string]string{"types": "finish", "data": "static/excel/" + uuidString + ".xlsx"}
 
 	//关闭通知管道
 	close(form.BroadcastChan)
 
+	//等待通知管道处理完毕
+	form.BroadcastWait.Wait()
+
+	//生成excel
 	err = f.SaveAs(filename)
 
 	if err != nil {

@@ -10,6 +10,8 @@ import (
 
 func broadcast(form form.Form) {
 
+	defer form.BroadcastWait.Done()
+
 	for message := range form.BroadcastChan {
 
 		if form.Uid != "" {
@@ -25,16 +27,12 @@ func broadcast(form form.Form) {
 					//发送日志
 					con.WriteJSON(gin.H{"types": "log", "data": message["data"]})
 
-					//fmt.Println(message["data"])
-
 				case "finish":
 
 					//已完成
 					con.WriteJSON(gin.H{"types": "finish", "data": message["data"]})
 
 				case "error":
-
-					//log.Println(message["data"])
 
 				}
 
@@ -46,15 +44,9 @@ func broadcast(form form.Form) {
 
 		case "log":
 
-			//发送日志
-			//con.WriteJSON(gin.H{"types": "log", "data": message["data"]})
-
 			fmt.Println(message["data"])
 
 		case "finish":
-
-			//已完成
-			//con.WriteJSON(gin.H{"types": "finish", "data": message["data"]})
 
 			log.Println(message["data"])
 
@@ -64,7 +56,7 @@ func broadcast(form form.Form) {
 
 		}
 
-		//fmt.Println(message)
+		//fmt.Println(message["types"])
 
 	}
 

@@ -29,6 +29,7 @@ type Form struct {
 	Uid                string                 //可视化下的websocket的uid
 	BroadcastChan      chan map[string]string //广播管道
 	CustomExcelHeader  bool                   //自定义Excel表格头部
+	BroadcastWait      *sync.WaitGroup        //通知通道处理完毕等待
 }
 
 type Field struct {

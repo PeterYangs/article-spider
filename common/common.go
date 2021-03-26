@@ -200,7 +200,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			wait.Add(1)
 
-			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup) {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
 
 				defer wait.Done()
 
@@ -262,31 +262,45 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				})
 
 				lock.Lock()
-				res[field] = html
+				resTemp := *res
+				resTemp[field] = html
 				lock.Unlock()
 
 				//resChan <- map[string]string{field:html}
 
-			}(doc, form, item, &lock, &wait)
+			}(doc, form, item, &lock, &wait, &res, field)
 
 		//单个图片
 		case fileTypes.SingleImage:
 
-			imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
+			wait.Add(1)
 
-			if imgBool == false {
+			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string) {
 
-				//fmt.Println("SingleImage图片选择器未找到")
+				defer wait.Done()
 
-				ErrorLine(form, "SingleImage图片选择器未找到")
+				imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
 
-				break
+				if imgBool == false {
 
-			}
+					//fmt.Println("SingleImage图片选择器未找到")
 
-			imgName := DownImg(form, imgUrl, item)
+					ErrorLine(form, "SingleImage图片选择器未找到")
 
-			res[field] = imgName
+					return
+
+				}
+
+				imgName := DownImg(form, imgUrl, item)
+
+				lock.Lock()
+				resTemp := *res
+				resTemp[field] = imgName
+				lock.Unlock()
+
+				//res[field] = imgName
+
+			}(doc, form, item, &lock, &wait, &res, field)
 
 			break
 
