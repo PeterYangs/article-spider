@@ -128,6 +128,16 @@ func StartWeb() {
 					return
 				}
 
+			case "ping":
+
+				err := conn.WriteJSON(gin.H{"types": m.Types, "data": "ping"})
+
+				if err != nil {
+
+					fmt.Println(err)
+
+					return
+				}
 			}
 
 			// Write message back to browser

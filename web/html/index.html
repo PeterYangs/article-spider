@@ -96,7 +96,8 @@
                 </div>
             </div>
 
-            <el-link v-if="filename" style="margin-top: 30px" :href="filename" type="primary"  target="_blank">下载</el-link>
+            <el-link v-if="filename" style="margin-top: 30px" :href="filename" type="primary" target="_blank">下载
+            </el-link>
 
 
         </div>
@@ -202,7 +203,7 @@
             type: 1,
             log: [],
             logMax: 100,
-            filename:""
+            filename: ""
         },
         methods: {
 
@@ -234,7 +235,7 @@
             },
             submit() {
 
-                this.filename=""
+                this.filename = ""
 
                 axios({
                     method: "post",
@@ -279,6 +280,8 @@
 
                         this.item.uid = data.data;
 
+                        this.ping()
+
                         break;
 
                     case "log":
@@ -289,12 +292,26 @@
 
                     case "finish":
 
-                        this.filename=data.data
+                        this.filename = data.data
 
                         break
 
 
                 }
+
+
+            },
+            ping() {
+
+                setTimeout(()=>{
+
+
+                    this.ws.send(JSON.stringify({types: "ping",data:"ping"}))
+
+
+                    return this.ping();
+
+                },3000)
 
 
             }
