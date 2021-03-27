@@ -518,6 +518,8 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 	//生成随机名称
 	uuidString := uuid.NewV4().String()
 
+	uuidString = strings.Replace(uuidString, "-", "", -1)
+
 	dir := ""
 
 	if item.ImageDir != "" {
