@@ -249,6 +249,23 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			break
 
+		//单个文字字段
+		case fileTypes.Attr:
+
+			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
+
+			//fmt.Println(v)
+
+			if item.ConversionFormatFunc != nil {
+
+				v = item.ConversionFormatFunc(v)
+
+			}
+
+			res[field] = v
+
+			break
+
 		//只爬html（不包括图片）
 		case fileTypes.OnlyHtml:
 

@@ -8,3 +8,4 @@ const SingleImage FieldTypes = 0x00002   //单个图片
 const OnlyHtml FieldTypes = 0x00003      //普通html(不包括图片)
 const HtmlWithImage FieldTypes = 0x00004 //html包括图片
 const ListImages FieldTypes = 0x00005    //多图
+const Attr FieldTypes = 0x00006          //标签属性选择器

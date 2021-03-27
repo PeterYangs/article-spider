@@ -40,4 +40,5 @@ type Field struct {
 	ImageDir             string                   //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
 	ExcelHeader          string                   //excel表头，需要CustomExcelHeader为true,例：A
 	ConversionFormatFunc func(data string) string //转换格式函数
+	AttrKey              string                   //属性值参数
 }
