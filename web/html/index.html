@@ -203,7 +203,9 @@
             type: 1,
             log: [],
             logMax: 100,
-            filename: ""
+            filename: "",
+            pingTimeout: 10,//心跳包超时时间
+            timeId: ""
         },
         methods: {
 
@@ -249,8 +251,11 @@
             },
             open() {
 
-                this.ws.send(JSON.stringify({types: "registered"}))
-
+                if (!this.item.uid) {
+                    this.ws.send(JSON.stringify({types: "registered"}))
+                }else {
+                    this.ws.send(JSON.stringify({types: "reconnect","data":this.item.uid}))
+                }
             },
 
             logAdd(log) {
@@ -296,36 +301,97 @@
 
                         break
 
+                    case "ping":
+
+                        this.pingTimeout = 10;
+
+                        break
+
 
                 }
 
 
             },
+            close() {
+
+                clearInterval(this.timeId)
+
+                this.connect();
+
+            },
             ping() {
 
-                setTimeout(()=>{
+                let index = 0;
+
+                //发送心跳包
+                this.timeId = setInterval(() => {
 
 
-                    this.ws.send(JSON.stringify({types: "ping",data:"ping"}))
+                    if (index % 3 === 0) {
+
+                        this.ws.send(JSON.stringify({types: "ping", data: "ping"}))
+                    }
 
 
-                    return this.ping();
-
-                },3000)
+                    if (this.pingTimeout <= 0) {
 
 
-            }
+                        this.pingTimeout = 10;
+
+                        this.ws.close()
+
+                        this.connect()
+
+                        clearInterval(this.timeId)
+
+                        console.log("心跳包超时");
+
+                        return;
+
+                    }
+
+                    this.pingTimeout--;
+
+                    index++
+
+                }, 1000)
+
+
+            },
+            connect() {
+
+
+                let ws = new WebSocket("ws://127.0.0.1:8089/broadcast");
+
+                this.ws = ws;
+
+                ws.onopen = this.open;
+
+                ws.onmessage = this.message;
+
+                ws.onclose = this.clone
+
+                ws.onerror = (e) => {
+
+                    console.log(e)
+
+                    setTimeout(() => {
+
+                        this.connect();
+
+                    }, 3000)
+
+
+                }
+
+
+            },
+
+
         },
         created() {
 
-            let ws = new WebSocket("ws://127.0.0.1:8089/broadcast");
-
-            this.ws = ws;
-
-
-            ws.onopen = this.open;
-
-            ws.onmessage = this.message;
+            this.connect()
 
 
         }

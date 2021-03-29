@@ -128,6 +128,22 @@ func StartWeb() {
 					return
 				}
 
+			//重连
+			case "reconnect":
+
+				connect.AddCon(m.Data, conn)
+
+				//err:=conn.WriteMessage(msgType, []byte(uid))
+
+				err := conn.WriteJSON(gin.H{"types": m.Types, "data": uid})
+
+				if err != nil {
+
+					fmt.Println(err)
+
+					return
+				}
+
 			case "ping":
 
 				err := conn.WriteJSON(gin.H{"types": m.Types, "data": "ping"})
