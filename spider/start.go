@@ -2,10 +2,11 @@ package spider
 
 import (
 	"article-spider/form"
+	"article-spider/storageMethod"
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/PeterYangs/tools"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"os"
 	"sync"
 )
@@ -48,6 +49,54 @@ func Start(form form.Form) {
 	//http设置初始化
 	form.HttpSetting = tools.HttpSetting{ProxyAddress: form.ProxyAddress, Header: form.HttpHeader}
 
+	//协程开启日志输出
+	go broadcast(form)
+
+	switch form.StorageMethod {
+
+	case storageMethod.Excel:
+
+		dealExcel(form, f)
+
+	case storageMethod.Mysql:
+
+		dealMysql(form)
+
+		//time.Sleep(30*time.Second)
+	}
+
+	fmt.Println("执行完毕")
+
+}
+
+func dealMysql(form form.Form) {
+
+	var mysqlWait sync.WaitGroup
+
+	form.MysqlWait = &mysqlWait
+
+	form.MysqlWait.Add(1)
+
+	//爬取完成通知通道初始化
+	form.IsFinish = make(chan bool, 1)
+
+	go WriteMysql(form)
+
+	//爬取列表
+	GetList(form)
+
+	form.MysqlWait.Wait()
+
+	//关闭通知管道
+	close(form.BroadcastChan)
+
+	//等待通知管道处理完毕
+	form.BroadcastWait.Wait()
+
+}
+
+func dealExcel(form form.Form, f *excelize.File) {
+
 	//excel等待锁
 	var excelWait sync.WaitGroup
 
@@ -55,18 +104,16 @@ func Start(form form.Form) {
 
 	form.ExcelWait.Add(1)
 
+	//爬取完成通知通道初始化
 	form.IsFinish = make(chan bool, 1)
 
 	//协程写入Excel
 	go WriteExcel(form)
 
-	//协程开启日志输出
-	go broadcast(form)
+	//close(form.Storage)
 
 	//爬取列表
 	GetList(form)
-
-	//close(form.Storage)
 
 	//等待管道处理完excel写入
 	form.ExcelWait.Wait()
@@ -85,14 +132,12 @@ func Start(form form.Form) {
 	form.BroadcastWait.Wait()
 
 	//生成excel
-	err = f.SaveAs(filename)
+	err := f.SaveAs(filename)
 
 	if err != nil {
 
 		fmt.Println(err)
 
 	}
-
-	fmt.Println("执行完毕")
 
 }

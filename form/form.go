@@ -2,6 +2,7 @@ package form
 
 import (
 	"article-spider/fileTypes"
+	"article-spider/storageMethod"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/PeterYangs/tools"
 	"sync"
@@ -20,17 +21,20 @@ type Form struct {
 	Storage            chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	StorageTemp        map[string]string      //存储列表页数据
 	ExcelWait          *sync.WaitGroup
-	DetailMaxCoroutine int                    //爬取详情页最大协程数，默认按照列表的长度
-	DisableAutoCoding  bool                   //是否关闭自动转码
-	IsFinish           chan bool              //通知excel已完成爬取
-	ProxyAddress       string                 //代理地址
-	HttpHeader         map[string]string      //header
-	HttpSetting        tools.HttpSetting      //全局http设置
-	Uid                string                 //可视化下的websocket的uid
-	BroadcastChan      chan map[string]string //广播管道
-	CustomExcelHeader  bool                   //自定义Excel表格头部
-	BroadcastWait      *sync.WaitGroup        //通知通道处理完毕等待
-	DisableDebug       bool                   //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
+	MysqlWait          *sync.WaitGroup
+	DetailMaxCoroutine int                         //爬取详情页最大协程数，默认按照列表的长度
+	DisableAutoCoding  bool                        //是否关闭自动转码
+	IsFinish           chan bool                   //通知excel已完成爬取
+	ProxyAddress       string                      //代理地址
+	HttpHeader         map[string]string           //header
+	HttpSetting        tools.HttpSetting           //全局http设置
+	Uid                string                      //可视化下的websocket的uid
+	BroadcastChan      chan map[string]string      //广播管道
+	CustomExcelHeader  bool                        //自定义Excel表格头部
+	BroadcastWait      *sync.WaitGroup             //通知通道处理完毕等待
+	DisableDebug       bool                        //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
+	StorageMethod      storageMethod.StorageMethod //数据导出方式，默认excel
+	MysqlSetting       MysqlSetting
 }
 
 type Field struct {
@@ -41,4 +45,11 @@ type Field struct {
 	ExcelHeader          string                   //excel表头，需要CustomExcelHeader为true,例：A
 	ConversionFormatFunc func(data string) string //转换格式函数
 	AttrKey              string                   //属性值参数
+}
+
+type MysqlSetting struct {
+	Host     string
+	Username string
+	Password string
+	Database string
 }

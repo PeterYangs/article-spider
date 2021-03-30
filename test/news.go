@@ -4,6 +4,7 @@ import (
 	"article-spider/fileTypes"
 	"article-spider/form"
 	"article-spider/spider"
+	"article-spider/storageMethod"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 
 		Host:             "http://www.gj078.cn",
 		Channel:          "/sports/index_[PAGE].html",
-		Limit:            21,
+		Limit:            1,
 		PageStart:        1,
 		ListSelector:     "#recent-content > div",
 		ListHrefSelector: " div > a",
@@ -30,6 +31,7 @@ func main() {
 		//DetailMaxCoroutine: 5,
 		HttpHeader:        map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
 		CustomExcelHeader: true,
+		StorageMethod:     storageMethod.Mysql,
 		//DisableDebug: true,
 	}
 

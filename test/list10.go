@@ -4,6 +4,7 @@ import (
 	"article-spider/fileTypes"
 	"article-spider/form"
 	"article-spider/spider"
+	"article-spider/storageMethod"
 	"encoding/json"
 	"fmt"
 	"github.com/PeterYangs/tools"
@@ -30,6 +31,7 @@ func main() {
 		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
 		//CustomExcelHeader:  true,
 		//DisableDebug: true,
+		StorageMethod: storageMethod.Mysql,
 	}
 
 	spider.Start(f)
