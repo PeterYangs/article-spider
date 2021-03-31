@@ -372,57 +372,56 @@ import (
 	"article-spider/fileTypes"
 	"article-spider/form"
 	"article-spider/spider"
-	"encoding/json"
-	"fmt"
-	"github.com/PeterYangs/tools"
+	"github.com/PuerkitoBio/goquery"
+	"strings"
 )
 
 func main() {
 
 	f := form.Form{
 
-		Host:             "https://www.doyo.cn",
-		Channel:          "/game/2-1-[PAGE].html",
+		Host:             "http://www.gj078.cn",
+		Channel:          "/sports/index_[PAGE].html",
 		Limit:            1,
 		PageStart:        1,
-		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
-		ListHrefSelector: " div > a:nth-child(1)",
+		ListSelector:     "#recent-content > div",
+		ListHrefSelector: " div > a",
 		DetailFields: map[string]form.Field{
-			"screenshots": {Types: fileTypes.ListImages, Selector: "#slider3 > ul img", ExcelHeader: "D", ConversionFormatFunc: conversion},
+
+			"title": {Types: fileTypes.SingleField, Selector: "#main > article > header > h1", ExcelHeader: "G"},
+			"content": {Types: fileTypes.HtmlWithImage, Selector: "#main > article > div.entry-content", ExcelHeader: "E", ImagePrefix: "/api/uploads", ImageDir: "news/[random:1-100]"},
+			"desc":    {Types: fileTypes.Attr, Selector: "meta[name=\"description\"]", AttrKey: "content", ExcelHeader: "H", ConversionFormatFunc: getDesc},
+			"keyword": {Types: fileTypes.Attr, Selector: "meta[name=\"keywords\"]", AttrKey: "content", ExcelHeader: "K"},
 		},
-		DetailMaxCoroutine: 5,
-		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
-		//DisableDebug: true,
+		ListFields: map[string]form.Field{
+			"img": {Types: fileTypes.SingleImage, Selector: " div > a > div > img", ExcelHeader: "F", ImageDir: "news/[random:1-100]"},
+		},
+		HttpHeader:        map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+		CustomExcelHeader: true,
 	}
 
 	spider.Start(f)
+
 }
 
-//转json格式
-func conversion(data string) string {
+func getDesc(data string, resList map[string]string) string {
 
-	var jsons []map[string]string
+	if data == "" {
 
-	array := tools.Explode(",", data)
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(resList["content"]))
 
-	for _, v := range array {
+		if err != nil {
 
-		jsons = append(jsons, map[string]string{"img": v, "name": ""})
+			return ""
+		}
+
+		return doc.Text()
 
 	}
 
-	jsonStr, err := json.Marshal(jsons)
-
-	if err != nil {
-
-		fmt.Println(err)
-
-		return ""
-	}
-
-	return string(jsonStr)
-
+	return data
 }
+
 
 
 ```
