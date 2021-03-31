@@ -236,11 +236,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			//fmt.Println(v)
 
-			if item.ConversionFormatFunc != nil {
-
-				v = item.ConversionFormatFunc(v)
-
-			}
+			//if item.ConversionFormatFunc != nil {
+			//
+			//	v = item.ConversionFormatFunc(v)
+			//
+			//}
 
 			//singleFieldChan <- v
 			singleFieldMap.Store(field, v)
@@ -256,11 +256,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			//fmt.Println(v)
 
-			if item.ConversionFormatFunc != nil {
-
-				v = item.ConversionFormatFunc(v)
-
-			}
+			//if item.ConversionFormatFunc != nil {
+			//
+			//	v = item.ConversionFormatFunc(v)
+			//
+			//}
 
 			res[field] = v
 
@@ -281,11 +281,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			}
 
-			if item.ConversionFormatFunc != nil {
-
-				v = item.ConversionFormatFunc(v)
-
-			}
+			//if item.ConversionFormatFunc != nil {
+			//
+			//	v = item.ConversionFormatFunc(v)
+			//
+			//}
 
 			res[field] = v
 
@@ -357,11 +357,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 					return true
 				})
 
-				if item.ConversionFormatFunc != nil {
-
-					html = item.ConversionFormatFunc(html)
-
-				}
+				//if item.ConversionFormatFunc != nil {
+				//
+				//	html = item.ConversionFormatFunc(html)
+				//
+				//}
 
 				lock.Lock()
 				resTemp := *res
@@ -399,11 +399,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				//fmt.Println(item.ConversionFormatFunc)
 
-				if item.ConversionFormatFunc != nil {
-
-					imgName = item.ConversionFormatFunc(imgName)
-
-				}
+				//if item.ConversionFormatFunc != nil {
+				//
+				//	imgName = item.ConversionFormatFunc(imgName)
+				//
+				//}
 
 				lock.Lock()
 				resTemp := *res
@@ -484,11 +484,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				array := tools.Join(",", strArray)
 
-				if item.ConversionFormatFunc != nil {
-
-					array = item.ConversionFormatFunc(array)
-
-				}
+				//if item.ConversionFormatFunc != nil {
+				//
+				//	array = item.ConversionFormatFunc(array)
+				//
+				//}
 
 				lock.Lock()
 				resTemp := *res
@@ -599,5 +599,39 @@ func ErrorLine(form form.Form, msg string) {
 	//fmt.Println("输出")
 
 	form.BroadcastChan <- map[string]string{"types": "error", "data": fullMsg}
+
+}
+
+//处理格式转换
+func ConversionFormat(form ff.Form, resList map[string]string) map[string]string {
+
+	tempRes := resList
+
+	//合并列表和详情选择器
+	var all = make(map[string]ff.Field)
+
+	for i, v := range form.ListFields {
+
+		all[i] = v
+
+	}
+
+	for i, v := range form.DetailFields {
+
+		all[i] = v
+
+	}
+
+	for i, v := range all {
+
+		if v.ConversionFormatFunc != nil {
+
+			tempRes[i] = v.ConversionFormatFunc(resList[i], resList)
+
+		}
+
+	}
+
+	return tempRes
 
 }

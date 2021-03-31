@@ -77,12 +77,21 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	//解析选择器返回map
 	res := common.ResolveSelector(form, doc, form.DetailFields)
 
+	//panic(res)
+
+	//fmt.Println(res)
+
+	//panic("")
+
 	//合并列表中数据
 	for i, v := range form.StorageTemp {
 
 		res[i] = v
 
 	}
+
+	//处理格式转换
+	res = common.ConversionFormat(form, res)
 
 	//写入管道
 	form.Storage <- res
