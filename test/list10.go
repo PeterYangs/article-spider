@@ -36,7 +36,7 @@ func main() {
 }
 
 //转json格式
-func conversion(data string) string {
+func Conversion(data string, list map[string]string) string {
 
 	var jsons []map[string]string
 

@@ -4,6 +4,7 @@ import (
 	"article-spider/fileTypes"
 	"article-spider/form"
 	"article-spider/spider"
+	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -12,26 +13,26 @@ func main() {
 
 	f := form.Form{
 
-		Host:             "http://www.gj078.cn",
-		Channel:          "/sports/index_[PAGE].html",
-		Limit:            1,
+		Host:             "http://news.4399.com",
+		Channel:          "/shouyou/6438_[PAGE].html",
+		Limit:            100,
 		PageStart:        1,
-		ListSelector:     "#recent-content > div",
-		ListHrefSelector: " div > a",
+		ListSelector:     "body > div.main.mb10.clearfix > div.leftbar > div.tabC1 > ul > li",
+		ListHrefSelector: " div.top_t > a",
 		DetailFields: map[string]form.Field{
 
-			"title": {Types: fileTypes.SingleField, Selector: "#main > article > header > h1", ExcelHeader: "G"},
+			"title": {Types: fileTypes.SingleField, Selector: "body > div.wp.cf > div.w700.fl > h1", ExcelHeader: "G"},
 			// /api/uploads/news20210325/4620210325/88e8a06664b249bf90fe12ccba084f89.jpg
-			"content": {Types: fileTypes.HtmlWithImage, Selector: "#main > article > div.entry-content", ExcelHeader: "E", ImagePrefix: "/api/uploads", ImageDir: "news/[random:1-100]"},
+			"content": {Types: fileTypes.HtmlWithImage, Selector: "body > div.wp.cf > div.w700.fl > div.content", ExcelHeader: "E", ImagePrefix: "/api/uploads", ImageDir: "news/[random:1-100]"},
 			"desc":    {Types: fileTypes.Attr, Selector: "meta[name=\"description\"]", AttrKey: "content", ExcelHeader: "H", ConversionFormatFunc: getDesc},
 			"keyword": {Types: fileTypes.Attr, Selector: "meta[name=\"keywords\"]", AttrKey: "content", ExcelHeader: "K"},
 		},
 		ListFields: map[string]form.Field{
-			"img": {Types: fileTypes.SingleImage, Selector: " div > a > div > img", ExcelHeader: "F", ImageDir: "news/[random:1-100]"},
+			"img": {Types: fileTypes.SingleImage, Selector: " div.l_li_img > a > img", ExcelHeader: "F", ImageDir: "news/[random:1-100]"},
 		},
-		//DetailMaxCoroutine: 5,
-		HttpHeader:        map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
-		CustomExcelHeader: true,
+		DetailMaxCoroutine: 2,
+		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+		CustomExcelHeader:  true,
 		//DisableDebug: true,
 	}
 
@@ -50,7 +51,7 @@ func getDesc(data string, resList map[string]string) string {
 			return ""
 		}
 
-		return doc.Text()
+		return tools.SubStr(doc.Text(), 0, 65)
 
 	}
 

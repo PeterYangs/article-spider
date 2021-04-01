@@ -245,8 +245,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 			//singleFieldChan <- v
 			singleFieldMap.Store(field, v)
 
+			lock.Lock()
 			res[field] = v
-
+			lock.Unlock()
 			break
 
 		//单个文字字段
@@ -261,8 +262,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 			//	v = item.ConversionFormatFunc(v)
 			//
 			//}
-
+			lock.Lock()
 			res[field] = v
+			lock.Unlock()
 
 			break
 
@@ -286,8 +288,9 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 			//	v = item.ConversionFormatFunc(v)
 			//
 			//}
-
+			lock.Lock()
 			res[field] = v
+			lock.Unlock()
 
 			break
 
@@ -499,6 +502,13 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			//res[field] = imgList
 
+		//固定数据
+		case fileTypes.Fixed:
+
+			lock.Lock()
+			res[field] = item.Selector
+			lock.Unlock()
+
 		}
 
 	}
@@ -527,6 +537,8 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 		//获取图片文件夹
 		dir = GetDir(item.ImageDir, singleFieldMap)
 
+		//panic(dir)
+
 		//设置文件夹
 		err := tools.MkDirDepth("image/" + dir)
 
@@ -545,11 +557,18 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 		ex = "png"
 	}
 
+	if !tools.In_array([]string{"png", "jpg", "jpeg", "gif", "jfif"}, strings.ToLower(ex)) {
+
+		ErrorLine(form, "图片拓展名异常")
+
+		return ""
+	}
+
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
 	//panic(imgName)
 
-	imgErr := tools.DownloadImage(imgUrl, "image/"+imgName, form.HttpSetting)
+	imgErr := tools.DownloadFile(imgUrl, "image/"+imgName, form.HttpSetting)
 
 	if imgErr != nil {
 
@@ -557,6 +576,8 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 		msg := imgErr.Error()
 
 		ErrorLine(form, msg)
+
+		//fmt.Println(imgUrl)
 
 		return url
 
