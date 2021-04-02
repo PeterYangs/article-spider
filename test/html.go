@@ -10,7 +10,7 @@ func main() {
 	url := "https://www.crsky.com/soft/273960.html"
 	//url:="https://www.duote.com/sort/50_0_wdow_0_1_.html"
 
-	resp, _ := tools.GetToResp(url)
+	resp, _ := tools.GetToResp(url, tools.HttpSetting{})
 
 	fmt.Println(resp.Header.Get("Content-Type"))
 
