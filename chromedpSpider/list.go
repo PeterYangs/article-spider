@@ -2,10 +2,13 @@ package chromedpSpider
 
 import (
 	"article-spider/chromedpForm"
+	"article-spider/common"
 	"context"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/chromedp"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -55,6 +58,18 @@ func GetList(form chromedpForm.Form) {
 		}
 
 		fmt.Println(html)
+
+		//goquery加载html
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+		if err != nil {
+
+			//common.ErrorLine(form, err.Error())
+
+			fmt.Println(err)
+
+			continue
+
+		}
 
 		return
 
