@@ -34,18 +34,6 @@ func GetList(form form.Form) {
 
 		}
 
-		html, err = common.DealCoding(html)
-
-		if err != nil {
-
-			//fmt.Println(err)
-
-			common.ErrorLine(form, err.Error())
-
-			continue
-
-		}
-
 		//自动转码
 		if form.DisableAutoCoding == false {
 
