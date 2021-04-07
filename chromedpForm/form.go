@@ -11,10 +11,10 @@ type Form struct {
 	WaitForListSelector string //等待列表的选择器
 	Limit               int
 	//PageStart           int
-	ListSelector     string
-	ListHrefSelector string
-	DetailFields     map[string]Field //详情页面字段选择器
-	ListFields       map[string]Field //列表页面字段选择器
+	ListSelector      string
+	ListClickSelector string           //点击选择器
+	DetailFields      map[string]Field //详情页面字段选择器
+	ListFields        map[string]Field //列表页面字段选择器
 	//ExcelFile          *excelize.File         //excel表格对象
 	//Storage            chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	//StorageTemp        map[string]string      //存储列表页数据

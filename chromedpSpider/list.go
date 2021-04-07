@@ -2,13 +2,11 @@ package chromedpSpider
 
 import (
 	"article-spider/chromedpForm"
-	"article-spider/common"
 	"context"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -42,11 +40,12 @@ func GetList(form chromedpForm.Form) {
 
 		//html, err := tools.GetToString(listUrl, form.HttpSetting)
 
-		html := ""
+		var list []*cdp.Node
+
 		err := chromedp.Run(ctx,
 			chromedp.Navigate(form.Host+form.Channel),
 			chromedp.WaitVisible(form.WaitForListSelector),
-			chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+			chromedp.Nodes(form.ListSelector, &list, chromedp.ByQueryAll),
 		)
 
 		if err != nil {
@@ -57,19 +56,100 @@ func GetList(form chromedpForm.Form) {
 
 		}
 
-		fmt.Println(html)
+		//fmt.Println(list)
 
-		//goquery加载html
-		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-		if err != nil {
+		for _, v := range list {
 
-			//common.ErrorLine(form, err.Error())
+			//_=v
 
-			fmt.Println(err)
+			//fmt.Println(v.FullXPath())
 
-			continue
+			///html/body/div[10]/div[3]/ul/li[1]/div[2]/a
+
+			txt := ""
+
+			err := chromedp.Run(ctx,
+
+				//chromedp.Navigate("https://www.baidu.com"),
+
+				chromedp.WaitVisible(v.FullXPath()+"/div[2]/a"),
+				chromedp.Click(v.FullXPath()+"/div[2]/a"),
+				chromedp.WaitVisible("/html/body/div[10]/div[2]/div[1]/div[1]/div[2]/div[1]"),
+				chromedp.Text("/html/body/div[10]/div[2]/div[1]/div[1]/div[2]/div[1]", &txt),
+			)
+
+			//err=chromedp.Run(ctx,
+			//	//chromedp.Navigate(form.Host+form.Channel),
+			//	//chromedp.WaitVisible(form.WaitForListSelector),
+			//	chromedp.Nodes(v.,&list,chromedp.ByQuery),
+			//)
+			//
+			if err != nil {
+
+				fmt.Println(err)
+
+				return
+
+			}
+			//
+			//
+
+			fmt.Println(txt)
+
+			time.Sleep(5 * time.Second)
+
+			return
 
 		}
+
+		//err := chromedp.Run(ctx,
+		//	chromedp.Navigate(form.Host+form.Channel),
+		//	chromedp.WaitVisible(form.WaitForListSelector),
+		//	chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+		//)
+
+		////fmt.Println(html)
+		//
+		////goquery加载html
+		//doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+		//if err != nil {
+		//
+		//	//common.ErrorLine(form, err.Error())
+		//
+		//	fmt.Println(err)
+		//
+		//	continue
+		//
+		//}
+		//
+		//
+		//doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
+		//
+		//	//href := ""
+		//	//
+		//	//isFind := false
+		//
+		//	//a链接是列表的情况
+		//	if form.ListClickSelector == "" {
+		//
+		//		//href, isFind = s.Attr("href")
+		//
+		//
+		//
+		//	} else {
+		//
+		//		gg:=s.Find(form.ListClickSelector).First().Nodes
+		//
+		//		//fmt.Println(gg)
+		//
+		//		for _,v:=range gg{
+		//
+		//			fmt.Println(*v)
+		//
+		//		}
+		//
+		//	}
+		//})
 
 		return
 
