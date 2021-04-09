@@ -2,9 +2,11 @@ package chromedpSpider
 
 import (
 	"article-spider/chromedpForm"
+	"article-spider/fileTypes"
 	"context"
 	"fmt"
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"log"
 	"time"
@@ -12,26 +14,19 @@ import (
 
 func GetList(form chromedpForm.Form) {
 
-	//浏览器设置
-	opts := append(chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.Flag("headless", false), //关闭无头
-	)
-
-	allocCtx, AllocatorCancel := chromedp.NewExecAllocator(context.Background(), opts...)
-
-	defer AllocatorCancel()
-
-	//创建一个浏览器实例
-	ctx, chromedpCancel := chromedp.NewContext(
-		allocCtx,
-		chromedp.WithLogf(log.Printf),
-	)
-	defer chromedpCancel()
-
-	// 设置超时时间
-	ctx, TimeoutCancel := context.WithTimeout(ctx, 60*time.Second)
+	ctx, TimeoutCancel := createContext(-1)
 
 	defer TimeoutCancel()
+
+	// 监听得到第二个tab页的target ID
+	ch := make(chan target.ID, 2)
+	chromedp.ListenTarget(ctx, func(ev interface{}) {
+		if ev, ok := ev.(*target.EventTargetCreated); ok &&
+			// if OpenerID == "", this is the first tab.
+			ev.TargetInfo.OpenerID != "" {
+			ch <- ev.TargetInfo.TargetID
+		}
+	})
 
 	//当前页码
 	var pageCurrent int
@@ -40,12 +35,19 @@ func GetList(form chromedpForm.Form) {
 
 		//html, err := tools.GetToString(listUrl, form.HttpSetting)
 
+		if pageCurrent == 0 {
+
+			chromedp.Run(ctx,
+				chromedp.Navigate(form.Host+form.Channel),
+			)
+
+		}
+
 		var list []*cdp.Node
 
 		err := chromedp.Run(ctx,
-			chromedp.Navigate(form.Host+form.Channel),
-			chromedp.WaitVisible(form.WaitForListSelector),
-			chromedp.Nodes(form.ListSelector, &list, chromedp.ByQueryAll),
+			chromedp.WaitVisible(form.WaitForListPath),
+			chromedp.Nodes(form.ListPath, &list),
 		)
 
 		if err != nil {
@@ -56,34 +58,16 @@ func GetList(form chromedpForm.Form) {
 
 		}
 
-		//fmt.Println(list)
-
 		for _, v := range list {
-
-			//_=v
-
-			//fmt.Println(v.FullXPath())
-
-			///html/body/div[10]/div[3]/ul/li[1]/div[2]/a
-
-			txt := ""
 
 			err := chromedp.Run(ctx,
 
 				//chromedp.Navigate("https://www.baidu.com"),
 
-				chromedp.WaitVisible(v.FullXPath()+"/div[2]/a"),
-				chromedp.Click(v.FullXPath()+"/div[2]/a"),
-				chromedp.WaitVisible("/html/body/div[10]/div[2]/div[1]/div[1]/div[2]/div[1]"),
-				chromedp.Text("/html/body/div[10]/div[2]/div[1]/div[1]/div[2]/div[1]", &txt),
+				chromedp.WaitVisible(v.FullXPath()+form.ListClickPath),
+				chromedp.Click(v.FullXPath()+form.ListClickPath),
 			)
 
-			//err=chromedp.Run(ctx,
-			//	//chromedp.Navigate(form.Host+form.Channel),
-			//	//chromedp.WaitVisible(form.WaitForListSelector),
-			//	chromedp.Nodes(v.,&list,chromedp.ByQuery),
-			//)
-			//
 			if err != nil {
 
 				fmt.Println(err)
@@ -91,68 +75,77 @@ func GetList(form chromedpForm.Form) {
 				return
 
 			}
-			//
-			//
 
-			fmt.Println(txt)
+			waitNewTab := time.After(1 * time.Second)
 
-			time.Sleep(5 * time.Second)
+			select {
 
-			return
+			case TargetID := <-ch:
+
+				ctx2, newTabCancle := chromedp.NewContext(ctx, chromedp.WithTargetID(TargetID))
+
+				//解析详情页面选择器
+				for field, item := range form.DetailFields {
+
+					_ = field
+
+					switch item.Types {
+
+					//单个文字字段
+					case fileTypes.SingleField:
+
+						txt := ""
+
+						chromedp.Run(ctx2,
+
+							chromedp.WaitVisible(item.Path),
+							chromedp.Text(item.Path, &txt),
+						)
+
+						fmt.Println(txt)
+
+					}
+
+				}
+
+				newTabCancle()
+
+			case <-waitNewTab:
+
+				fmt.Println("nothing")
+
+			}
+
+			time.Sleep(1 * time.Second)
 
 		}
 
-		//err := chromedp.Run(ctx,
-		//	chromedp.Navigate(form.Host+form.Channel),
-		//	chromedp.WaitVisible(form.WaitForListSelector),
-		//	chromedp.OuterHTML("html", &html, chromedp.ByQuery),
-		//)
+		//点击下一页
+		chromedp.Run(ctx, chromedp.Click(form.NextPath))
 
-		////fmt.Println(html)
-		//
-		////goquery加载html
-		//doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-		//if err != nil {
-		//
-		//	//common.ErrorLine(form, err.Error())
-		//
-		//	fmt.Println(err)
-		//
-		//	continue
-		//
-		//}
-		//
-		//
-		//doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
-		//
-		//	//href := ""
-		//	//
-		//	//isFind := false
-		//
-		//	//a链接是列表的情况
-		//	if form.ListClickSelector == "" {
-		//
-		//		//href, isFind = s.Attr("href")
-		//
-		//
-		//
-		//	} else {
-		//
-		//		gg:=s.Find(form.ListClickSelector).First().Nodes
-		//
-		//		//fmt.Println(gg)
-		//
-		//		for _,v:=range gg{
-		//
-		//			fmt.Println(*v)
-		//
-		//		}
-		//
-		//	}
-		//})
-
-		return
+		//return
 
 	}
 
+}
+
+func createContext(timeout int) (context.Context, context.CancelFunc) {
+
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", false),
+		chromedp.Flag("disable-gpu", false),
+		chromedp.Flag("enable-automation", false),
+		chromedp.Flag("disable-extensions", false),
+	)
+
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+
+	ctx, cancel := chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Printf))
+
+	if timeout != -1 {
+
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(timeout)*time.Second)
+	}
+
+	return ctx, cancel
 }

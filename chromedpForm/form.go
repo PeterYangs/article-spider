@@ -5,16 +5,15 @@ import (
 )
 
 type Form struct {
-	Host                string
-	Channel             string
-	NextSelector        string //下一页选择器，用于chromedp
-	WaitForListSelector string //等待列表的选择器
-	Limit               int
-	//PageStart           int
-	ListSelector      string
-	ListClickSelector string           //点击选择器
-	DetailFields      map[string]Field //详情页面字段选择器
-	ListFields        map[string]Field //列表页面字段选择器
+	Host            string
+	Channel         string
+	NextPath        string //下一页选择器
+	WaitForListPath string //等待列表的选择器
+	Limit           int
+	ListPath        string
+	ListClickPath   string           //点击选择器
+	DetailFields    map[string]Field //详情页面字段选择器
+	ListFields      map[string]Field //列表页面字段选择器
 	//ExcelFile          *excelize.File         //excel表格对象
 	//Storage            chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	//StorageTemp        map[string]string      //存储列表页数据
@@ -34,7 +33,7 @@ type Form struct {
 
 type Field struct {
 	Types                fileTypes.FieldTypes
-	Selector             string                                              //选择器
+	Path                 string                                              //选择器
 	ImagePrefix          string                                              //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
 	ImageDir             string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
 	ExcelHeader          string                                              //excel表头，需要CustomExcelHeader为true,例：A
