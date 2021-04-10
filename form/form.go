@@ -11,18 +11,20 @@ type Form struct {
 	Host                string
 	Channel             string
 	NextSelector        string //下一页选择器，用于chromedp
-	WaitForListSelector string //等待列表的选择器
+	WaitForListSelector string //等待列表的选择器,用于chromedp
 	Limit               int
 	PageStart           int
 	ListSelector        string
 	ListHrefSelector    string
+	ListPath            string                 //列表路径(xpath)，用于chromedp
+	ListClickPath       string                 //点击相对路径(xpath),用于chromedp
 	DetailFields        map[string]Field       //详情页面字段选择器
 	ListFields          map[string]Field       //列表页面字段选择器
 	ExcelFile           *excelize.File         //excel表格对象
 	Storage             chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	StorageTemp         map[string]string      //存储列表页数据
 	ExcelWait           *sync.WaitGroup
-	DetailMaxCoroutine  int                    //爬取详情页最大协程数，默认按照列表的长度
+	DetailMaxCoroutine  int                    //爬取详情页最大协程数，默认按照列表的长度,chromedp不支持
 	DisableAutoCoding   bool                   //是否关闭自动转码
 	IsFinish            chan bool              //通知excel已完成爬取
 	ProxyAddress        string                 //代理地址

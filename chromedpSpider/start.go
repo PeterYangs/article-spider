@@ -1,11 +1,12 @@
-package spider
+package chromedpSpider
 
 import (
 	"article-spider/form"
+	"article-spider/spider"
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/PeterYangs/tools"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"os"
 	"sync"
 )
@@ -58,10 +59,10 @@ func Start(form form.Form) {
 	form.IsFinish = make(chan bool, 1)
 
 	//协程写入Excel
-	go WriteExcel(form)
+	go spider.WriteExcel(form)
 
 	//协程开启日志输出
-	go Broadcast(form)
+	go spider.Broadcast(form)
 
 	//爬取列表
 	GetList(form)

@@ -214,15 +214,11 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 	var res = make(map[string]string)
 
-	//var resChan = make(chan map[string]string, 10)
-
 	var lock = sync.Mutex{}
 
 	var wait = sync.WaitGroup{}
 
 	var singleFieldMap = sync.Map{}
-
-	//defer close(singleFieldChan)
 
 	//解析详情页面选择器
 	for field, item := range selector {
@@ -233,14 +229,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 		case fileTypes.SingleField:
 
 			v := doc.Find(item.Selector).Text()
-
-			//fmt.Println(v)
-
-			//if item.ConversionFormatFunc != nil {
-			//
-			//	v = item.ConversionFormatFunc(v)
-			//
-			//}
 
 			//singleFieldChan <- v
 			singleFieldMap.Store(field, v)
@@ -255,13 +243,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
 
-			//fmt.Println(v)
-
-			//if item.ConversionFormatFunc != nil {
-			//
-			//	v = item.ConversionFormatFunc(v)
-			//
-			//}
 			lock.Lock()
 			res[field] = v
 			lock.Unlock()
@@ -283,11 +264,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 			}
 
-			//if item.ConversionFormatFunc != nil {
-			//
-			//	v = item.ConversionFormatFunc(v)
-			//
-			//}
 			lock.Lock()
 			res[field] = v
 			lock.Unlock()
@@ -360,12 +336,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 					return true
 				})
 
-				//if item.ConversionFormatFunc != nil {
-				//
-				//	html = item.ConversionFormatFunc(html)
-				//
-				//}
-
 				lock.Lock()
 				resTemp := *res
 				resTemp[field] = html
@@ -388,8 +358,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				if imgBool == false {
 
-					//fmt.Println("SingleImage图片选择器未找到")
-
 					ErrorLine(form, "SingleImage图片选择器未找到")
 
 					return
@@ -398,22 +366,10 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				imgName := DownImg(form, imgUrl, item, singleFieldMap)
 
-				//panic()
-
-				//fmt.Println(item.ConversionFormatFunc)
-
-				//if item.ConversionFormatFunc != nil {
-				//
-				//	imgName = item.ConversionFormatFunc(imgName)
-				//
-				//}
-
 				lock.Lock()
 				resTemp := *res
 				resTemp[field] = imgName
 				lock.Unlock()
-
-				//res[field] = imgName
 
 			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
 
@@ -421,8 +377,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 		//多个图片
 		case fileTypes.ListImages:
-
-			//imgList := ""
 
 			wait.Add(1)
 
@@ -442,8 +396,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 					if imgBool == false {
 
-						//fmt.Println("ListImages图片选择器未找到")
-
 						ErrorLine(form, "ListImages图片选择器未找到")
 
 					} else {
@@ -456,29 +408,19 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 							imgName := DownImg(form, imgUrl, item, singleFieldMap)
 
-							//imgList=append(imgList, imgName)
-
-							//imgList += imgName + ","
-
 							imgList.Store(imgName, "")
 
 						}(&waitImg, &imgList, singleFieldMap)
 
 					}
 
-					//fmt.Println(imgName)
-
 				})
 
 				waitImg.Wait()
 
-				//html = strings.Replace(html, img, imgName, 1)
-
 				var strArray []string
 
 				imgList.Range(func(key, value interface{}) bool {
-
-					//html = strings.Replace(html, value.(string), key.(string), 1)
 
 					strArray = append(strArray, key.(string))
 
@@ -487,20 +429,12 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				array := tools.Join(",", strArray)
 
-				//if item.ConversionFormatFunc != nil {
-				//
-				//	array = item.ConversionFormatFunc(array)
-				//
-				//}
-
 				lock.Lock()
 				resTemp := *res
 				resTemp[field] = array
 				lock.Unlock()
 
 			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
-
-			//res[field] = imgList
 
 		//固定数据
 		case fileTypes.Fixed:

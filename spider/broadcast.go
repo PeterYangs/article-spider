@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func broadcast(form form.Form) {
+func Broadcast(form form.Form) {
 
 	defer form.BroadcastWait.Done()
 

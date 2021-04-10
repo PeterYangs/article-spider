@@ -1,18 +1,20 @@
 package chromedpSpider
 
 import (
-	"article-spider/chromedpForm"
-	"article-spider/fileTypes"
+	"article-spider/common"
+	"article-spider/form"
 	"context"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"log"
+	"strings"
 	"time"
 )
 
-func GetList(form chromedpForm.Form) {
+func GetList(form form.Form) {
 
 	ctx, TimeoutCancel := createContext(-1)
 
@@ -46,7 +48,7 @@ func GetList(form chromedpForm.Form) {
 		var list []*cdp.Node
 
 		err := chromedp.Run(ctx,
-			chromedp.WaitVisible(form.WaitForListPath),
+			chromedp.WaitVisible(form.WaitForListSelector, chromedp.ByQuery),
 			chromedp.Nodes(form.ListPath, &list),
 		)
 
@@ -84,29 +86,40 @@ func GetList(form chromedpForm.Form) {
 
 				ctx2, newTabCancle := chromedp.NewContext(ctx, chromedp.WithTargetID(TargetID))
 
-				//解析详情页面选择器
-				for field, item := range form.DetailFields {
+				html := ""
 
-					_ = field
+				chromedp.Run(ctx2,
+					chromedp.Sleep(1*time.Second),
+					chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+				)
 
-					switch item.Types {
+				//加载
+				doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
-					//单个文字字段
-					case fileTypes.SingleField:
+				if err != nil {
+					//log.Fatal(err)
 
-						txt := ""
+					common.ErrorLine(form, err.Error())
 
-						chromedp.Run(ctx2,
-
-							chromedp.WaitVisible(item.Path),
-							chromedp.Text(item.Path, &txt),
-						)
-
-						fmt.Println(txt)
-
-					}
+					return
 
 				}
+
+				//解析选择器返回map
+				res := common.ResolveSelector(form, doc, form.DetailFields)
+
+				//合并列表中数据
+				for i, v := range form.StorageTemp {
+
+					res[i] = v
+
+				}
+
+				//处理格式转换
+				res = common.ConversionFormat(form, res)
+
+				//写入管道
+				form.Storage <- res
 
 				newTabCancle()
 
@@ -121,11 +134,14 @@ func GetList(form chromedpForm.Form) {
 		}
 
 		//点击下一页
-		chromedp.Run(ctx, chromedp.Click(form.NextPath))
+		chromedp.Run(ctx, chromedp.Click(form.NextSelector, chromedp.ByQuery))
 
 		//return
 
 	}
+
+	//通知excel已完成
+	form.IsFinish <- true
 
 }
 
