@@ -1,5 +1,8 @@
 **article-spider是一个用go编写的爬取文章工具。支持两种模式，常规爬取模式和浏览器自动化模式**
 
+[中文文档](https://www.kancloud.cn/peter_yang/article_spider/2232702)
+<hr/>
+
 安装
 
 git clone https://github.com/PeterYangs/article-spider.git
