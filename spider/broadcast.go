@@ -1,9 +1,9 @@
 package spider
 
 import (
-	"article-spider/connect"
-	"article-spider/form"
 	"fmt"
+	"github.com/PeterYangs/article-spider/connect"
+	"github.com/PeterYangs/article-spider/form"
 	"github.com/gin-gonic/gin"
 	"log"
 )

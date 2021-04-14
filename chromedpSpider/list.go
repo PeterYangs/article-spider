@@ -1,10 +1,10 @@
 package chromedpSpider
 
 import (
-	"article-spider/common"
-	"article-spider/form"
 	"context"
 	"fmt"
+	"github.com/PeterYangs/article-spider/common"
+	"github.com/PeterYangs/article-spider/form"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/target"

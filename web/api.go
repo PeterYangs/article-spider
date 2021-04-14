@@ -1,13 +1,13 @@
 package web
 
 import (
-	"article-spider/common"
-	"article-spider/connect"
-	"article-spider/form"
-	"article-spider/message"
-	"article-spider/spider"
 	"encoding/json"
 	"fmt"
+	"github.com/PeterYangs/article-spider/common"
+	"github.com/PeterYangs/article-spider/connect"
+	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/message"
+	"github.com/PeterYangs/article-spider/spider"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	uuid "github.com/satori/go.uuid"

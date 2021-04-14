@@ -1,6 +1,6 @@
 package main
 
-import "article-spider/web"
+import "github.com/PeterYangs/article-spider/web"
 
 func main() {
 

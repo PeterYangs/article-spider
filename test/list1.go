@@ -1,9 +1,9 @@
 package main
 
 import (
-	"article-spider/fileTypes"
-	"article-spider/form"
-	"article-spider/spider"
+	"github.com/PeterYangs/article-spider/fileTypes"
+	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/spider"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package spider
 
 import (
-	"article-spider/form"
-	ff "article-spider/form"
+	"github.com/PeterYangs/article-spider/form"
+	ff "github.com/PeterYangs/article-spider/form"
 	"strconv"
 )
 

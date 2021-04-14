@@ -1,10 +1,10 @@
 package chromedpSpider
 
 import (
-	"article-spider/form"
-	"article-spider/spider"
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/spider"
 	"github.com/PeterYangs/tools"
 	uuid "github.com/satori/go.uuid"
 	"os"

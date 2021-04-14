@@ -1,9 +1,9 @@
 package spider
 
 import (
-	"article-spider/common"
-	"article-spider/form"
 	"fmt"
+	"github.com/PeterYangs/article-spider/common"
+	"github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"strconv"

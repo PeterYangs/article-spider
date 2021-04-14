@@ -1,8 +1,8 @@
 package form
 
 import (
-	"article-spider/fileTypes"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/tools"
 	"sync"
 )

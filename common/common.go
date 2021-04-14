@@ -1,9 +1,9 @@
 package common
 
 import (
-	"article-spider/fileTypes"
-	"article-spider/form"
-	ff "article-spider/form"
+	"github.com/PeterYangs/article-spider/fileTypes"
+	"github.com/PeterYangs/article-spider/form"
+	ff "github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"

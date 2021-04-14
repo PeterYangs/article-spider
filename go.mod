@@ -1,4 +1,4 @@
-module article-spider
+module github.com/PeterYangs/article-spider
 
 go 1.15
 
