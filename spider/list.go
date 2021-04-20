@@ -16,6 +16,20 @@ func GetList(form form.Form) {
 	//当前页码
 	var pageCurrent int
 
+	hostLast := tools.SubStr(form.Host, len(form.Host)-1, 1)
+
+	if hostLast == "/" {
+
+		form.Host = tools.SubStr(form.Host, 0, len(form.Host)-1)
+	}
+
+	ChannelFirst := tools.SubStr(form.Channel, 0, 1)
+
+	if ChannelFirst != "/" {
+
+		form.Channel = "/" + form.Channel
+	}
+
 	for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
 
 		//当前列表url
