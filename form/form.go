@@ -19,7 +19,7 @@ type Form struct {
 	ListPath            string                 //列表路径(xpath)，用于chromedp
 	ListClickPath       string                 //点击相对路径(xpath),用于chromedp
 	DetailFields        map[string]Field       //详情页面字段选择器
-	ListFields          map[string]Field       //列表页面字段选择器
+	ListFields          map[string]Field       //列表页面字段选择器,暂不支持api爬取
 	ExcelFile           *excelize.File         //excel表格对象
 	Storage             chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	StorageTemp         map[string]string      //存储列表页数据
