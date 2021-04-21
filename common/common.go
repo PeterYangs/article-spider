@@ -513,7 +513,13 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 
 		//fmt.Println(imgUrl)
 
-		return url
+		//获取默认图片
+		if item.DefaultImg != nil {
+
+			return item.DefaultImg(form, item)
+		}
+
+		return ""
 
 	}
 

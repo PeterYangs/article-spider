@@ -24,17 +24,18 @@ type Form struct {
 	Storage             chan map[string]string //存储爬取数据 ["title"]="文章标题"
 	StorageTemp         map[string]string      //存储列表页数据
 	ExcelWait           *sync.WaitGroup
-	DetailMaxCoroutine  int                    //爬取详情页最大协程数，默认按照列表的长度,chromedp不支持
-	DisableAutoCoding   bool                   //是否关闭自动转码
-	IsFinish            chan bool              //通知excel已完成爬取
-	ProxyAddress        string                 //代理地址
-	HttpHeader          map[string]string      //header
-	HttpSetting         tools.HttpSetting      //全局http设置
-	Uid                 string                 //可视化下的websocket的uid
-	BroadcastChan       chan map[string]string //广播管道
-	CustomExcelHeader   bool                   //自定义Excel表格头部
-	BroadcastWait       *sync.WaitGroup        //通知通道处理完毕等待
-	DisableDebug        bool                   //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
+	DetailMaxCoroutine  int                          //爬取详情页最大协程数，默认按照列表的长度,chromedp不支持
+	DisableAutoCoding   bool                         //是否关闭自动转码
+	IsFinish            chan bool                    //通知excel已完成爬取
+	ProxyAddress        string                       //代理地址
+	HttpHeader          map[string]string            //header
+	HttpSetting         tools.HttpSetting            //全局http设置
+	Uid                 string                       //可视化下的websocket的uid
+	BroadcastChan       chan map[string]string       //广播管道
+	CustomExcelHeader   bool                         //自定义Excel表格头部
+	BroadcastWait       *sync.WaitGroup              //通知通道处理完毕等待
+	DisableDebug        bool                         //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
+	ApiConversion       func(result string) []string //用于apiSpider,返回详情页面链接
 }
 
 type Field struct {
@@ -45,4 +46,5 @@ type Field struct {
 	ExcelHeader          string                                              //excel表头，需要CustomExcelHeader为true,例：A
 	ConversionFormatFunc func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 	AttrKey              string                                              //属性值参数
+	DefaultImg           func(form Form, item Field) string                  //图片出错时，设置默认图片
 }
