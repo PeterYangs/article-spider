@@ -19,6 +19,7 @@ func main() {
 		DetailFields: map[string]form.Field{
 			"title": {Types: fileTypes.SingleField, Selector: "body > div.wrap.mt_5 > div > div.main-left-box > div.down-box > div.soft-name > div > h1"},
 		},
+		DetailMaxCoroutine: 1,
 	}
 
 	spider.Start(f)

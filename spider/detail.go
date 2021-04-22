@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-//爬取详情
+// GetDetail 爬取详情
 func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMaxChan chan int) {
 
 	//form.s
@@ -27,7 +27,8 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	}(detailMaxChan, form.DetailMaxCoroutine)
 
 	//获取详情页面html
-	html, err := tools.GetToString(detailUrl, form.HttpSetting)
+	//html, err := tools.GetToString(detailUrl, form.HttpSetting)
+	html, header, err := tools.GetToStringWithHeader(detailUrl, form.HttpSetting)
 
 	if err != nil {
 
@@ -40,7 +41,7 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	//自动转码
 	if form.DisableAutoCoding == false {
 
-		html, err = common.DealCoding(html)
+		html, err = common.DealCoding(html, header)
 
 		if err != nil {
 

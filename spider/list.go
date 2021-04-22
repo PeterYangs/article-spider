@@ -36,7 +36,9 @@ func GetList(form form.Form) {
 		listUrl := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
 		//获取html页面
-		html, err := tools.GetToString(listUrl, form.HttpSetting)
+		//html, err := tools.GetToString(listUrl, form.HttpSetting)
+
+		html, header, err := tools.GetToStringWithHeader(listUrl, form.HttpSetting)
 
 		if err != nil {
 
@@ -51,7 +53,7 @@ func GetList(form form.Form) {
 		//自动转码
 		if form.DisableAutoCoding == false {
 
-			html, err = common.DealCoding(html)
+			html, err = common.DealCoding(html, header)
 
 			if err != nil {
 

@@ -7,6 +7,7 @@ import (
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
+	"net/http"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -15,7 +16,7 @@ import (
 	"time"
 )
 
-//获取完整a链接
+// GetHref 获取完整a链接
 func GetHref(href string, host string) string {
 
 	case1, _ := regexp.MatchString("^/[a-zA-Z0-9_]+.*", href)
@@ -136,17 +137,11 @@ func GetDir(path string, singleFieldMap *sync.Map) string {
 
 	}
 
-	//panic(singleField)
-
-	//fmt.Println(singleField)
-	//
-	//panic("")
-
 	return path
 
 }
 
-//伪三元运算
+// If 伪三元运算
 func If(condition bool, trueVal, falseVal interface{}) interface{} {
 	if condition {
 		return trueVal
@@ -154,8 +149,30 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 	return falseVal
 }
 
-//解决编码问题
-func DealCoding(html string) (string, error) {
+// DealCoding 解决编码问题
+func DealCoding(html string, header http.Header) (string, error) {
+
+	headerContentType_ := header["Content-Type"]
+
+	if len(headerContentType_) > 0 {
+
+		headerContentType := headerContentType_[0]
+
+		charset := GetCharsetByContentType(headerContentType)
+
+		switch charset {
+
+		case "gbk":
+
+			return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+		case "gb2312":
+
+			return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+		}
+
+	}
 
 	code, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
@@ -183,8 +200,30 @@ func DealCoding(html string) (string, error) {
 
 	contentType, _ = code.Find("meta[http-equiv=\"Content-Type\"]").Attr("content")
 
+	charset := GetCharsetByContentType(contentType)
+
+	switch charset {
+
+	case "gbk":
+
+		return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+	case "gb2312":
+
+		return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+	}
+
+	return html, nil
+}
+
+// GetCharsetByContentType 从contentType中获取编码
+func GetCharsetByContentType(contentType string) string {
+
+	contentType = strings.TrimSpace(strings.ToLower(contentType))
+
 	//捕获编码
-	r, _ := regexp.Compile(`charset=(.*)`)
+	r, _ := regexp.Compile(`charset=([^;]+)`)
 
 	re := r.FindAllStringSubmatch(contentType, 1)
 
@@ -192,24 +231,14 @@ func DealCoding(html string) (string, error) {
 
 		c := re[0][1]
 
-		switch c {
-
-		case "gbk":
-
-			html = string(tools.ConvertToByte(html, "gbk", "utf8"))
-
-		case "gb2312":
-
-			html = string(tools.ConvertToByte(html, "gbk", "utf8"))
-
-		}
+		return c
 
 	}
 
-	return html, nil
+	return ""
 }
 
-//解析选择器
+// ResolveSelector 解析选择器
 func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]form.Field) map[string]string {
 
 	var res = make(map[string]string)
@@ -453,7 +482,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 }
 
-//下载图片（包括生产文件夹）
+// DownImg 下载图片（包括生产文件夹）
 func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.Map) string {
 
 	//获取完整链接
@@ -527,7 +556,7 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 
 }
 
-//解析字段
+// ResolveFields 解析字段
 func ResolveFields(field map[string]interface{}) map[string]form.Field {
 
 	fields := make(map[string]form.Field)
@@ -550,7 +579,7 @@ func ResolveFields(field map[string]interface{}) map[string]form.Field {
 
 }
 
-//错误日志
+// ErrorLine 错误日志
 func ErrorLine(form form.Form, msg string) {
 
 	_, f, l, _ := runtime.Caller(1)
@@ -563,7 +592,7 @@ func ErrorLine(form form.Form, msg string) {
 
 }
 
-//处理格式转换
+// ConversionFormat 处理格式转换
 func ConversionFormat(form ff.Form, resList map[string]string) map[string]string {
 
 	tempRes := resList
