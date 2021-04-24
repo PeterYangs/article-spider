@@ -64,6 +64,8 @@ func GetList(form form.Form) {
 
 			}
 
+			s = common.GetHref(s, form.Host)
+
 			//根据列表的长度开启协程爬取详情页
 			go spider.GetDetail(form, s, &wait, detailMaxChan)
 
