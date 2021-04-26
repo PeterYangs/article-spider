@@ -71,8 +71,12 @@ func GetList(form form.Form) {
 		//控制详情页面最大并发数管道
 		detailMaxChan := make(chan int, form.DetailMaxCoroutine)
 
+		findOne := false
+
 		//查找列表中的a链接
 		doc.Find(form.ListSelector).Each(func(i int, s *goquery.Selection) {
+
+			findOne = true
 
 			//只爬列表
 			if len(form.DetailFields) <= 0 && len(form.ListFields) > 0 {
@@ -173,6 +177,11 @@ func GetList(form form.Form) {
 			}
 
 		})
+
+		if !findOne {
+
+			common.ErrorLine(form, "未找到任何a链接")
+		}
 
 		wait.Wait()
 
