@@ -5,15 +5,13 @@ import (
 	"github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/article-spider/spider"
 	"github.com/PeterYangs/tools"
-	"strconv"
-	"strings"
 	"sync"
 )
 
 func GetList(form form.Form) {
 
 	//当前页码
-	var pageCurrent int
+	//var pageCurrent int
 
 	hostLast := tools.SubStr(form.Host, len(form.Host)-1, 1)
 
@@ -29,10 +27,7 @@ func GetList(form form.Form) {
 		form.Channel = "/" + form.Channel
 	}
 
-	for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
-
-		//当前列表url
-		listUrl := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+	common.GetChannelList(form, func(listUrl string) {
 
 		//获取html页面
 		apiResult, err := tools.GetToString(listUrl, form.HttpSetting)
@@ -43,7 +38,7 @@ func GetList(form form.Form) {
 
 			common.ErrorLine(form, err.Error())
 
-			continue
+			return
 
 		}
 
@@ -73,7 +68,7 @@ func GetList(form form.Form) {
 
 		wait.Wait()
 
-	}
+	})
 
 	//通知excel已完成
 	form.IsFinish <- true

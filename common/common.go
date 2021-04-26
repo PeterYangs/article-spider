@@ -625,3 +625,32 @@ func ConversionFormat(form ff.Form, resList map[string]string) map[string]string
 	return tempRes
 
 }
+
+// GetChannelList 获取栏目链接
+func GetChannelList(form form.Form, callback func(listUrl string)) {
+
+	if form.ChannelFunc == nil {
+
+		//当前页码
+		var pageCurrent int
+
+		for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
+
+			//当前列表url
+			url := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+
+			callback(url)
+
+		}
+
+		return
+	}
+
+	//自定义栏目
+	for _, i := range form.ChannelFunc(form) {
+
+		callback(form.Host + i)
+
+	}
+
+}
