@@ -73,6 +73,9 @@ func Start(form form.Form) {
 
 	uuidString := uuid.NewV4().String()
 
+	//创建excel表文件夹
+	tools.MkDirDepth("web/static/excel")
+
 	filename := "web/static/excel/" + uuidString + ".xlsx"
 
 	//发送excel路径
