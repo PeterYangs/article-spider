@@ -58,6 +58,9 @@ func Start(form form.Form) {
 
 	form.IsFinish = make(chan bool, 1)
 
+	//进度值初始化
+	form.Progress = &sync.Map{}
+
 	//协程写入Excel
 	go spider.WriteExcel(form)
 

@@ -37,6 +37,7 @@ type Form struct {
 	BroadcastWait       *sync.WaitGroup              //通知通道处理完毕等待
 	DisableDebug        bool                         //是否关闭调试模式，开启调试模式后，所有的输出会在终端上
 	ApiConversion       func(result string) []string //用于apiSpider,返回详情页面链接
+	Progress            *sync.Map                    //当前进度，有两个值，一个是maxPage(最大页数)，一个是currentPage(当前页数)
 }
 
 type Field struct {

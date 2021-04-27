@@ -634,12 +634,22 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 		//当前页码
 		var pageCurrent int
 
+		form.Progress.Store("maxPage", float32(form.Limit-form.PageStart+1))
+		form.Progress.Store("currentPage", float32(0))
+
 		for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
 
 			//当前列表url
 			url := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
 			callback(url)
+
+			currentPage, _ := form.Progress.Load("currentPage")
+
+			//这里有点恶心，有没有简单的写法
+			c := currentPage.(float32)
+			c++
+			form.Progress.Store("currentPage", c)
 
 		}
 

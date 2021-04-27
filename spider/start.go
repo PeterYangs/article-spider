@@ -32,7 +32,7 @@ func Start(form form.Form) {
 		fmt.Println(err)
 	}
 
-	//管道赋值
+	//数据存储管道赋值
 	form.Storage = storage
 
 	//日志管道初始化
@@ -41,6 +41,7 @@ func Start(form form.Form) {
 	//通知等待锁
 	var BroadcastWait sync.WaitGroup
 
+	//通知等待锁赋值
 	form.BroadcastWait = &BroadcastWait
 
 	form.BroadcastWait.Add(1)
@@ -55,6 +56,10 @@ func Start(form form.Form) {
 
 	form.ExcelWait.Add(1)
 
+	//进度值初始化
+	form.Progress = &sync.Map{}
+
+	//爬取完成通知
 	form.IsFinish = make(chan bool, 1)
 
 	//协程写入Excel
