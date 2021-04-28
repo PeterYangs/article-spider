@@ -49,4 +49,11 @@ type Field struct {
 	ConversionFormatFunc func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 	AttrKey              string                                              //属性值参数
 	DefaultImg           func(form Form, item Field) string                  //图片出错时，设置默认图片
+	NextSelector         string                                              //详情页下一页选择器，只对详情页字段有效
+	DetailNextFields     map[string]Field                                    //详情页下一页选择器字段
 }
+
+//type DetailNext struct {
+//	NextSelector string
+//	Field        Field
+//}
