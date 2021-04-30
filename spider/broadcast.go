@@ -48,8 +48,6 @@ func Broadcast(form form.Form) {
 
 			case "log":
 
-				//fmt.Println(message["data"])
-
 				maxPage, _ := form.Progress.Load("maxPage")
 				currentPage, _ := form.Progress.Load("currentPage")
 

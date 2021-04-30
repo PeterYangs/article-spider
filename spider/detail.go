@@ -68,6 +68,13 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	//解析选择器返回map
 	res := common.ResolveSelector(form, doc, form.DetailFields)
 
+	//t:=doc.Find(form.NextSelector).Text()
+
+	//f:=form.DetailFields["title"].
+
+	//fmt.Println(doc.Find(form.DetailFields.NextSelector).Text())
+	//fmt.Println(form.NextSelector)
+
 	//合并列表中数据
 	for i, v := range form.StorageTemp {
 

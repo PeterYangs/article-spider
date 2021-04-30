@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/article-spider/form"
 	ff "github.com/PeterYangs/article-spider/form"
@@ -334,23 +335,42 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
 
-					img, b := selection.Attr("src")
+					//img, imgBool := selection.Attr("src")
+					//
+					//if imgBool == false {
+					//
+					//	//懒加载
+					//	img, imgBool = doc.Find(item.Selector).Attr("data-original")
+					//
+					//	if imgBool == false {
+					//
+					//		ErrorLine(form, "HtmlWithImage图片选择器未找到")
+					//
+					//		return
+					//	}
+					//
+					//}
 
-					if b == true {
+					img, err := getImageLink(selection)
 
-						waitImg.Add(1)
+					if err != nil {
 
-						go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
+						ErrorLine(form, "SingleImage图片选择器未找到")
 
-							defer waitImg.Done()
-
-							imgName := DownImg(form, img, item, singleFieldMap)
-
-							imgList.Store(imgName, img)
-
-						}(&waitImg, &imgList, singleFieldMap)
-
+						return
 					}
+
+					waitImg.Add(1)
+
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
+
+						defer waitImg.Done()
+
+						imgName := DownImg(form, img, item, singleFieldMap)
+
+						imgList.Store(imgName, img)
+
+					}(&waitImg, &imgList, singleFieldMap)
 
 				})
 
@@ -383,14 +403,29 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				defer wait.Done()
 
-				imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
+				//imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
 
-				if imgBool == false {
+				//if imgBool == false {
+				//
+				//	//懒加载
+				//	imgUrl, imgBool = doc.Find(item.Selector).Attr("data-original")
+				//
+				//	if imgBool == false {
+				//
+				//		ErrorLine(form, "SingleImage图片选择器未找到")
+				//
+				//		return
+				//	}
+				//
+				//}
+
+				imgUrl, err := getImageLink(doc.Find(item.Selector))
+
+				if err != nil {
 
 					ErrorLine(form, "SingleImage图片选择器未找到")
 
 					return
-
 				}
 
 				imgName := DownImg(form, imgUrl, item, singleFieldMap)
@@ -421,27 +456,42 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
 
-					imgUrl, imgBool := selection.Attr("src")
+					//imgUrl, imgBool := selection.Attr("src")
+					//
+					//if imgBool == false {
+					//
+					//	//懒加载
+					//	imgUrl, imgBool = doc.Find(item.Selector).Attr("data-original")
+					//
+					//	if imgBool == false {
+					//
+					//		ErrorLine(form, "ListImages图片选择器未找到")
+					//
+					//		return
+					//	}
+					//
+					//}
 
-					if imgBool == false {
+					imgUrl, err := getImageLink(selection)
+
+					if err != nil {
 
 						ErrorLine(form, "ListImages图片选择器未找到")
 
-					} else {
-
-						waitImg.Add(1)
-
-						go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
-
-							defer waitImg.Done()
-
-							imgName := DownImg(form, imgUrl, item, singleFieldMap)
-
-							imgList.Store(imgName, "")
-
-						}(&waitImg, &imgList, singleFieldMap)
-
+						return
 					}
+
+					waitImg.Add(1)
+
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, singleFieldMap *sync.Map) {
+
+						defer waitImg.Done()
+
+						imgName := DownImg(form, imgUrl, item, singleFieldMap)
+
+						imgList.Store(imgName, "")
+
+					}(&waitImg, &imgList, singleFieldMap)
 
 				})
 
@@ -520,9 +570,23 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 		ex = "png"
 	}
 
-	if !tools.In_array([]string{"png", "jpg", "jpeg", "gif", "jfif"}, strings.ToLower(ex)) {
+	allowImage := []string{"png", "jpg", "jpeg", "gif", "jfif"}
 
-		ErrorLine(form, "图片拓展名异常")
+	//自定义允许下载的图片拓展名
+	if len(form.AllowImageExtension) > 0 {
+
+		allowImage = form.AllowImageExtension
+	}
+
+	if !tools.In_array(allowImage, strings.ToLower(ex)) {
+
+		ErrorLine(form, "图片拓展名异常:"+imgUrl)
+
+		//获取默认图片
+		if item.DefaultImg != nil {
+
+			return item.DefaultImg(form, item)
+		}
 
 		return ""
 	}
@@ -663,4 +727,26 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 
 	}
 
+}
+
+//获取图片链接
+func getImageLink(imageDoc *goquery.Selection) (string, error) {
+
+	imgUrl, imgBool := imageDoc.Attr("src")
+
+	if imgBool == false {
+
+		//懒加载
+		imgUrl, imgBool = imageDoc.Attr("data-original")
+
+		if imgBool == false {
+
+			//ErrorLine(form, "ListImages图片选择器未找到")
+
+			return "", errors.New("未找到图片链接")
+		}
+
+	}
+
+	return imgUrl, nil
 }
