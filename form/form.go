@@ -3,11 +3,13 @@ package form
 import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/PeterYangs/article-spider/fileTypes"
+	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
 	"sync"
 )
 
 type Form struct {
+	Mode                mode.Mode                //爬取模式
 	Host                string                   //网站域名
 	Channel             string                   //栏目链接，页码用[PAGE]替换
 	ChannelFunc         func(form Form) []string //自定义栏目链接，使用此函数后，Channel、Limit、PageStart将失效，会直接使用此函数返回的栏目链接

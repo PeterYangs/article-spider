@@ -1,9 +1,9 @@
 package main
 
 import (
-	"article-spider/chromedpSpider"
-	"article-spider/fileTypes"
-	"article-spider/form"
+	"github.com/PeterYangs/article-spider/chromedpSpider"
+	"github.com/PeterYangs/article-spider/fileTypes"
+	"github.com/PeterYangs/article-spider/form"
 )
 
 func main() {

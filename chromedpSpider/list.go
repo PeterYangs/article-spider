@@ -31,13 +31,15 @@ func GetList(form form.Form) {
 	})
 
 	//当前页码
-	var pageCurrent int
+	//var pageCurrent int
 
-	for pageCurrent = 0; pageCurrent < form.Limit; pageCurrent++ {
+	//for pageCurrent = 0; pageCurrent < form.Limit; pageCurrent++ {
+
+	common.GetChannelList(form, func(pageCurrent string) {
 
 		//html, err := tools.GetToString(listUrl, form.HttpSetting)
 
-		if pageCurrent == 0 {
+		if pageCurrent == "0" {
 
 			chromedp.Run(ctx,
 				chromedp.Navigate(form.Host+form.Channel),
@@ -233,7 +235,7 @@ func GetList(form form.Form) {
 
 		//return
 
-	}
+	})
 
 	//通知excel已完成
 	form.IsFinish <- true

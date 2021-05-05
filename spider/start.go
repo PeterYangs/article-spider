@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/satori/go.uuid"
 	"os"
@@ -11,6 +12,8 @@ import (
 )
 
 func Start(form form.Form) {
+
+	form.Mode = mode.Normal
 
 	//新建xlsx文件
 	f := excelize.NewFile()

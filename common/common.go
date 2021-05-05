@@ -5,6 +5,7 @@ import (
 	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/article-spider/form"
 	ff "github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
@@ -693,37 +694,69 @@ func ConversionFormat(form ff.Form, resList map[string]string) map[string]string
 // GetChannelList 获取栏目链接
 func GetChannelList(form form.Form, callback func(listUrl string)) {
 
-	if form.ChannelFunc == nil {
+	switch form.Mode {
 
-		//当前页码
-		var pageCurrent int
+	case mode.Normal, mode.Api:
 
-		form.Progress.Store("maxPage", float32(form.Limit-form.PageStart+1))
-		form.Progress.Store("currentPage", float32(0))
+		if form.ChannelFunc == nil {
 
-		for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
+			//当前页码
+			var pageCurrent int
 
-			//当前列表url
-			url := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+			form.Progress.Store("maxPage", float32(form.Limit-form.PageStart+1))
+			form.Progress.Store("currentPage", float32(0))
 
-			callback(url)
+			for pageCurrent = form.PageStart; pageCurrent <= form.Limit; pageCurrent++ {
+
+				//当前列表url
+				url := form.Host + strings.Replace(form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+
+				callback(url)
+
+				currentPage, _ := form.Progress.Load("currentPage")
+
+				//这里有点恶心，有没有简单的写法
+				c := currentPage.(float32)
+				c++
+				form.Progress.Store("currentPage", c)
+
+			}
+
+			return
+		}
+
+		//自定义栏目
+		for _, i := range form.ChannelFunc(form) {
+
+			callback(form.Host + i)
 
 			currentPage, _ := form.Progress.Load("currentPage")
 
-			//这里有点恶心，有没有简单的写法
 			c := currentPage.(float32)
 			c++
 			form.Progress.Store("currentPage", c)
 
 		}
 
-		return
-	}
+	case mode.Auto:
 
-	//自定义栏目
-	for _, i := range form.ChannelFunc(form) {
+		//当前页码
+		var pageCurrent int
 
-		callback(form.Host + i)
+		form.Progress.Store("maxPage", float32(form.Limit))
+		form.Progress.Store("currentPage", float32(0))
+
+		for pageCurrent = 0; pageCurrent < form.Limit; pageCurrent++ {
+
+			callback(strconv.Itoa(pageCurrent))
+
+			currentPage, _ := form.Progress.Load("currentPage")
+
+			c := currentPage.(float32)
+			c++
+			form.Progress.Store("currentPage", c)
+
+		}
 
 	}
 
