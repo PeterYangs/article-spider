@@ -477,32 +477,35 @@ func main() {
 package main
 
 import (
+	"github.com/PeterYangs/article-spider/chromedpSpider"
 	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
 )
 
 func main() {
 
 	f := form.Form{
 
-		Host:             "https://www.cos-onsen.com",
-		Channel:          "/product-list/46?view=new&page=[PAGE]",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "#main_container > article > div > div.page_contents.clearfix.categorylist_contents > div > div.itemlist_box.clearfix > ul > li",
-		ListHrefSelector: "div > a",
+		Host:                "https://down.gamersky.com",
+		Channel:             "/Special/bigpc/",
+		Limit:               2,
+		WaitForListSelector: "body > div.Mid > div.Mid2 > ul > li:nth-child(1)",
+		ListSelector:        "body > div.Mid > div.Mid2 > ul > li",
+		ListHrefSelector:    "div.tit > a",
 		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, Selector: "#main_container > article > div > div.page_title > h1 > span.goods_name"},
-			//"html":    {Types: fileTypes.OnlyHtml, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div"},
-			"image": {Types: fileTypes.SingleImage, Selector: "body > section > div > div > div.col-md-3 > div > div.qrcode-panel.common-panel > div:nth-child(1) > img", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
-			//"content": {Types: fileTypes.HtmlWithImage, Selector: "#detail-content", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+			"title": {Types: fileTypes.SingleField, Selector: "body > div.Mid > div.Mid2 > div.Mid2_L > div.Mid2L_ctt.block > div.Mid2L_actdl2 > div.tit"},
+			"img":   {Types: fileTypes.SingleImage, Selector: "body > div.Mid > div.Mid2 > div.Mid2_L > div.Mid2L_ctt.block > div.Mid2L_actdl2 > div.game > div.img > img", ImageDir: "demo"},
 		},
+
+		NextSelector: "#pe100_page_jdgame > a.p1.nexe",
 	}
 
-	spider.Start(f)
+
+
+	chromedpSpider.Start(f)
 
 }
+
 
 
 
