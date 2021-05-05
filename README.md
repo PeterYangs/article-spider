@@ -471,34 +471,39 @@ func main() {
 
 ```
 
-**浏览器自动化模式爬取(实验中)**
+**浏览器自动化模式爬取**
 
 ```
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/chromedpSpider"
 	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/spider"
 )
 
 func main() {
 
 	f := form.Form{
 
-		Host:                "https://www.522gg.com",
-		Channel:             "/game",
-		Limit:               1,
-		WaitForListSelector: "body > div:nth-child(5) > div > div.row.fn_mgsx10 > div",
-		ListPath:            "/html/body/div[5]/div/div[2]/div",
-		ListClickPath:       "/div/div/a",
-		DetailFields:        map[string]form.Field{"title": {Types: fileTypes.SingleField, Selector: "body > div:nth-child(5) > div > div > div.col-xs12.col-sm12.col-md8.col-lg8 > div:nth-child(1) > div > div > div.info.w160 > div.l > h1"}},
-		NextSelector:        "body > div:nth-child(5) > div > div:nth-child(3) > div > ul > li:nth-child(13) > a",
+		Host:             "https://www.cos-onsen.com",
+		Channel:          "/product-list/46?view=new&page=[PAGE]",
+		Limit:            5,
+		PageStart:        1,
+		ListSelector:     "#main_container > article > div > div.page_contents.clearfix.categorylist_contents > div > div.itemlist_box.clearfix > ul > li",
+		ListHrefSelector: "div > a",
+		DetailFields: map[string]form.Field{
+			"title": {Types: fileTypes.SingleField, Selector: "#main_container > article > div > div.page_title > h1 > span.goods_name"},
+			//"html":    {Types: fileTypes.OnlyHtml, Selector: "body > section > div > div > div.col-md-7 > div:nth-child(2) > div"},
+			"image": {Types: fileTypes.SingleImage, Selector: "body > section > div > div > div.col-md-3 > div > div.qrcode-panel.common-panel > div:nth-child(1) > img", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+			//"content": {Types: fileTypes.HtmlWithImage, Selector: "#detail-content", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
+		},
 	}
 
-	chromedpSpider.Start(f)
+	spider.Start(f)
 
 }
+
 
 
 ```
