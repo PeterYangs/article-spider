@@ -750,3 +750,38 @@ func getImageLink(imageDoc *goquery.Selection) (string, error) {
 
 	return imgUrl, nil
 }
+
+// OnlyList 只爬列表
+func OnlyList(form ff.Form, s *goquery.Selection) bool {
+
+	if len(form.DetailFields) <= 0 && len(form.ListFields) > 0 {
+
+		ts, err := s.Html()
+
+		if err != nil {
+
+			ErrorLine(form, err.Error())
+
+			return true
+
+		}
+
+		tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(ts))
+
+		if err != nil {
+
+			ErrorLine(form, err.Error())
+
+			return true
+		}
+
+		res := ResolveSelector(form, tempDoc, form.ListFields)
+
+		form.Storage <- res
+
+		return true
+
+	}
+
+	return false
+}

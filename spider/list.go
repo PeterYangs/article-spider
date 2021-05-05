@@ -79,33 +79,11 @@ func GetList(form form.Form) {
 			findOne = true
 
 			//只爬列表
-			if len(form.DetailFields) <= 0 && len(form.ListFields) > 0 {
+			isReturn := common.OnlyList(form, s)
 
-				ts, err := s.Html()
-
-				if err != nil {
-
-					common.ErrorLine(form, err.Error())
-
-					return
-
-				}
-
-				tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(ts))
-
-				if err != nil {
-
-					common.ErrorLine(form, err.Error())
-
-					return
-				}
-
-				res := common.ResolveSelector(form, tempDoc, form.ListFields)
-
-				form.Storage <- res
+			if isReturn {
 
 				return
-
 			}
 
 			href := ""
