@@ -532,7 +532,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 }
 
-// DownImg 下载图片（包括生产文件夹）
+// DownImg 下载图片（包括生成文件夹）
 func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.Map) string {
 
 	//获取完整链接
