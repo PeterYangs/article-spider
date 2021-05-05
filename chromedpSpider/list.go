@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -33,7 +33,7 @@ func GetList(form form.Form) {
 	//当前页码
 	var pageCurrent int
 
-	for pageCurrent = 0; pageCurrent <= form.Limit; pageCurrent++ {
+	for pageCurrent = 0; pageCurrent < form.Limit; pageCurrent++ {
 
 		//html, err := tools.GetToString(listUrl, form.HttpSetting)
 
@@ -45,11 +45,13 @@ func GetList(form form.Form) {
 
 		}
 
-		var list []*cdp.Node
+		//var list []*cdp.Node
+
+		var html string
 
 		err := chromedp.Run(ctx,
 			chromedp.WaitVisible(form.WaitForListSelector, chromedp.ByQuery),
-			chromedp.Nodes(form.ListPath, &list),
+			chromedp.OuterHTML("html", &html, chromedp.ByQuery),
 		)
 
 		if err != nil {
@@ -60,78 +62,171 @@ func GetList(form form.Form) {
 
 		}
 
-		for _, v := range list {
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
-			err := chromedp.Run(ctx,
+		if err != nil {
 
-				//chromedp.Navigate("https://www.baidu.com"),
+			log.Fatal(err)
+		}
 
-				chromedp.WaitVisible(v.FullXPath()+form.ListClickPath),
-				chromedp.Click(v.FullXPath()+form.ListClickPath),
-			)
+		//time.Sleep(3*time.Second)
 
-			if err != nil {
+		doc.Find(form.ListSelector).Each(func(index int, selection *goquery.Selection) {
 
-				fmt.Println(err)
+			isReturn := common.OnlyList(form, selection)
+
+			if isReturn {
 
 				return
+			}
+
+			isFind := false
+
+			//a链接是列表的情况
+			if form.ListHrefSelector == "" {
+
+				isFind = true
+
+			} else {
+
+				size := selection.Find(form.ListHrefSelector).Size()
+
+				if size >= 1 {
+
+					isFind = true
+
+				}
 
 			}
 
-			waitNewTab := time.After(1 * time.Second)
+			if isFind {
 
-			select {
+				//需要点击的选择器
+				currentSelector := form.ListSelector + ":nth-child(" + strconv.Itoa(index+1) + ")" + " > " + form.ListHrefSelector
 
-			case TargetID := <-ch:
-
-				ctx2, newTabCancle := chromedp.NewContext(ctx, chromedp.WithTargetID(TargetID))
-
-				html := ""
-
-				chromedp.Run(ctx2,
-					chromedp.Sleep(1*time.Second),
-					chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+				chromedp.Run(
+					ctx,
+					chromedp.WaitVisible(currentSelector, chromedp.ByQuery),
+					chromedp.Click(currentSelector, chromedp.ByQuery),
 				)
 
-				//加载
-				doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+				//列表选择器不为空时(放在这里是因为有些网站的图片是懒加载，点击后再获取列表信息)
+				if len(form.ListFields) > 0 {
 
-				if err != nil {
-					//log.Fatal(err)
+					t, err := selection.Html()
 
-					common.ErrorLine(form, err.Error())
+					if err != nil {
 
-					return
+						common.ErrorLine(form, err.Error())
+
+						return
+
+					}
+
+					tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(t))
+
+					res := common.ResolveSelector(form, tempDoc, form.ListFields)
+
+					if len(res) != 0 {
+
+						form.StorageTemp = res
+					}
 
 				}
 
-				//解析选择器返回map
-				res := common.ResolveSelector(form, doc, form.DetailFields)
+				waitNewTab := time.After(1 * time.Second)
 
-				//合并列表中数据
-				for i, v := range form.StorageTemp {
+				select {
 
-					res[i] = v
+				case TargetID := <-ch:
+
+					ctx2, newTabCancle := chromedp.NewContext(ctx, chromedp.WithTargetID(TargetID))
+
+					html := ""
+
+					chromedp.Run(ctx2,
+						chromedp.Sleep(1*time.Second),
+						chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+					)
+
+					//加载
+					doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+					if err != nil {
+
+						common.ErrorLine(form, err.Error())
+
+						return
+
+					}
+
+					//解析选择器返回map
+					res := common.ResolveSelector(form, doc, form.DetailFields)
+
+					//合并列表中数据
+					for i, v := range form.StorageTemp {
+
+						res[i] = v
+
+					}
+
+					//处理格式转换
+					res = common.ConversionFormat(form, res)
+
+					//写入管道
+					form.Storage <- res
+
+					newTabCancle()
+
+				case <-waitNewTab:
+
+					//fmt.Println("nothing")
+
+					html := ""
+
+					chromedp.Run(ctx,
+						chromedp.Sleep(1*time.Second),
+						chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+					)
+
+					//加载
+					doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+					if err != nil {
+
+						common.ErrorLine(form, err.Error())
+
+						return
+
+					}
+
+					//解析选择器返回map
+					res := common.ResolveSelector(form, doc, form.DetailFields)
+
+					//合并列表中数据
+					for i, v := range form.StorageTemp {
+
+						res[i] = v
+
+					}
+
+					//处理格式转换
+					res = common.ConversionFormat(form, res)
+
+					//写入管道
+					form.Storage <- res
+
+					//返回上一页
+					chromedp.Run(ctx,
+						chromedp.NavigateBack(),
+						chromedp.Sleep(1*time.Second),
+					)
 
 				}
-
-				//处理格式转换
-				res = common.ConversionFormat(form, res)
-
-				//写入管道
-				form.Storage <- res
-
-				newTabCancle()
-
-			case <-waitNewTab:
-
-				fmt.Println("nothing")
 
 			}
 
-			time.Sleep(1 * time.Second)
-
-		}
+		})
 
 		//点击下一页
 		chromedp.Run(ctx, chromedp.Click(form.NextSelector, chromedp.ByQuery))
@@ -152,6 +247,7 @@ func createContext(timeout int) (context.Context, context.CancelFunc) {
 		chromedp.Flag("disable-gpu", false),
 		chromedp.Flag("enable-automation", false),
 		chromedp.Flag("disable-extensions", false),
+		chromedp.WindowSize(1920, 1080),
 	)
 
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)

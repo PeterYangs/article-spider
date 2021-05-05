@@ -16,8 +16,6 @@ type Form struct {
 	PageStart           int
 	ListSelector        string
 	ListHrefSelector    string
-	ListPath            string                 //列表路径(xpath)，用于chromedp
-	ListClickPath       string                 //点击相对路径(xpath),用于chromedp
 	DetailFields        map[string]Field       //详情页面字段选择器
 	ListFields          map[string]Field       //列表页面字段选择器
 	ExcelFile           *excelize.File         //excel表格对象

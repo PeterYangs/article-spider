@@ -453,7 +453,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 }
 
-//下载图片（包括生产文件夹）
+// DownImg 下载图片（包括生产文件夹）
 func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.Map) string {
 
 	//获取完整链接
@@ -521,7 +521,7 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 
 }
 
-//解析字段
+// ResolveFields 解析字段
 func ResolveFields(field map[string]interface{}) map[string]form.Field {
 
 	fields := make(map[string]form.Field)
@@ -544,7 +544,7 @@ func ResolveFields(field map[string]interface{}) map[string]form.Field {
 
 }
 
-//错误日志
+// ErrorLine 错误日志
 func ErrorLine(form form.Form, msg string) {
 
 	_, f, l, _ := runtime.Caller(1)
@@ -557,7 +557,7 @@ func ErrorLine(form form.Form, msg string) {
 
 }
 
-//处理格式转换
+// ConversionFormat 处理格式转换
 func ConversionFormat(form ff.Form, resList map[string]string) map[string]string {
 
 	tempRes := resList
@@ -589,4 +589,39 @@ func ConversionFormat(form ff.Form, resList map[string]string) map[string]string
 
 	return tempRes
 
+}
+
+// OnlyList 只爬列表
+func OnlyList(form ff.Form, s *goquery.Selection) bool {
+
+	if len(form.DetailFields) <= 0 && len(form.ListFields) > 0 {
+
+		ts, err := s.Html()
+
+		if err != nil {
+
+			ErrorLine(form, err.Error())
+
+			return true
+
+		}
+
+		tempDoc, err := goquery.NewDocumentFromReader(strings.NewReader(ts))
+
+		if err != nil {
+
+			ErrorLine(form, err.Error())
+
+			return true
+		}
+
+		res := ResolveSelector(form, tempDoc, form.ListFields)
+
+		form.Storage <- res
+
+		return true
+
+	}
+
+	return false
 }
