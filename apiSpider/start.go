@@ -3,6 +3,7 @@ package apiSpider
 import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/article-spider/common"
 	"github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/article-spider/spider"
@@ -15,6 +16,8 @@ import (
 func Start(form form.Form) {
 
 	form.Mode = mode.Api
+
+	form.Client = common.GetHttpClient(form)
 
 	//新建xlsx文件
 	f := excelize.NewFile()

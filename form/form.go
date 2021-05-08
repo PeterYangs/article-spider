@@ -5,10 +5,13 @@ import (
 	"github.com/PeterYangs/article-spider/fileTypes"
 	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
+	"github.com/PeterYangs/tools/http"
 	"sync"
+	"time"
 )
 
 type Form struct {
+	Client              *http.C                  //http客户端
 	Mode                mode.Mode                //爬取模式
 	Host                string                   //网站域名
 	Channel             string                   //栏目链接，页码用[PAGE]替换
@@ -39,6 +42,7 @@ type Form struct {
 	ApiConversion       func(result string) []string //用于apiSpider,返回详情页面链接
 	Progress            *sync.Map                    //当前进度，有两个值，一个是maxPage(最大页数)，一个是currentPage(当前页数)
 	AllowImageExtension []string                     //允许下载的图片拓展名
+	HttpTimeout         time.Duration                //请求超时时间
 }
 
 type Field struct {

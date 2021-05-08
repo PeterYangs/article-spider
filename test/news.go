@@ -15,7 +15,7 @@ func main() {
 
 		Host:             "http://news.4399.com",
 		Channel:          "/shouyou/6438_[PAGE].html",
-		Limit:            100,
+		Limit:            2,
 		PageStart:        1,
 		ListSelector:     "body > div.main.mb10.clearfix > div.leftbar > div.tabC1 > ul > li",
 		ListHrefSelector: " div.top_t > a",

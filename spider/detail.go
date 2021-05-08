@@ -3,7 +3,6 @@ package spider
 import (
 	"github.com/PeterYangs/article-spider/common"
 	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 	"sync"
@@ -28,7 +27,9 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 
 	//获取详情页面html
 	//html, err := tools.GetToString(detailUrl, form.HttpSetting)
-	html, header, err := tools.GetToStringWithHeader(detailUrl, form.HttpSetting)
+	//html, header, err := tools.GetToStringWithHeader(detailUrl, form.HttpSetting)
+
+	html, header, err := form.Client.Request().GetToStringWithHeader(detailUrl)
 
 	if err != nil {
 

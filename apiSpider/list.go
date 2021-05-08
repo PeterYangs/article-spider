@@ -30,7 +30,8 @@ func GetList(form form.Form) {
 	common.GetChannelList(form, func(listUrl string) {
 
 		//获取html页面
-		apiResult, err := tools.GetToString(listUrl, form.HttpSetting)
+		//apiResult, err := tools.GetToString(listUrl, form.HttpSetting)
+		apiResult, err := form.Client.Request().GetToString(listUrl)
 
 		detailList := form.ApiConversion(apiResult)
 

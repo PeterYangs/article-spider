@@ -3,6 +3,7 @@ package spider
 import (
 	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/PeterYangs/article-spider/common"
 	"github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
@@ -13,7 +14,10 @@ import (
 
 func Start(form form.Form) {
 
+	//设置模式
 	form.Mode = mode.Normal
+
+	form.Client = common.GetHttpClient(form)
 
 	//新建xlsx文件
 	f := excelize.NewFile()

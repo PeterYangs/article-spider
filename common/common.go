@@ -7,6 +7,7 @@ import (
 	ff "github.com/PeterYangs/article-spider/form"
 	"github.com/PeterYangs/article-spider/mode"
 	"github.com/PeterYangs/tools"
+	http2 "github.com/PeterYangs/tools/http"
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
@@ -596,7 +597,8 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 
 	//panic(imgName)
 
-	imgErr := tools.DownloadFile(imgUrl, "image/"+imgName, form.HttpSetting)
+	//imgErr := tools.DownloadFile(imgUrl, "image/"+imgName, form.HttpSetting)
+	imgErr := form.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
 
 	if imgErr != nil {
 
@@ -817,4 +819,28 @@ func OnlyList(form ff.Form, s *goquery.Selection) bool {
 	}
 
 	return false
+}
+
+// GetHttpClient 获取http客户端
+func GetHttpClient(form ff.Form) *http2.C {
+
+	client := http2.Client()
+
+	//设置超时时间
+	if form.HttpTimeout != 0 {
+
+		client.SetTimeout(form.HttpTimeout)
+
+	}
+	//设置header
+	client.SetHeader(form.HttpHeader)
+
+	//设置代理
+	if form.ProxyAddress != "" {
+
+		client.SetProxyAddress(form.ProxyAddress)
+	}
+
+	return client
+
 }

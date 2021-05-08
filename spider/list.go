@@ -28,7 +28,9 @@ func GetList(form form.Form) {
 
 	common.GetChannelList(form, func(listUrl string) {
 
-		html, header, err := tools.GetToStringWithHeader(listUrl, form.HttpSetting)
+		//html, header, err := tools.GetToStringWithHeader(listUrl, form.HttpSetting)
+
+		html, header, err := form.Client.Request().GetToStringWithHeader(listUrl)
 
 		if err != nil {
 
