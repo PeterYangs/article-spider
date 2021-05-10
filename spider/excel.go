@@ -3,13 +3,12 @@ package spider
 import (
 	"github.com/PeterYangs/article-spider/form"
 	ff "github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/result"
 	"strconv"
 )
 
 // WriteExcel 写入excel表
 func WriteExcel(form form.Form) {
-
-	defer form.ExcelWait.Done()
 
 	row := 2
 
@@ -43,10 +42,12 @@ func WriteExcel(form form.Form) {
 
 	}
 
-	go checkChan(form)
+	//go checkChan(form)
 
 	//写入
-	for v := range form.Storage {
+	//for v := range form.Storage {
+
+	result.GetResult(form, func(v map[string]string) {
 
 		indexs := 0
 
@@ -66,7 +67,9 @@ func WriteExcel(form form.Form) {
 
 		row++
 
-	}
+	})
+
+	//}
 
 }
 
@@ -100,16 +103,16 @@ func getHeader(name string, array map[string]string) string {
 	return array[name]
 }
 
-//检查是否已完成爬取
-func checkChan(form form.Form) {
-
-	select {
-
-	case <-form.IsFinish:
-
-		//关闭通道写入
-		close(form.Storage)
-
-	}
-
-}
+////检查是否已完成爬取
+//func checkChan(form form.Form) {
+//
+//	select {
+//
+//	case <-form.IsFinish:
+//
+//		//关闭通道写入
+//		close(form.Storage)
+//
+//	}
+//
+//}

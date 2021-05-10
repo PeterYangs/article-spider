@@ -22,12 +22,12 @@ type Form struct {
 	PageStart           int
 	ListSelector        string
 	ListHrefSelector    string
-	DetailFields        map[string]Field       //详情页面字段选择器
-	ListFields          map[string]Field       //列表页面字段选择器,暂不支持api爬取
-	ExcelFile           *excelize.File         //excel表格对象
-	Storage             chan map[string]string //存储爬取数据 ["title"]="文章标题"
-	StorageTemp         map[string]string      //存储列表页数据
-	ExcelWait           *sync.WaitGroup
+	DetailFields        map[string]Field             //详情页面字段选择器
+	ListFields          map[string]Field             //列表页面字段选择器,暂不支持api爬取
+	ExcelFile           *excelize.File               //excel表格对象
+	Storage             chan map[string]string       //存储爬取数据 ["title"]="文章标题"
+	StorageTemp         map[string]string            //存储列表页数据
+	StorageWait         *sync.WaitGroup              //等待管道读取数据完毕
 	DetailMaxCoroutine  int                          //爬取详情页最大协程数，默认按照列表的长度,chromedp不支持
 	DisableAutoCoding   bool                         //是否关闭自动转码
 	IsFinish            chan bool                    //通知excel已完成爬取
@@ -43,6 +43,7 @@ type Form struct {
 	Progress            *sync.Map                    //当前进度，有两个值，一个是maxPage(最大页数)，一个是currentPage(当前页数)
 	AllowImageExtension []string                     //允许下载的图片拓展名
 	HttpTimeout         time.Duration                //请求超时时间
+	ResultCallback      func(item map[string]string) //自定义获取爬取结果回调
 }
 
 type Field struct {

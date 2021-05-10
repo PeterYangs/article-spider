@@ -18,7 +18,7 @@ func main() {
 
 		Host:      "http://app.cnfol.com",
 		Channel:   "/dataapi/index.php/futuresdata/getCatArticle?catid=133&contid=28828722&page=[PAGE]&limit=23&jsoncallback=jQuery1830549977029189465_1618989236347&_=1618989248636",
-		Limit:     40,
+		Limit:     2,
 		PageStart: 1,
 		DetailFields: map[string]form.Field{
 			"title": {Types: fileTypes.SingleField, Selector: "body > div.allCnt > div.artMain.mBlock > h3.artTitle", ExcelHeader: "G"},
