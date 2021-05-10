@@ -337,22 +337,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
 
-					//img, imgBool := selection.Attr("src")
-					//
-					//if imgBool == false {
-					//
-					//	//懒加载
-					//	img, imgBool = doc.Find(item.Selector).Attr("data-original")
-					//
-					//	if imgBool == false {
-					//
-					//		ErrorLine(form, "HtmlWithImage图片选择器未找到")
-					//
-					//		return
-					//	}
-					//
-					//}
-
 					img, err := getImageLink(selection)
 
 					if err != nil {
@@ -378,8 +362,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				waitImg.Wait()
 
-				//html = strings.Replace(html, img, imgName, 1)
-
 				imgList.Range(func(key, value interface{}) bool {
 
 					html = strings.Replace(html, value.(string), key.(string), -1)
@@ -392,8 +374,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				resTemp[field] = html
 				lock.Unlock()
 
-				//resChan <- map[string]string{field:html}
-
 			}(doc, form, item, &lock, &wait, &res, field, &singleFieldMap)
 
 		//单个图片
@@ -404,22 +384,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 			go func(doc *goquery.Document, form ff.Form, item ff.Field, lock *sync.Mutex, wait *sync.WaitGroup, res *map[string]string, field string, singleFieldMap *sync.Map) {
 
 				defer wait.Done()
-
-				//imgUrl, imgBool := doc.Find(item.Selector).Attr("src")
-
-				//if imgBool == false {
-				//
-				//	//懒加载
-				//	imgUrl, imgBool = doc.Find(item.Selector).Attr("data-original")
-				//
-				//	if imgBool == false {
-				//
-				//		ErrorLine(form, "SingleImage图片选择器未找到")
-				//
-				//		return
-				//	}
-				//
-				//}
 
 				imgUrl, err := getImageLink(doc.Find(item.Selector))
 
@@ -457,22 +421,6 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 				//sync.
 
 				doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
-
-					//imgUrl, imgBool := selection.Attr("src")
-					//
-					//if imgBool == false {
-					//
-					//	//懒加载
-					//	imgUrl, imgBool = doc.Find(item.Selector).Attr("data-original")
-					//
-					//	if imgBool == false {
-					//
-					//		ErrorLine(form, "ListImages图片选择器未找到")
-					//
-					//		return
-					//	}
-					//
-					//}
 
 					imgUrl, err := getImageLink(selection)
 
@@ -595,19 +543,13 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
-	//panic(imgName)
-
-	//imgErr := tools.DownloadFile(imgUrl, "image/"+imgName, form.HttpSetting)
 	imgErr := form.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
 
 	if imgErr != nil {
 
-		//log.Println(imgErr)
 		msg := imgErr.Error()
 
 		ErrorLine(form, msg)
-
-		//fmt.Println(imgUrl)
 
 		//获取默认图片
 		if item.DefaultImg != nil {

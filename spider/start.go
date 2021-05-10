@@ -78,8 +78,6 @@ func Start(form form.Form) {
 	//爬取列表
 	GetList(form)
 
-	//close(form.Storage)
-
 	//等待管道处理完excel写入
 	form.ExcelWait.Wait()
 

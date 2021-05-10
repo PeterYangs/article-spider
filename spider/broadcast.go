@@ -75,8 +75,6 @@ func Broadcast(form form.Form) {
 
 		}
 
-		//fmt.Println(message["types"])
-
 	}
 
 }

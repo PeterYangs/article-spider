@@ -10,9 +10,6 @@ import (
 
 func GetList(form form.Form) {
 
-	//当前页码
-	//var pageCurrent int
-
 	hostLast := tools.SubStr(form.Host, len(form.Host)-1, 1)
 
 	if hostLast == "/" {
@@ -30,7 +27,6 @@ func GetList(form form.Form) {
 	common.GetChannelList(form, func(listUrl string) {
 
 		//获取html页面
-		//apiResult, err := tools.GetToString(listUrl, form.HttpSetting)
 		apiResult, err := form.Client.Request().GetToString(listUrl)
 
 		detailList := form.ApiConversion(apiResult)

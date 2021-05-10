@@ -57,8 +57,3 @@ type Field struct {
 	NextSelector         string                                              //详情页下一页选择器，只对详情页字段有效
 	DetailNextFields     map[string]Field                                    //详情页下一页选择器字段
 }
-
-//type DetailNext struct {
-//	NextSelector string
-//	Field        Field
-//}

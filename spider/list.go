@@ -28,13 +28,9 @@ func GetList(form form.Form) {
 
 	common.GetChannelList(form, func(listUrl string) {
 
-		//html, header, err := tools.GetToStringWithHeader(listUrl, form.HttpSetting)
-
 		html, header, err := form.Client.Request().GetToStringWithHeader(listUrl)
 
 		if err != nil {
-
-			//fmt.Println(err)
 
 			common.ErrorLine(form, err.Error())
 
@@ -114,8 +110,6 @@ func GetList(form form.Form) {
 
 				href = common.GetHref(href, form.Host)
 
-				//doc, err := goquery.NewDocumentFromReader(s)
-
 				//列表选择器不为空时
 				if len(form.ListFields) > 0 {
 
@@ -139,8 +133,6 @@ func GetList(form form.Form) {
 					}
 
 				}
-
-				//if len(form.DetailFields) > 0 {
 
 				wait.Add(1)
 

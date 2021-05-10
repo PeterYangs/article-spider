@@ -11,8 +11,6 @@ import (
 // GetDetail 爬取详情
 func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMaxChan chan int) {
 
-	//form.s
-
 	defer func(detailMaxChan chan int, max int) {
 
 		if max != 0 {
@@ -26,9 +24,6 @@ func GetDetail(form form.Form, detailUrl string, wait *sync.WaitGroup, detailMax
 	}(detailMaxChan, form.DetailMaxCoroutine)
 
 	//获取详情页面html
-	//html, err := tools.GetToString(detailUrl, form.HttpSetting)
-	//html, header, err := tools.GetToStringWithHeader(detailUrl, form.HttpSetting)
-
 	html, header, err := form.Client.Request().GetToStringWithHeader(detailUrl)
 
 	if err != nil {

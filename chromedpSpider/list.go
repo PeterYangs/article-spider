@@ -30,14 +30,7 @@ func GetList(form form.Form) {
 		}
 	})
 
-	//当前页码
-	//var pageCurrent int
-
-	//for pageCurrent = 0; pageCurrent < form.Limit; pageCurrent++ {
-
 	common.GetChannelList(form, func(pageCurrent string) {
-
-		//html, err := tools.GetToString(listUrl, form.HttpSetting)
 
 		if pageCurrent == "0" {
 
@@ -46,8 +39,6 @@ func GetList(form form.Form) {
 			)
 
 		}
-
-		//var list []*cdp.Node
 
 		var html string
 
@@ -70,8 +61,6 @@ func GetList(form form.Form) {
 
 			log.Fatal(err)
 		}
-
-		//time.Sleep(3*time.Second)
 
 		doc.Find(form.ListSelector).Each(func(index int, selection *goquery.Selection) {
 

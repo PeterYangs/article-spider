@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-//写入excel表
+// WriteExcel 写入excel表
 func WriteExcel(form form.Form) {
 
 	defer form.ExcelWait.Done()
@@ -22,14 +22,10 @@ func WriteExcel(form form.Form) {
 	//合并表头
 	for i, v := range form.DetailFields {
 
-		//headerList = append(headerList, i)
-
 		headerList[i] = v
 	}
 
 	for i, v := range form.ListFields {
-
-		//headerList = append(headerList, i)
 
 		headerList[i] = v
 	}
@@ -57,10 +53,6 @@ func WriteExcel(form form.Form) {
 		for ii, vv := range v {
 
 			if indexs == 0 {
-
-				//fmt.Println(vv)
-
-				//fmt.Println()
 
 				//输出到通知管道
 				form.BroadcastChan <- map[string]string{"types": "log", "data": vv}

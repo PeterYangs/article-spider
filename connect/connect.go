@@ -5,19 +5,17 @@ import (
 	"sync"
 )
 
-//type Connect sync.Map
-
-//存储全局websocket连接
+// ConnectList 存储全局websocket连接
 var ConnectList sync.Map
 
-//添加一个连接
+// AddCon 添加一个连接
 func AddCon(uid string, con *websocket.Conn) {
 
 	ConnectList.Store(uid, con)
 
 }
 
-//获取一个连接
+// GetCon 获取一个连接
 func GetCon(uid string) *websocket.Conn {
 
 	con, ok := ConnectList.Load(uid)
@@ -31,7 +29,7 @@ func GetCon(uid string) *websocket.Conn {
 
 }
 
-//删除一个连接
+// DeleteCon 删除一个连接
 func DeleteCon(uid string) {
 
 	ConnectList.Delete(uid)
