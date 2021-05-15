@@ -520,25 +520,34 @@ func DownImg(form form.Form, url string, item form.Field, singleFieldMap *sync.M
 		ex = "png"
 	}
 
-	allowImage := []string{"png", "jpg", "jpeg", "gif", "jfif"}
+	//禁用拓展名检查
+	if form.DisableImageExtensionCheck {
 
-	//自定义允许下载的图片拓展名
-	if len(form.AllowImageExtension) > 0 {
+		ex = "png"
 
-		allowImage = form.AllowImageExtension
-	}
+	} else {
 
-	if !tools.In_array(allowImage, strings.ToLower(ex)) {
+		allowImage := []string{"png", "jpg", "jpeg", "gif", "jfif"}
 
-		ErrorLine(form, "图片拓展名异常:"+imgUrl)
+		//自定义允许下载的图片拓展名
+		if len(form.AllowImageExtension) > 0 {
 
-		//获取默认图片
-		if item.DefaultImg != nil {
-
-			return item.DefaultImg(form, item)
+			allowImage = form.AllowImageExtension
 		}
 
-		return ""
+		if !tools.In_array(allowImage, strings.ToLower(ex)) {
+
+			ErrorLine(form, "图片拓展名异常:"+imgUrl)
+
+			//获取默认图片
+			if item.DefaultImg != nil {
+
+				return item.DefaultImg(form, item)
+			}
+
+			return ""
+		}
+
 	}
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
