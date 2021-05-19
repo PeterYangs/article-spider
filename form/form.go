@@ -45,6 +45,7 @@ type Form struct {
 	HttpTimeout                time.Duration                //请求超时时间
 	ResultCallback             func(item map[string]string) //自定义获取爬取结果回调
 	DisableImageExtensionCheck bool                         //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	LazyImageAttrName          string                       //懒加载图片属性，默认为data-original
 }
 
 type Field struct {

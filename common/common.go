@@ -337,7 +337,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
 
-					img, err := getImageLink(selection)
+					img, err := getImageLink(selection, form)
 
 					if err != nil {
 
@@ -385,7 +385,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				defer wait.Done()
 
-				imgUrl, err := getImageLink(doc.Find(item.Selector))
+				imgUrl, err := getImageLink(doc.Find(item.Selector), form)
 
 				if err != nil {
 
@@ -422,7 +422,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
 
-					imgUrl, err := getImageLink(selection)
+					imgUrl, err := getImageLink(selection, form)
 
 					if err != nil {
 
@@ -716,7 +716,19 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 }
 
 //获取图片链接
-func getImageLink(imageDoc *goquery.Selection) (string, error) {
+func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
+
+	if form.LazyImageAttrName != "" {
+
+		imgUrl, imgBool := imageDoc.Attr(form.LazyImageAttrName)
+
+		if imgBool == false {
+
+			return "", errors.New("未找到图片链接")
+		}
+
+		return imgUrl, nil
+	}
 
 	imgUrl, imgBool := imageDoc.Attr("src")
 
@@ -726,8 +738,6 @@ func getImageLink(imageDoc *goquery.Selection) (string, error) {
 		imgUrl, imgBool = imageDoc.Attr("data-original")
 
 		if imgBool == false {
-
-			//ErrorLine(form, "ListImages图片选择器未找到")
 
 			return "", errors.New("未找到图片链接")
 		}
