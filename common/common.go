@@ -341,7 +341,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 					if err != nil {
 
-						ErrorLine(form, "SingleImage图片选择器未找到")
+						ErrorLine(form, err.Error())
 
 						return
 					}
@@ -389,7 +389,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 				if err != nil {
 
-					ErrorLine(form, "SingleImage图片选择器未找到")
+					ErrorLine(form, err.Error())
 
 					return
 				}
@@ -426,7 +426,7 @@ func ResolveSelector(form form.Form, doc *goquery.Document, selector map[string]
 
 					if err != nil {
 
-						ErrorLine(form, "ListImages图片选择器未找到")
+						ErrorLine(form, err.Error())
 
 						return
 					}
@@ -718,21 +718,21 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 //获取图片链接
 func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
 
-	if form.LazyImageAttrName != "" {
-
-		imgUrl, imgBool := imageDoc.Attr(form.LazyImageAttrName)
-
-		if imgBool == false {
-
-			return "", errors.New("未找到图片链接")
-		}
-
-		return imgUrl, nil
-	}
-
 	imgUrl, imgBool := imageDoc.Attr("src")
 
 	if imgBool == false {
+
+		if form.LazyImageAttrName != "" {
+
+			imgUrl, imgBool = imageDoc.Attr(form.LazyImageAttrName)
+
+			if imgBool == false {
+
+				return "", errors.New("未找到图片链接")
+			}
+
+			return imgUrl, nil
+		}
 
 		//懒加载
 		imgUrl, imgBool = imageDoc.Attr("data-original")
