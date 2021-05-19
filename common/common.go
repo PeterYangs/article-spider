@@ -720,13 +720,13 @@ func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
 
 	imgUrl, imgBool := imageDoc.Attr("src")
 
-	if imgBool == false {
+	if imgBool == false || imgUrl == "" {
 
 		if form.LazyImageAttrName != "" {
 
 			imgUrl, imgBool = imageDoc.Attr(form.LazyImageAttrName)
 
-			if imgBool == false {
+			if imgBool == false || imgUrl == "" {
 
 				return "", errors.New("未找到图片链接")
 			}
@@ -737,7 +737,7 @@ func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
 		//懒加载
 		imgUrl, imgBool = imageDoc.Attr("data-original")
 
-		if imgBool == false {
+		if imgBool == false || imgUrl == "" {
 
 			return "", errors.New("未找到图片链接")
 		}
