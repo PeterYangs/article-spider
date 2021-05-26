@@ -656,7 +656,7 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 			//当前页码
 			var pageCurrent int
 
-			form.Progress.Store("maxPage", float32(form.Limit-form.PageStart+1))
+			form.Progress.Store("maxPage", float32(form.PageStart+form.Limit))
 			form.Progress.Store("currentPage", float32(0))
 
 			for pageCurrent = form.PageStart; pageCurrent <= form.PageStart+form.Limit; pageCurrent++ {
