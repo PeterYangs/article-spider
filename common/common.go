@@ -173,6 +173,14 @@ func DealCoding(html string, header http.Header) (string, error) {
 
 			return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
 
+		case "utf-8":
+
+			return html, nil
+
+		case "utf8":
+
+			return html, nil
+
 		}
 
 	}
@@ -193,11 +201,19 @@ func DealCoding(html string, header http.Header) (string, error) {
 
 	case "gbk":
 
-		html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+		return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
 
 	case "gb2312":
 
-		html = string(tools.ConvertToByte(html, "gbk", "utf8"))
+		return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+	case "utf-8":
+
+		return html, nil
+
+	case "utf8":
+
+		return html, nil
 
 	}
 
