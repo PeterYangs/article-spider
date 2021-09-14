@@ -734,21 +734,21 @@ func GetChannelList(form form.Form, callback func(listUrl string)) {
 //获取图片链接
 func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
 
+	if form.LazyImageAttrName != "" {
+
+		imgUrl, imgBool := imageDoc.Attr(form.LazyImageAttrName)
+
+		if imgBool == false || imgUrl == "" {
+
+			return "", errors.New("未找到图片链接")
+		}
+
+		return imgUrl, nil
+	}
+
 	imgUrl, imgBool := imageDoc.Attr("src")
 
 	if imgBool == false || imgUrl == "" {
-
-		if form.LazyImageAttrName != "" {
-
-			imgUrl, imgBool = imageDoc.Attr(form.LazyImageAttrName)
-
-			if imgBool == false || imgUrl == "" {
-
-				return "", errors.New("未找到图片链接")
-			}
-
-			return imgUrl, nil
-		}
 
 		//懒加载
 		imgUrl, imgBool = imageDoc.Attr("data-original")
