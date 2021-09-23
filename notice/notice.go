@@ -1,6 +1,8 @@
 package notice
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type types int
 
@@ -15,33 +17,55 @@ type message struct {
 	content interface{}
 }
 
-func NewInfo(content string) *message {
+func NewInfo(content interface{}) *message {
 
 	return &message{types: Info, content: content}
 }
 
+func NewError(content interface{}) *message {
+
+	return &message{types: Error, content: content}
+}
+
+func NewDebug(content interface{}) *message {
+
+	return &message{types: Debug, content: content}
+}
+
 type Notice struct {
-	ch chan message
+	ch chan *message
 }
 
 func NewNotice() *Notice {
 
+	ch := make(chan *message, 10)
+
 	return &Notice{
-		ch: make(chan message, 10),
+		ch: ch,
 	}
 }
 
-func (n *Notice) PushMessage(message message) {
+func (n *Notice) PushMessage(message *message) {
 
 	n.ch <- message
 
 }
 
-func (n *Notice) Service() {
+func (n *Notice) Service(closeEvent func()) {
+
+	defer func() {
+
+		closeEvent()
+	}()
 
 	for m := range n.ch {
 
 		fmt.Println(m.content)
 	}
+
+}
+func (n *Notice) Close() {
+
+	close(n.ch)
 
 }

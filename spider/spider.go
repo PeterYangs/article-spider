@@ -9,21 +9,26 @@ import (
 	"github.com/PeterYangs/tools/http"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Spider struct {
 	form   *form.Form
-	notice *notice.Notice
+	Notice *notice.Notice
 }
 
 func NewSpider() *Spider {
 
-	return &Spider{notice: notice.NewNotice()}
+	return &Spider{Notice: notice.NewNotice()}
 }
 
 func (s *Spider) LoadForm(form *form.Form) *Spider {
 
 	s.form = form
+
+	s.form.Notice = s.Notice
+
+	s.form.Wait = sync.WaitGroup{}
 
 	return s
 }
@@ -41,18 +46,29 @@ func (s *Spider) loadClient() *Spider {
 // Start 普通模式爬取
 func (s *Spider) Start() {
 
+	go s.Notice.Service(func() {
+
+		s.form.Wait.Done()
+	})
+
 	s.checkLink()
 
 	s.loadClient()
+
+	//消息关闭等待标记
+	s.form.Wait.Add(1)
 
 	n := normal.NewNormal(s.form)
 
 	s.getChannelList(func(listUrl string) {
 
+		//fmt.Println(listUrl)
+
 		n.GetList(listUrl)
 
 	})
 
+	s.form.Wait.Wait()
 }
 
 func (s *Spider) checkLink() {

@@ -1,8 +1,8 @@
 package normal
 
 import (
-	"fmt"
 	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -24,9 +24,7 @@ func (n *normal) GetList(listUrl string) {
 
 	if err != nil {
 
-		//common.ErrorLine(form, err.Error())
-
-		fmt.Println(err)
+		n.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 		return
 
@@ -39,7 +37,7 @@ func (n *normal) GetList(listUrl string) {
 
 		if err != nil {
 
-			//common.ErrorLine(form, err.Error())
+			n.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 			return
 
@@ -51,14 +49,14 @@ func (n *normal) GetList(listUrl string) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 
-		//common.ErrorLine(form, err.Error())
+		n.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 		return
 
 	}
 
 	//查找列表中的a链接
-	doc.Find(n.form.ListSelector).Each(func(i int, s *goquery.Selection) {
+	size := doc.Find(n.form.ListSelector).Each(func(i int, s *goquery.Selection) {
 
 		href := ""
 
@@ -77,11 +75,61 @@ func (n *normal) GetList(listUrl string) {
 
 		if href == "" || isFind == false {
 
-			fmt.Println("a链接为空")
+			n.form.Notice.PushMessage(notice.NewError("a链接为空"))
 
 			return
 		}
 
-	})
+		//n.form.Notice.PushMessage(notice.NewInfo(href))
+
+		n.GetDetail(n.form.GetHref(href))
+
+	}).Size()
+
+	if size <= 0 {
+
+		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
+	}
+
+	n.form.Notice.Close()
+
+}
+
+func (n *normal) GetDetail(detailUrl string) {
+
+	html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
+
+	if err != nil {
+
+		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		return
+
+	}
+
+	//自动转码
+	if n.form.DisableAutoCoding == false {
+
+		html, err = n.form.DealCoding(html, header)
+
+		if err != nil {
+
+			n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+			return
+
+		}
+
+	}
+
+	////goquery加载html
+	//doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	//if err != nil {
+	//
+	//	n.form.Notice.PushMessage(notice.NewError(err.Error()))
+	//
+	//	return
+	//
+	//}
 
 }
