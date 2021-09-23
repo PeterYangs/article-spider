@@ -1,7 +1,10 @@
 github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2 h1:MHu5KWWt28FzRGQgc4Ryj/lZT/W/by4NvsnstbWwkkY=
 github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2/go.mod h1:xc0ybJZXcn084ZaIvQv+LfCDQjMWfxkBa2K9nLXYJtI=
+github.com/PeterYangs/article-spider v0.0.25 h1:LVN1CNBo1PFawjR2SNfl37DzdxA6ZghQdZdXx8vGu4A=
 github.com/PeterYangs/tools v0.2.25 h1:vmn9lJ5+jgbkzlYHmK78g8TCi3sYFipzS8l3gF37XMM=
 github.com/PeterYangs/tools v0.2.25/go.mod h1:VMrlLNpXOuQBkHmZjH7HPMUFMd9JyvT/amjxICvlOfQ=
+github.com/PeterYangs/tools v0.2.32 h1:pDe4CHOuIhCOzTreLF0JBt5qmpFBEYsjmjBrAU29y+M=
+github.com/PeterYangs/tools v0.2.32/go.mod h1:VMrlLNpXOuQBkHmZjH7HPMUFMd9JyvT/amjxICvlOfQ=
 github.com/PuerkitoBio/goquery v1.6.1 h1:FgjbQZKl5HTmcn4sKBgvx8vv63nhyhIpv7lJpFGCWpk=
 github.com/PuerkitoBio/goquery v1.6.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/andybalholm/cascadia v1.1.0 h1:BuuO6sSfQNFRu1LppgbD25Hr2vLYW25JvxHs5zzsLTo=

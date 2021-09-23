@@ -13,6 +13,9 @@ func main() {
 		Host:      "https://www.duote.com",
 		Channel:   "/sort/50_0_wdow_0_[PAGE]_.html",
 		PageStart: 1,
+		Length:    1,
 	})
+
+	s.Start()
 
 }
