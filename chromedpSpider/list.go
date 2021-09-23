@@ -3,8 +3,8 @@ package chromedpSpider
 import (
 	"context"
 	"fmt"
-	"github.com/PeterYangs/article-spider/common"
-	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/v2/common"
+	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"

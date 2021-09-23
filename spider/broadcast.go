@@ -2,8 +2,8 @@ package spider
 
 import (
 	"fmt"
-	"github.com/PeterYangs/article-spider/connect"
-	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/v2/connect"
+	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/tools"
 	"github.com/gin-gonic/gin"
 	"log"

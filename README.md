@@ -5,7 +5,7 @@
 
 安装
 
-go get github.com/PeterYangs/article-spider
+go get github.com/PeterYangs/article-spider/v2
 
 开始使用
 
@@ -15,9 +15,9 @@ go get github.com/PeterYangs/article-spider
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -78,9 +78,9 @@ CustomExcelHeader：是否开启自定义excel头部
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -112,9 +112,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -146,9 +146,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -182,9 +182,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -221,9 +221,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -257,9 +257,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -295,9 +295,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -333,9 +333,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -372,9 +372,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -436,9 +436,9 @@ func getDesc(data string, resList map[string]string) string {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 	"encoding/json"
 	"fmt"
 	"github.com/PeterYangs/tools"
@@ -477,9 +477,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/chromedpSpider"
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
+	"github.com/PeterYangs/article-spider/v2/chromedpSpider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
 )
 
 func main() {

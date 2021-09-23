@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {

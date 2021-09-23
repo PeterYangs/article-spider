@@ -1,10 +1,10 @@
 package chromedpSpider
 
 import (
-	"github.com/PeterYangs/article-spider/form"
-	ff "github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/mode"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/form"
+	ff "github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/mode"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func Start(form form.Form) {

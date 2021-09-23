@@ -2,8 +2,8 @@ package form
 
 import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/mode"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/PeterYangs/tools/http"
 	"sync"

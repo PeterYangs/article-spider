@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/PeterYangs/article-spider/apiSpider"
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/tool"
+	"github.com/PeterYangs/article-spider/v2/apiSpider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/tool"
 	"github.com/PeterYangs/tools"
 	"log"
 	"regexp"

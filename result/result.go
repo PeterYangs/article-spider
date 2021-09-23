@@ -1,6 +1,6 @@
 package result
 
-import "github.com/PeterYangs/article-spider/form"
+import "github.com/PeterYangs/article-spider/v2/form"
 
 // GetResult 获取爬取结果
 func GetResult(form form.Form, callback func(item map[string]string)) {

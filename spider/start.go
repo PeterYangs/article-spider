@@ -1,9 +1,9 @@
 package spider
 
 import (
-	"github.com/PeterYangs/article-spider/form"
-	ff "github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/mode"
+	"github.com/PeterYangs/article-spider/v2/form"
+	ff "github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/mode"
 )
 
 func Start(form form.Form) {
