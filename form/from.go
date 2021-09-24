@@ -33,15 +33,17 @@ type Form struct {
 	DisableImageExtensionCheck bool                                //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
 	AllowImageExtension        []string                            //允许下载的图片拓展名
 	DefaultImg                 func(form *Form, item Field) string //图片出错时，设置默认图片
-	//ListFinish        chan bool
+	DetailFields               map[string]Field                    //详情页面字段选择器
+	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
+	Storage                    chan map[string]string              //数据结果通道
 }
 
 type Field struct {
 	Types       fileTypes.FieldTypes
-	Selector    string //字段选择器
-	AttrKey     string //属性值参数
-	ImagePrefix string //图片路径前缀,会生成到Excel表格中，但不会生成文件夹
-	ImageDir    string //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	Selector    string                               //字段选择器
+	AttrKey     string                               //属性值参数
+	ImagePrefix func(form *Form, path string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir    string                               //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
 }
 
 // DealCoding 解决编码问题
@@ -599,7 +601,21 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	}
 
-	return (If(item.ImagePrefix == "", "", item.ImagePrefix+"/")).(string) + imgName
+	prefix := ""
+
+	if item.ImagePrefix != nil {
+
+		prefix = item.ImagePrefix(f, imgName)
+
+	}
+
+	//自动添加斜杠
+	if tools.SubStr(prefix, -1, -1) != "/" {
+
+		prefix += "/"
+	}
+
+	return (If(item.ImagePrefix == nil, "", prefix)).(string) + imgName
 
 }
 

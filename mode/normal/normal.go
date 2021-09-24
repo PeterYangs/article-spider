@@ -18,8 +18,6 @@ func NewNormal(form *form.Form) *normal {
 
 func (n *normal) GetList(listUrl string) {
 
-	//html, header, err := form.Client.Request().GetToStringWithHeader(listUrl)
-
 	html, header, err := n.form.Client.Request().GetToStringWithHeader(listUrl)
 
 	if err != nil {
@@ -62,6 +60,8 @@ func (n *normal) GetList(listUrl string) {
 
 		isFind := false
 
+		storage := make(map[string]string)
+
 		//a链接是列表的情况
 		if n.form.HrefSelector == "" {
 
@@ -80,9 +80,31 @@ func (n *normal) GetList(listUrl string) {
 			return
 		}
 
-		//n.form.Notice.PushMessage(notice.NewInfo(href))
+		//列表选择器不为空时
+		if len(n.form.ListFields) > 0 {
 
-		n.GetDetail(n.form.GetHref(href))
+			t, err := s.Html()
+
+			if err != nil {
+
+				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+
+			}
+
+			storage, err = n.form.ResolveSelector(t, n.form.ListFields)
+
+			if err != nil {
+
+				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+			}
+
+		}
+
+		n.GetDetail(n.form.GetHref(href), storage)
 
 	}).Size()
 
@@ -95,7 +117,7 @@ func (n *normal) GetList(listUrl string) {
 
 }
 
-func (n *normal) GetDetail(detailUrl string) {
+func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
 
@@ -122,14 +144,30 @@ func (n *normal) GetDetail(detailUrl string) {
 
 	}
 
-	////goquery加载html
-	//doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
-	//if err != nil {
-	//
-	//	n.form.Notice.PushMessage(notice.NewError(err.Error()))
-	//
-	//	return
-	//
-	//}
+	res, err := n.form.ResolveSelector(html, n.form.DetailFields)
+
+	if err != nil {
+
+		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		return
+	}
+
+	for s, s2 := range res {
+
+		storage[s] = s2
+
+	}
+
+	for s, s2 := range storage {
+
+		storage[s] = strings.TrimSpace(s2)
+	}
+
+	//fmt.Println(storage)
+
+	n.form.Storage <- storage
+
+	//fmt.Println(res)
 
 }

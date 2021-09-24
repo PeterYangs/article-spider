@@ -5,6 +5,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/article-spider/v2/mode/normal"
 	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/article-spider/v2/result"
 	"github.com/PeterYangs/tools"
 	"github.com/PeterYangs/tools/http"
 	"strconv"
@@ -28,6 +29,9 @@ func (s *Spider) LoadForm(form *form.Form) *Spider {
 
 	s.form.Notice = s.Notice
 
+	//初始化结果通道
+	s.form.Storage = make(chan map[string]string, 20)
+
 	s.form.Wait = sync.WaitGroup{}
 
 	return s
@@ -50,6 +54,10 @@ func (s *Spider) Start() {
 
 		s.form.Wait.Done()
 	})
+
+	r := result.NewResult(s.form)
+
+	go r.Work()
 
 	s.checkLink()
 
