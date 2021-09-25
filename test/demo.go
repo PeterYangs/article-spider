@@ -10,7 +10,7 @@ func main() {
 
 	s := spider.NewSpider()
 
-	s.LoadForm(&form.Form{
+	s.LoadForm(form.CustomForm{
 		Host:         "https://www.duote.com",
 		Channel:      "/sort/50_0_wdow_0_[PAGE]_.html",
 		ListSelector: "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",

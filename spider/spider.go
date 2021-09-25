@@ -1,6 +1,7 @@
 package spider
 
 import (
+	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/article-spider/v2/mode/normal"
@@ -23,9 +24,27 @@ func NewSpider() *Spider {
 	return &Spider{Notice: notice.NewNotice()}
 }
 
-func (s *Spider) LoadForm(form *form.Form) *Spider {
+func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 
-	s.form = form
+	f := &form.Form{
+		Host:                       cf.Host,
+		Channel:                    cf.Channel,
+		PageStart:                  cf.PageStart,
+		Length:                     cf.Length,
+		ListSelector:               cf.ListSelector,
+		HrefSelector:               cf.HrefSelector,
+		DisableAutoCoding:          cf.DisableAutoCoding,
+		LazyImageAttrName:          cf.LazyImageAttrName,
+		DisableImageExtensionCheck: cf.DisableImageExtensionCheck,
+		AllowImageExtension:        cf.AllowImageExtension,
+		DefaultImg:                 cf.DefaultImg,
+		DetailFields:               cf.DetailFields,
+		ListFields:                 cf.ListFields,
+		CustomExcelHeader:          cf.CustomExcelHeader,
+		DetailCoroutineNumber:      cf.DetailCoroutineNumber,
+	}
+
+	s.form = f
 
 	s.form.Notice = s.Notice
 
@@ -49,6 +68,18 @@ func (s *Spider) loadClient() *Spider {
 
 // Start 普通模式爬取
 func (s *Spider) Start() {
+
+	s.form.Mode = mode.Normal
+
+	detailMaxCoroutines := conf.Conf.DetailMaxCoroutines
+
+	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
+	if s.form.DetailCoroutineNumber > detailMaxCoroutines || s.form.DetailCoroutineNumber == 0 {
+
+		s.form.DetailCoroutineNumber = detailMaxCoroutines
+	}
+
+	s.form.DetailCoroutineChan = make(chan bool, s.form.DetailCoroutineNumber)
 
 	go s.Notice.Service(func() {
 
@@ -76,6 +107,10 @@ func (s *Spider) Start() {
 		n.GetList(listUrl)
 
 	})
+
+	s.form.DetailWait.Wait()
+
+	close(s.form.Storage)
 
 	s.form.Wait.Wait()
 }

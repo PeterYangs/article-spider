@@ -17,6 +17,25 @@ import (
 	"time"
 )
 
+type CustomForm struct {
+	Host                       string                              //网站域名
+	Channel                    string                              //栏目链接，页码用[PAGE]替换
+	PageStart                  int                                 //页码起始页
+	Length                     int                                 //爬取页码长度
+	ListSelector               string                              //列表选择器
+	HrefSelector               string                              //a链接选择器，相对于列表选择器
+	DisableAutoCoding          bool                                //是否自动转码
+	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
+	DisableImageExtensionCheck bool                                //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	AllowImageExtension        []string                            //允许下载的图片拓展名
+	DefaultImg                 func(form *Form, item Field) string //图片出错时，设置默认图片
+	DetailFields               map[string]Field                    //详情页面字段选择器
+	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
+	CustomExcelHeader          bool                                //自定义Excel表格头部
+	DetailCoroutineNumber      int                                 //爬取详情页协程数
+
+}
+
 type Form struct {
 	Host                       string  //网站域名
 	Channel                    string  //栏目链接，页码用[PAGE]替换
@@ -26,7 +45,7 @@ type Form struct {
 	ListSelector               string  //列表选择器
 	HrefSelector               string  //a链接选择器，相对于列表选择器
 	Mode                       mode.Mode
-	DisableAutoCoding          bool
+	DisableAutoCoding          bool //是否自动转码
 	Notice                     *notice.Notice
 	Wait                       sync.WaitGroup
 	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
@@ -37,7 +56,9 @@ type Form struct {
 	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
 	Storage                    chan map[string]string              //数据结果通道
 	CustomExcelHeader          bool                                //自定义Excel表格头部
-
+	DetailCoroutineNumber      int                                 //爬取详情页协程数
+	DetailCoroutineChan        chan bool                           //限制详情页并发chan
+	DetailWait                 sync.WaitGroup
 }
 
 type Field struct {

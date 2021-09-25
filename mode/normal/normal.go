@@ -104,7 +104,11 @@ func (n *normal) GetList(listUrl string) {
 
 		}
 
-		n.GetDetail(n.form.GetHref(href), storage)
+		n.form.DetailCoroutineChan <- true
+
+		n.form.DetailWait.Add(1)
+
+		go n.GetDetail(n.form.GetHref(href), storage)
 
 	}).Size()
 
@@ -113,13 +117,19 @@ func (n *normal) GetList(listUrl string) {
 		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
 	}
 
-	//n.form.Notice.Close()
-
-	close(n.form.Storage)
+	//close(n.form.Storage)
 
 }
 
 func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
+
+	defer func() {
+
+		<-n.form.DetailCoroutineChan
+
+		n.form.DetailWait.Done()
+
+	}()
 
 	html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
 
