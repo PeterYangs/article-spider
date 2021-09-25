@@ -7,6 +7,8 @@
 
 go get github.com/PeterYangs/article-spider
 
+v2版本正在开发中，详情见：https://github.com/PeterYangs/article-spider/tree/v2
+
 开始使用
 
 **爬取文字(fileTypes.SingleField)**
