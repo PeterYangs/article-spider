@@ -36,6 +36,8 @@ type Form struct {
 	DetailFields               map[string]Field                    //详情页面字段选择器
 	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
 	Storage                    chan map[string]string              //数据结果通道
+	CustomExcelHeader          bool                                //自定义Excel表格头部
+
 }
 
 type Field struct {
@@ -44,6 +46,7 @@ type Field struct {
 	AttrKey     string                               //属性值参数
 	ImagePrefix func(form *Form, path string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
 	ImageDir    string                               //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader string                               //excel表头，需要CustomExcelHeader为true,例：A
 }
 
 // DealCoding 解决编码问题
@@ -191,24 +194,17 @@ func (f *Form) GetHref(href string) string {
 }
 
 // ResolveSelector 解析选择器
-func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[string]string, error) {
+func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl string) (map[string]string, error) {
 
+	//存储结果
 	var res = &sync.Map{}
 
-	//var lock = &sync.Mutex{}
-
 	var wait = &sync.WaitGroup{}
-
-	//var singleFieldMap = sync.Map{}
 
 	//goquery加载html
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 
 	if err != nil {
-
-		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
-
-		//f.Notice.PushMessage(notice.NewError(err.Error()))
 
 		return nil, err
 
@@ -224,13 +220,6 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 			v := doc.Find(item.Selector).Text()
 
-			//singleFieldChan <- v
-			//singleFieldMap.Store(field, v)
-
-			//lock.Lock()
-			//res[field] = v
-			//lock.Unlock()
-
 			res.Store(field, v)
 
 			break
@@ -239,10 +228,6 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 		case fileTypes.Attr:
 
 			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
-
-			//lock.Lock()
-			//res[field] = v
-			//lock.Unlock()
 
 			res.Store(field, v)
 
@@ -255,13 +240,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 			if err != nil {
 
-				//ErrorLine(form, err.Error())
-
-				//res[field] = ""
-
 				res.Store(field, "")
 
-				f.Notice.PushMessage(notice.NewError(err.Error()))
+				f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 				break
 
@@ -284,9 +265,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 				if err != nil {
 
-					//ErrorLine(form, err.Error())
-
-					f.Notice.PushMessage(notice.NewError(err.Error()))
+					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 					return
 
@@ -296,7 +275,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error()))
+					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 					return
 
@@ -312,7 +291,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 					if err != nil {
 
-						f.Notice.PushMessage(notice.NewError(err.Error()))
+						f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 						return
 					}
@@ -340,11 +319,6 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 					return true
 				})
 
-				//lock.Lock()
-				//resTemp := *res
-				//resTemp[field] = html
-				//lock.Unlock()
-
 				res.Store(field, html_)
 
 			}(item, field)
@@ -362,19 +336,12 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 				if err != nil {
 
-					//ErrorLine(form, err.Error())
-
-					f.Notice.PushMessage(notice.NewError(err.Error()))
+					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 					return
 				}
 
 				imgName := f.DownImg(imgUrl, item, res)
-
-				//lock.Lock()
-				//resTemp := *res
-				//resTemp[field] = imgName
-				//lock.Unlock()
 
 				res.Store(field, imgName)
 
@@ -403,9 +370,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 					if err != nil {
 
-						//ErrorLine(form, err.Error())
-
-						f.Notice.PushMessage(notice.NewError(err.Error()))
+						f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 						return
 					}
@@ -437,21 +402,12 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field) (map[stri
 
 				array := tools.Join(",", strArray)
 
-				//lock.Lock()
-				//resTemp := *res
-				//resTemp[field] = array
-				//lock.Unlock()
-
 				res.Store(field, array)
 
 			}(item, field)
 
 		//固定数据
 		case fileTypes.Fixed:
-
-			//lock.Lock()
-			//res[field] = item.Selector
-			//lock.Unlock()
 
 			res.Store(field, item.Selector)
 

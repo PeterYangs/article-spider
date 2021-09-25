@@ -61,6 +61,7 @@ func (n *Notice) Service(closeEvent func()) {
 	for m := range n.ch {
 
 		fmt.Println(m.content)
+
 	}
 
 }

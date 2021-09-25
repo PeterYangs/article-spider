@@ -1,14 +1,3 @@
-### article-spider是一个用go编写的爬取文章工具。支持两种模式，常规爬取模式和浏览器自动化模式
-
-
-
-安装
-```shell
-go get github.com/PeterYangs/article-spider/v2
-```
-
-**快速开始**
-```go
 package main
 
 import (
@@ -49,8 +38,3 @@ func main() {
 	s.Start()
 
 }
-
-```
-
-
-

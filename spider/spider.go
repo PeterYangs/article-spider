@@ -57,6 +57,9 @@ func (s *Spider) Start() {
 
 	r := result.NewResult(s.form)
 
+	//excel处理等待标记
+	s.form.Wait.Add(1)
+
 	go r.Work()
 
 	s.checkLink()
@@ -69,8 +72,6 @@ func (s *Spider) Start() {
 	n := normal.NewNormal(s.form)
 
 	s.getChannelList(func(listUrl string) {
-
-		//fmt.Println(listUrl)
 
 		n.GetList(listUrl)
 

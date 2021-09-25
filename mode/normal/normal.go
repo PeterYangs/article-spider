@@ -93,7 +93,7 @@ func (n *normal) GetList(listUrl string) {
 
 			}
 
-			storage, err = n.form.ResolveSelector(t, n.form.ListFields)
+			storage, err = n.form.ResolveSelector(t, n.form.ListFields, listUrl)
 
 			if err != nil {
 
@@ -113,7 +113,9 @@ func (n *normal) GetList(listUrl string) {
 		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
 	}
 
-	n.form.Notice.Close()
+	//n.form.Notice.Close()
+
+	close(n.form.Storage)
 
 }
 
@@ -144,7 +146,7 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	}
 
-	res, err := n.form.ResolveSelector(html, n.form.DetailFields)
+	res, err := n.form.ResolveSelector(html, n.form.DetailFields, detailUrl)
 
 	if err != nil {
 
@@ -164,10 +166,6 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 		storage[s] = strings.TrimSpace(s2)
 	}
 
-	//fmt.Println(storage)
-
 	n.form.Storage <- storage
-
-	//fmt.Println(res)
 
 }
