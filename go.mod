@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2
-	github.com/PeterYangs/request v0.0.5
+	github.com/PeterYangs/request v0.0.6
 	github.com/PeterYangs/tools v0.2.35
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/chromedp/cdproto v0.0.0-20210323015217-0942afbea50e

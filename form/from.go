@@ -7,7 +7,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
-	"github.com/PeterYangs/tools/http"
+
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
 	http2 "net/http"
@@ -462,7 +462,13 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection) (string, error) {
 
 		if imgBool == false || imgUrl == "" {
 
-			return "", errors.New("未找到图片链接")
+			imgUrl, imgBool = imageDoc.Attr("src")
+
+			if imgBool == false || imgUrl == "" {
+
+				return "", errors.New("未找到图片链接")
+			}
+
 		}
 
 		return imgUrl, nil
@@ -559,7 +565,9 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
-	imgErr := f.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
+	//imgErr := f.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
+
+	imgErr := f.Client.R().Download(imgUrl, "image/"+imgName)
 
 	if imgErr != nil {
 

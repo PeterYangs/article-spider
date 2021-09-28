@@ -18,11 +18,7 @@ func NewNormal(form *form.Form) *normal {
 
 func (n *normal) GetList(listUrl string) {
 
-	//html, header, err := n.form.Client.Request().GetToStringWithHeader(listUrl)
-
-	rsp, err := n.form.Client.R().Get(listUrl)
-
-	content, err := rsp.Body().Content()
+	content, header, err := n.form.Client.R().GetToContentWithHeader(listUrl)
 
 	if err != nil {
 
@@ -31,6 +27,8 @@ func (n *normal) GetList(listUrl string) {
 		return
 
 	}
+
+	html := content.ToString()
 
 	//自动转码
 	if n.form.DisableAutoCoding == false {
@@ -133,7 +131,9 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	}()
 
-	html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
+	//html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
+
+	content, header, err := n.form.Client.R().GetToContentWithHeader(detailUrl)
 
 	if err != nil {
 
@@ -142,6 +142,8 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 		return
 
 	}
+
+	html := content.ToString()
 
 	//自动转码
 	if n.form.DisableAutoCoding == false {
