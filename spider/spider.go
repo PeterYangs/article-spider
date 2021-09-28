@@ -7,8 +7,8 @@ import (
 	"github.com/PeterYangs/article-spider/v2/mode/normal"
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/article-spider/v2/result"
+	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
-	"github.com/PeterYangs/tools/http"
 	"strconv"
 	"strings"
 	"sync"
@@ -58,7 +58,9 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 
 func (s *Spider) loadClient() *Spider {
 
-	client := http.Client()
+	//client := http.Client()
+
+	client := request.NewClient()
 
 	s.form.Client = client
 

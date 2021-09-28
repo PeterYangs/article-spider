@@ -5,6 +5,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/fileTypes"
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
 	"github.com/PeterYangs/tools/http"
 	"github.com/PuerkitoBio/goquery"
@@ -37,13 +38,13 @@ type CustomForm struct {
 }
 
 type Form struct {
-	Host                       string  //网站域名
-	Channel                    string  //栏目链接，页码用[PAGE]替换
-	PageStart                  int     //页码起始页
-	Length                     int     //爬取页码长度
-	Client                     *http.C //http客户端
-	ListSelector               string  //列表选择器
-	HrefSelector               string  //a链接选择器，相对于列表选择器
+	Host                       string          //网站域名
+	Channel                    string          //栏目链接，页码用[PAGE]替换
+	PageStart                  int             //页码起始页
+	Length                     int             //爬取页码长度
+	Client                     *request.Client //http客户端
+	ListSelector               string          //列表选择器
+	HrefSelector               string          //a链接选择器，相对于列表选择器
 	Mode                       mode.Mode
 	DisableAutoCoding          bool //是否自动转码
 	Notice                     *notice.Notice

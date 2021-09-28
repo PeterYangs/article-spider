@@ -18,7 +18,11 @@ func NewNormal(form *form.Form) *normal {
 
 func (n *normal) GetList(listUrl string) {
 
-	html, header, err := n.form.Client.Request().GetToStringWithHeader(listUrl)
+	//html, header, err := n.form.Client.Request().GetToStringWithHeader(listUrl)
+
+	rsp, err := n.form.Client.R().Get(listUrl)
+
+	content, err := rsp.Body().Content()
 
 	if err != nil {
 
@@ -116,8 +120,6 @@ func (n *normal) GetList(listUrl string) {
 
 		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
 	}
-
-	//close(n.form.Storage)
 
 }
 
