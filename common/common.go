@@ -740,7 +740,13 @@ func getImageLink(imageDoc *goquery.Selection, form form.Form) (string, error) {
 
 		if imgBool == false || imgUrl == "" {
 
-			return "", errors.New("未找到图片链接")
+			imgUrl, imgBool = imageDoc.Attr("src")
+
+			if imgBool == false || imgUrl == "" {
+
+				return "", errors.New("未找到图片链接")
+			}
+
 		}
 
 		return imgUrl, nil
