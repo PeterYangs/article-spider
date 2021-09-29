@@ -34,7 +34,8 @@ type CustomForm struct {
 	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
 	CustomExcelHeader          bool                                //自定义Excel表格头部
 	DetailCoroutineNumber      int                                 //爬取详情页协程数
-
+	HttpTimeout                time.Duration                       //请求超时时间
+	HttpHeader                 map[string]string                   //header
 }
 
 type Form struct {
@@ -60,6 +61,8 @@ type Form struct {
 	DetailCoroutineNumber      int                                 //爬取详情页协程数
 	DetailCoroutineChan        chan bool                           //限制详情页并发chan
 	DetailWait                 sync.WaitGroup
+	HttpTimeout                time.Duration     //请求超时时间
+	HttpHeader                 map[string]string //header
 }
 
 type Field struct {

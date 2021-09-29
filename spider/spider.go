@@ -42,10 +42,13 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		ListFields:                 cf.ListFields,
 		CustomExcelHeader:          cf.CustomExcelHeader,
 		DetailCoroutineNumber:      cf.DetailCoroutineNumber,
+		HttpTimeout:                cf.HttpTimeout,
+		HttpHeader:                 cf.HttpHeader,
 	}
 
 	s.form = f
 
+	//通知服务
 	s.form.Notice = s.Notice
 
 	//初始化结果通道
@@ -58,9 +61,16 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 
 func (s *Spider) loadClient() *Spider {
 
-	//client := http.Client()
-
 	client := request.NewClient()
+
+	if s.form.HttpTimeout != 0 {
+
+		client.Timeout(s.form.HttpTimeout)
+	}
+
+	client.Header(s.form.HttpHeader)
+
+	client.ReTry(1)
 
 	s.form.Client = client
 
