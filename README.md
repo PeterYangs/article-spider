@@ -2,10 +2,16 @@
 
 
 
-安装
+**安装**
 ```shell
 go get github.com/PeterYangs/article-spider/v2
 ```
+
+**流程图**
+
+![](process.png)流程图
+
+
 
 **快速开始**
 ```go

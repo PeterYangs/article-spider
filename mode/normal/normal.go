@@ -106,6 +106,7 @@ func (n *normal) GetList(listUrl string) {
 
 		}
 
+		//控制协程并发数
 		n.form.DetailCoroutineChan <- true
 
 		n.form.DetailWait.Add(1)

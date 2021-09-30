@@ -93,6 +93,7 @@ func (s *Spider) Start() {
 
 	s.form.DetailCoroutineChan = make(chan bool, s.form.DetailCoroutineNumber)
 
+	//消息处理服务
 	go s.Notice.Service(func() {
 
 		s.form.Wait.Done()
@@ -103,10 +104,12 @@ func (s *Spider) Start() {
 	//excel处理等待标记
 	s.form.Wait.Add(1)
 
+	//处理结果服务
 	go r.Work()
 
 	s.checkLink()
 
+	//初始化http客户端
 	s.loadClient()
 
 	//消息关闭等待标记
@@ -114,12 +117,14 @@ func (s *Spider) Start() {
 
 	n := normal.NewNormal(s.form)
 
+	//列表回调
 	s.getChannelList(func(listUrl string) {
 
 		n.GetList(listUrl)
 
 	})
 
+	//等待详情协程处理完毕
 	s.form.DetailWait.Wait()
 
 	close(s.form.Storage)
