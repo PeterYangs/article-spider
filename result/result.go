@@ -1,9 +1,12 @@
 package result
 
 import (
+	"fmt"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/tools"
+	"github.com/shopspring/decimal"
 )
 
 type result struct {
@@ -31,12 +34,33 @@ func (r *result) Work() {
 
 		exc.Write(s)
 
-		r.form.Notice.PushMessage(notice.NewInfo(s))
+		content := ""
+
+		for _, s3 := range s {
+
+			content = s3
+
+			break
+		}
+
+		//content+="当前进度：",
+		//
+		////r.form.Notice.PushMessage(notice.NewInfo(s))
+
+		//one:=big.NewInt()
+
+		//one.Div(one,big.NewInt()).String()
+
+		if r.form.Total != 0 {
+
+			fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, 60)+"", "\r")
+
+		}
 
 	}
 
 	filename := exc.Save()
 
-	r.form.Notice.PushMessage(notice.NewInfo("excel文件为:" + filename))
+	r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
 
 }

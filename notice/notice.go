@@ -2,6 +2,7 @@ package notice
 
 import (
 	"fmt"
+	"log"
 )
 
 type types int
@@ -10,26 +11,32 @@ const (
 	Info  = 0x00000
 	Debug = 0x00001
 	Error = 0x00002
+	Log   = 0x00003
 )
 
 type message struct {
 	types   types
-	content interface{}
+	content []interface{}
 }
 
-func NewInfo(content interface{}) *message {
+func NewInfo(content ...interface{}) *message {
 
 	return &message{types: Info, content: content}
 }
 
-func NewError(content interface{}) *message {
+func NewError(content ...interface{}) *message {
 
 	return &message{types: Error, content: content}
 }
 
-func NewDebug(content interface{}) *message {
+func NewDebug(content ...interface{}) *message {
 
 	return &message{types: Debug, content: content}
+}
+
+func NewLog(content ...interface{}) *message {
+
+	return &message{types: Log, content: content}
 }
 
 type Notice struct {
@@ -60,7 +67,20 @@ func (n *Notice) Service(closeEvent func()) {
 
 	for m := range n.ch {
 
-		fmt.Println(m.content)
+		//fmt.Println(m.content...)
+
+		switch m.types {
+		case Log:
+
+			log.Println(m.content...)
+
+		case Debug:
+
+			log.Println(m.content...)
+
+		default:
+			fmt.Println(m.content...)
+		}
 
 	}
 

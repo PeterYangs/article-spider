@@ -63,6 +63,9 @@ type Form struct {
 	DetailWait                 sync.WaitGroup
 	HttpTimeout                time.Duration     //请求超时时间
 	HttpHeader                 map[string]string //header
+	DetailSize                 int               //每个列表的详情数量
+	Total                      int               //预计爬取总数
+	CurrentIndex               int               //当前爬取数量
 }
 
 type Field struct {
@@ -267,7 +270,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				res.Store(field, "")
 
-				f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+				f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
 				break
 
@@ -290,7 +293,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+					f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
 					return
 
@@ -316,7 +319,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					if err != nil {
 
-						f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+						f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",富文本内容"))
 
 						return
 					}
@@ -361,7 +364,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+					f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
 					return
 				}
@@ -395,7 +398,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					if err != nil {
 
-						f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+						f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
 						return
 					}

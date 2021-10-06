@@ -115,6 +115,15 @@ func (n *normal) GetList(listUrl string) {
 
 	}).Size()
 
+	if n.form.DetailSize == 0 && size > 0 {
+
+		n.form.DetailSize = size
+
+		//计算大概爬取总数量
+		n.form.Total = n.form.Length * size
+
+	}
+
 	if size <= 0 {
 
 		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
@@ -129,6 +138,16 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 		<-n.form.DetailCoroutineChan
 
 		n.form.DetailWait.Done()
+
+		n.form.CurrentIndex++
+
+		if n.form.Total != 0 {
+
+			//fmt.Println(n.form.CurrentIndex)
+
+			//n.form.Notice.PushMessage(notice.NewInfo("当前进度：", int(float64(n.form.CurrentIndex)/float64(n.form.Total)*100)))
+
+		}
 
 	}()
 

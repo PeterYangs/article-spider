@@ -33,7 +33,7 @@ func main() {
 			"desc": {ExcelHeader: "K", Types: fileTypes.Text, Selector: "  a > div > p"},
 		},
 		CustomExcelHeader:     true,
-		DetailCoroutineNumber: 10,
+		DetailCoroutineNumber: 2,
 	})
 
 	s.Start()
