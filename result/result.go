@@ -2,6 +2,7 @@ package result
 
 import (
 	"fmt"
+	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/notice"
@@ -53,7 +54,7 @@ func (r *result) Work() {
 
 		if r.form.Total != 0 {
 
-			fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, 60)+"", "\r")
+			fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
 
 		}
 
