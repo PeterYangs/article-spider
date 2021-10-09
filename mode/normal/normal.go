@@ -180,6 +180,33 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	}
 
+	if len(n.form.MiddleSelector) > 0 {
+
+		for _, s := range n.form.MiddleSelector {
+
+			doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+			if err != nil {
+
+				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+
+			}
+
+			href, b := doc.Find(s).Attr("href")
+
+			if !b {
+
+				return
+			}
+
+			panic(href)
+
+		}
+
+	}
+
 	res, err := n.form.ResolveSelector(html, n.form.DetailFields, detailUrl)
 
 	if err != nil {

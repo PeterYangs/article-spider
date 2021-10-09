@@ -36,6 +36,7 @@ type CustomForm struct {
 	DetailCoroutineNumber      int                                 //爬取详情页协程数
 	HttpTimeout                time.Duration                       //请求超时时间
 	HttpHeader                 map[string]string                   //header
+	MiddleHrefSelector         []string                            //中间层a链接选择器，当详情页有多层时使用
 }
 
 type Form struct {
@@ -66,6 +67,7 @@ type Form struct {
 	DetailSize                 int               //每个列表的详情数量
 	Total                      int               //预计爬取总数
 	CurrentIndex               int               //当前爬取数量
+	MiddleSelector             []string          //中间层选择器，当详情页有多层时使用
 }
 
 type Field struct {
