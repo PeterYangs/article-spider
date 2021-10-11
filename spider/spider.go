@@ -4,6 +4,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/mode"
+	"github.com/PeterYangs/article-spider/v2/mode/api"
 	"github.com/PeterYangs/article-spider/v2/mode/normal"
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/article-spider/v2/result"
@@ -46,6 +47,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		HttpHeader:                 cf.HttpHeader,
 		MiddleSelector:             cf.MiddleHrefSelector,
 		ResultCallback:             cf.ResultCallback,
+		ApiConversion:              cf.ApiConversion,
 	}
 
 	s.form = f
@@ -77,6 +79,60 @@ func (s *Spider) loadClient() *Spider {
 	s.form.Client = client
 
 	return s
+
+}
+
+func (s *Spider) StartApi() {
+
+	s.form.Mode = mode.Api
+
+	detailMaxCoroutines := conf.Conf.DetailMaxCoroutines
+
+	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
+	if s.form.DetailCoroutineNumber > detailMaxCoroutines || s.form.DetailCoroutineNumber == 0 {
+
+		s.form.DetailCoroutineNumber = detailMaxCoroutines
+	}
+
+	s.form.DetailCoroutineChan = make(chan bool, s.form.DetailCoroutineNumber)
+
+	//消息处理服务
+	go s.Notice.Service(func() {
+
+		s.form.Wait.Done()
+	})
+
+	r := result.NewResult(s.form)
+
+	//excel处理等待标记
+	s.form.Wait.Add(1)
+
+	//处理结果服务
+	go r.Work()
+
+	s.checkLink()
+
+	//初始化http客户端
+	s.loadClient()
+
+	//消息关闭等待标记
+	s.form.Wait.Add(1)
+
+	n := api.NewApi(s.form)
+
+	//列表回调
+	s.getChannelList(func(listUrl string) {
+
+		n.GetList(listUrl)
+
+	})
+
+	//等待详情协程处理完毕
+	s.form.DetailWait.Wait()
+
+	close(s.form.Storage)
+
+	s.form.Wait.Wait()
 
 }
 

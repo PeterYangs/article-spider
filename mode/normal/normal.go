@@ -149,44 +149,7 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 		n.form.CurrentIndex++
 
-		if n.form.Total != 0 {
-
-			//fmt.Println(n.form.CurrentIndex)
-
-			//n.form.Notice.PushMessage(notice.NewInfo("当前进度：", int(float64(n.form.CurrentIndex)/float64(n.form.Total)*100)))
-
-		}
-
 	}()
-
-	//html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
-
-	//content, header, err := n.form.Client.R().GetToContentWithHeader(detailUrl)
-	//
-	//if err != nil {
-	//
-	//	n.form.Notice.PushMessage(notice.NewError(err.Error()))
-	//
-	//	return
-	//
-	//}
-	//
-	//html := content.ToString()
-	//
-	////自动转码
-	//if n.form.DisableAutoCoding == false {
-	//
-	//	html, err = n.form.DealCoding(html, header)
-	//
-	//	if err != nil {
-	//
-	//		n.form.Notice.PushMessage(notice.NewError(err.Error()))
-	//
-	//		return
-	//
-	//	}
-	//
-	//}
 
 	html, err := n.form.GetHtml(detailUrl)
 
@@ -231,8 +194,6 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 				return
 
 			}
-
-			//panic(href)
 
 		}
 

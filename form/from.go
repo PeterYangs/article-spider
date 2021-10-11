@@ -38,6 +38,7 @@ type CustomForm struct {
 	HttpHeader                 map[string]string                        //header
 	MiddleHrefSelector         []string                                 //中间层a链接选择器，当详情页有多层时使用
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
+	ApiConversion              func(html string, form *Form) []string   //api获取链接
 }
 
 type Form struct {
@@ -70,6 +71,7 @@ type Form struct {
 	CurrentIndex               int                                      //当前爬取数量
 	MiddleSelector             []string                                 //中间层选择器，当详情页有多层时使用
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
+	ApiConversion              func(html string, form *Form) []string   //api获取链接
 }
 
 type Field struct {
