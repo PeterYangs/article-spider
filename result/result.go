@@ -33,24 +33,25 @@ func (r *result) Work() {
 
 	for s := range r.form.Storage {
 
-		exc.Write(s)
+		if r.form.ResultCallback != nil {
+
+			r.form.ResultCallback(s, r.form)
+
+		} else {
+
+			exc.Write(s)
+
+		}
 
 		content := ""
 
+		//获取一个随机结果(map的顺序不是固定的)，用做显示
 		for _, s3 := range s {
 
 			content = s3
 
 			break
 		}
-
-		//content+="当前进度：",
-		//
-		////r.form.Notice.PushMessage(notice.NewInfo(s))
-
-		//one:=big.NewInt()
-
-		//one.Div(one,big.NewInt()).String()
 
 		if r.form.Total != 0 {
 
@@ -60,8 +61,12 @@ func (r *result) Work() {
 
 	}
 
-	filename := exc.Save()
+	if r.form.ResultCallback == nil {
 
-	r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
+		filename := exc.Save()
+
+		r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
+
+	}
 
 }

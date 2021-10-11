@@ -45,6 +45,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		HttpTimeout:                cf.HttpTimeout,
 		HttpHeader:                 cf.HttpHeader,
 		MiddleSelector:             cf.MiddleHrefSelector,
+		ResultCallback:             cf.ResultCallback,
 	}
 
 	s.form = f

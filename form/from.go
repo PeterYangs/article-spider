@@ -19,24 +19,25 @@ import (
 )
 
 type CustomForm struct {
-	Host                       string                              //网站域名
-	Channel                    string                              //栏目链接，页码用[PAGE]替换
-	PageStart                  int                                 //页码起始页
-	Length                     int                                 //爬取页码长度
-	ListSelector               string                              //列表选择器
-	HrefSelector               string                              //a链接选择器，相对于列表选择器
-	DisableAutoCoding          bool                                //是否自动转码
-	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
-	DisableImageExtensionCheck bool                                //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
-	AllowImageExtension        []string                            //允许下载的图片拓展名
-	DefaultImg                 func(form *Form, item Field) string //图片出错时，设置默认图片
-	DetailFields               map[string]Field                    //详情页面字段选择器
-	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
-	CustomExcelHeader          bool                                //自定义Excel表格头部
-	DetailCoroutineNumber      int                                 //爬取详情页协程数
-	HttpTimeout                time.Duration                       //请求超时时间
-	HttpHeader                 map[string]string                   //header
-	MiddleHrefSelector         []string                            //中间层a链接选择器，当详情页有多层时使用
+	Host                       string                                   //网站域名
+	Channel                    string                                   //栏目链接，页码用[PAGE]替换
+	PageStart                  int                                      //页码起始页
+	Length                     int                                      //爬取页码长度
+	ListSelector               string                                   //列表选择器
+	HrefSelector               string                                   //a链接选择器，相对于列表选择器
+	DisableAutoCoding          bool                                     //是否自动转码
+	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
+	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	AllowImageExtension        []string                                 //允许下载的图片拓展名
+	DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
+	DetailFields               map[string]Field                         //详情页面字段选择器
+	ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
+	CustomExcelHeader          bool                                     //自定义Excel表格头部
+	DetailCoroutineNumber      int                                      //爬取详情页协程数
+	HttpTimeout                time.Duration                            //请求超时时间
+	HttpHeader                 map[string]string                        //header
+	MiddleHrefSelector         []string                                 //中间层a链接选择器，当详情页有多层时使用
+	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 }
 
 type Form struct {
@@ -62,12 +63,13 @@ type Form struct {
 	DetailCoroutineNumber      int                                 //爬取详情页协程数
 	DetailCoroutineChan        chan bool                           //限制详情页并发chan
 	DetailWait                 sync.WaitGroup
-	HttpTimeout                time.Duration     //请求超时时间
-	HttpHeader                 map[string]string //header
-	DetailSize                 int               //每个列表的详情数量
-	Total                      int               //预计爬取总数
-	CurrentIndex               int               //当前爬取数量
-	MiddleSelector             []string          //中间层选择器，当详情页有多层时使用
+	HttpTimeout                time.Duration                            //请求超时时间
+	HttpHeader                 map[string]string                        //header
+	DetailSize                 int                                      //每个列表的详情数量
+	Total                      int                                      //预计爬取总数
+	CurrentIndex               int                                      //当前爬取数量
+	MiddleSelector             []string                                 //中间层选择器，当详情页有多层时使用
+	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 }
 
 type Field struct {
