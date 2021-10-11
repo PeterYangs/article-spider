@@ -71,12 +71,13 @@ type Form struct {
 }
 
 type Field struct {
-	Types       fileTypes.FieldTypes
-	Selector    string                               //字段选择器
-	AttrKey     string                               //属性值参数
-	ImagePrefix func(form *Form, path string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir    string                               //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader string                               //excel表头，需要CustomExcelHeader为true,例：A
+	Types        fileTypes.FieldTypes
+	Selector     string                               //字段选择器
+	AttrKey      string                               //属性值参数
+	ImagePrefix  func(form *Form, path string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir     string                               //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader  string                               //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex int                                  //正则匹配中的反向引用的下标，默认是1
 }
 
 // DealCoding 解决编码问题
@@ -441,6 +442,24 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			res.Store(field, item.Selector)
 
+		//正则
+		case fileTypes.Regular:
+
+			reg := regexp.MustCompile(item.Selector).FindStringSubmatch(html)
+
+			if len(reg) > 0 {
+
+				index := 1
+
+				if item.RegularIndex != 0 {
+
+					index = item.RegularIndex
+				}
+
+				res.Store(field, reg[index])
+
+			}
+
 		}
 
 	}
@@ -705,4 +724,33 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 		return trueVal
 	}
 	return falseVal
+}
+
+// GetHtml 从链接中获取html
+func (f *Form) GetHtml(url string) (string, error) {
+
+	content, header, err := f.Client.R().GetToContentWithHeader(f.GetHref(url))
+
+	if err != nil {
+
+		return "", err
+
+	}
+
+	html := content.ToString()
+
+	//自动转码
+	if f.DisableAutoCoding == false {
+
+		html, err = f.DealCoding(html, header)
+
+		if err != nil {
+
+			return "", err
+
+		}
+
+	}
+
+	return html, nil
 }

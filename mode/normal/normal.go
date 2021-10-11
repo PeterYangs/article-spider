@@ -153,7 +153,34 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	//html, header, err := n.form.Client.Request().GetToStringWithHeader(detailUrl)
 
-	content, header, err := n.form.Client.R().GetToContentWithHeader(detailUrl)
+	//content, header, err := n.form.Client.R().GetToContentWithHeader(detailUrl)
+	//
+	//if err != nil {
+	//
+	//	n.form.Notice.PushMessage(notice.NewError(err.Error()))
+	//
+	//	return
+	//
+	//}
+	//
+	//html := content.ToString()
+	//
+	////自动转码
+	//if n.form.DisableAutoCoding == false {
+	//
+	//	html, err = n.form.DealCoding(html, header)
+	//
+	//	if err != nil {
+	//
+	//		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+	//
+	//		return
+	//
+	//	}
+	//
+	//}
+
+	html, err := n.form.GetHtml(detailUrl)
 
 	if err != nil {
 
@@ -163,23 +190,7 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	}
 
-	html := content.ToString()
-
-	//自动转码
-	if n.form.DisableAutoCoding == false {
-
-		html, err = n.form.DealCoding(html, header)
-
-		if err != nil {
-
-			n.form.Notice.PushMessage(notice.NewError(err.Error()))
-
-			return
-
-		}
-
-	}
-
+	//中间链接（中间页面）
 	if len(n.form.MiddleSelector) > 0 {
 
 		for _, s := range n.form.MiddleSelector {
@@ -201,7 +212,19 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 				return
 			}
 
-			panic(href)
+			href = n.form.GetHref(href)
+
+			html, err = n.form.GetHtml(href)
+
+			if err != nil {
+
+				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+
+			}
+
+			//panic(href)
 
 		}
 
