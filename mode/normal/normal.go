@@ -106,6 +106,14 @@ func (n *normal) GetList(listUrl string) {
 
 		}
 
+		if len(n.form.DetailFields) > 0 {
+
+			n.form.Storage <- storage
+
+			return
+
+		}
+
 		//控制协程并发数
 		n.form.DetailCoroutineChan <- true
 
@@ -239,6 +247,7 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 		return
 	}
 
+	//合并列表结果
 	for s, s2 := range res {
 
 		storage[s] = s2
