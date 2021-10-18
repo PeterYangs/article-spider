@@ -1,31 +1,71 @@
 package result
 
-import "github.com/PeterYangs/article-spider/form"
+import (
+	"fmt"
+	"github.com/PeterYangs/article-spider/v2/conf"
+	"github.com/PeterYangs/article-spider/v2/excel"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/tools"
+	"github.com/shopspring/decimal"
+)
 
-// GetResult 获取爬取结果
-func GetResult(form form.Form, callback func(item map[string]string)) {
+type result struct {
+	form *form.Form
+}
 
-	defer form.StorageWait.Done()
+func NewResult(form *form.Form) *result {
 
-	go checkChan(form)
+	return &result{form: form}
+}
 
-	for v := range form.Storage {
+func (r *result) Work() {
 
-		callback(v)
+	defer func() {
+
+		r.form.Wait.Done()
+
+		r.form.Notice.Close()
+
+	}()
+
+	exc := excel.NewExcel(r.form)
+
+	for s := range r.form.Storage {
+
+		if r.form.ResultCallback != nil {
+
+			r.form.ResultCallback(s, r.form)
+
+		} else {
+
+			exc.Write(s)
+
+		}
+
+		content := ""
+
+		//获取一个随机结果(map的顺序不是固定的)，用做显示
+		for _, s3 := range s {
+
+			content = s3
+
+			break
+		}
+
+		if r.form.Total != 0 {
+
+			fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
+
+		}
 
 	}
 
-}
+	if r.form.ResultCallback == nil {
 
-//检查是否已完成爬取
-func checkChan(form form.Form) {
+		filename := exc.Save()
 
-	select {
-
-	case <-form.IsFinish:
-
-		//关闭通道写入
-		close(form.Storage)
+		r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
 
 	}
 

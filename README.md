@@ -1,524 +1,253 @@
-**article-spider是一个用go编写的爬取文章工具。支持两种模式，常规爬取模式和浏览器自动化模式**
+### article-spider是一个用go编写的爬取文章工具。支持两种模式，常规爬取模式和浏览器自动化模式
 
-[中文文档](https://www.kancloud.cn/peter_yang/article_spider/2232702)
-<hr/>
 
-安装
+
+**安装**
 ```shell
-go get github.com/PeterYangs/article-spider
+go get github.com/PeterYangs/article-spider/v2
 ```
-v2版本正在开发中，详情见：https://github.com/PeterYangs/article-spider/tree/v2
 
-开始使用
+**流程图**
 
-**爬取文字(fileTypes.SingleField)**
+![](process.png)流程图
 
-```
+
+
+**快速开始**
+```go
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
 
-	f := form.Form{
+	s := spider.NewSpider()
 
-		Host:             "https://www.weixz.com",
-		Channel:          "/gamexz/list_[PAGE]-0.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
-		ListHrefSelector: "div.GameListIcon > a",
+	s.LoadForm(form.CustomForm{
+		Host:         "https://www.925g.com",
+		Channel:      "/zixun_page[PAGE].html/",
+		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
+		HrefSelector: " a",
+		PageStart:    1,
+		Length:       10,
 		DetailFields: map[string]form.Field{
-			"title":   {Types: fileTypes.SingleField, Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
+			"title": {ExcelHeader: "J", Types: fileTypes.Text, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1"},
+			"img": {ExcelHeader: "H", Types: fileTypes.Image, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd img:nth-child(1)", ImageDir: "app", ImagePrefix: func(form *form.Form, path string) string {
 
-		},
-	}
+				return "app"
+			}},
+			"content": {ExcelHeader: "I", Types: fileTypes.HtmlWithImage, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd", ImagePrefix: func(form *form.Form, path string) string {
 
-	spider.Start(f)
-
-
-}
-
-```
-
-Host:网站域名
-
-Channel：列表规则，[PAGE]替换页码
-
-Limit：最大爬取页码
-
-PageStart：起始页码
-
-ListSelector：列表选择器
-
-ListHrefSelector：列表a标签选择器，相对于列表的选择器
-
-DetailFields：详情页选择器，key为Excel表头
-
-ListFields：  列表页元素选择器（如需要爬列表上的缩略图或者标题）
-
-DetailMaxCoroutine:详情页最大协程数量，默认和最大值都为列表详情页长度
-
-DisableAutoCoding：是否关闭自动转码（目前根据页面的meta将gbk转utf8）
-
-ProxyAddress：代理地址（你懂得）
-
-HttpHeader：http请求头部
-
-CustomExcelHeader：是否开启自定义excel头部
-
-<br/>
-
-**爬取图片(fileTypes.SingleImage)**
-
-```
-
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	f := form.Form{
-
-		Host:             "https://www.weixz.com",
-		Channel:          "/gamexz/list_[PAGE]-0.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
-		ListHrefSelector: "div.GameListIcon > a",
-		DetailFields: map[string]form.Field{
-			"title":   {Types: fileTypes.SingleField, Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
-			"image":{Types: fileTypes.SingleImage,Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoIcon > img",ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
-
-		},
-	}
-
-	spider.Start(f)
-
-
-}
-```
-
-**爬取富文本(fileTypes.HtmlWithImage,可以将内容中的图片下载出来并替换原链接)**
-
-```	
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	f := form.Form{
-
-		Host:             "https://www.weixz.com",
-		Channel:          "/gamexz/list_[PAGE]-0.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.GameList.wd1200.mt-20px > ul > li",
-		ListHrefSelector: "div.GameListIcon > a",
-		DetailFields: map[string]form.Field{
-			"title":   {Types: fileTypes.SingleField, Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentInfo.displayFlex > div.mobileGamesContentInfoText > div > h1"},
-                        "html": {Types: fileTypes.HtmlWithImage, Selector: "body > div.wrap > div.information-main.mt-20px.wd1200.displayFlex > div.information-main-left > div.mobileGamesContent > div.mobileGamesContentTexts > div.mobileGamesContentText", ImagePrefix: "upload", ImageDir: "[date:Ym]/[random:1-100]"},
-		},
-	}
-
-	spider.Start(f)
-
-
-}
-	
-	
-```
-**爬多图(fileTypes.ListImages)**
-
-```
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	//爬多图
-	f := form.Form{
-
-		Host:             "https://www.duote.com",
-		Channel:          "/sort/50_0_wdow_0_[PAGE]_.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",
-		ListHrefSelector: " a",
-		DetailFields: map[string]form.Field{
-			"list_img": {Types: fileTypes.ListImages, Selector: ".print-box img"},
-		},
-		DetailMaxCoroutine: 1,
-	}
-
-	spider.Start(f)
-
-}
-
-
-```
-
-**爬列表元素(ListFields)**
-
-```
-
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	
-	f := form.Form{
-
-		Host:             "https://www.duote.com",
-		Channel:          "/sort/50_0_wdow_0_[PAGE]_.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",
-		ListHrefSelector: " a",
-		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, Selector: "body > div.wrap.mt_5 > div > div.main-left-box > div.down-box > div.soft-name > div > h1"},
+				return "/api"
+			}},
 		},
 		ListFields: map[string]form.Field{
-			"img": {Types: fileTypes.SingleImage, Selector: "a > img"},
-		},
-		DetailMaxCoroutine: 1,
-	}
 
-	spider.Start(f)
+			"desc": {ExcelHeader: "K", Types: fileTypes.Text, Selector: "  a > div > p"},
+		},
+		CustomExcelHeader:     true,
+		DetailCoroutineNumber: 10,
+	})
+
+	s.Start()
 
 }
-
-
 ```
+**自定义分页链接**
 
-**只爬列表**
-
-
-```
+```go
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
 
-	//只爬列表
-	f := form.Form{
+	s := spider.NewSpider()
 
-		Host:             "https://www.duote.com",
-		Channel:          "/sort/50_0_wdow_0_[PAGE]_.html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.wrap > div.box > div.main-left-box > div > div.bd > div > div.soft-info-lists > div",
-		ListHrefSelector: " a",
-		ListFields: map[string]form.Field{
-			"img": {Types: fileTypes.SingleImage, Selector: "a > img"},
+	s.LoadForm(form.CustomForm{
+		Host: "https://www.925g.com",
+		ChannelFunc: func(form *form.Form) []string {
+			return []string{
+				"https://www.925g.com/zixun_page1.html/",
+				"https://www.925g.com/zixun_page2.html/",
+				"https://www.925g.com/zixun_page3.html/",
+				"https://www.925g.com/zixun_page4.html/",
+				"https://www.925g.com/zixun_page5.html/",
+				"https://www.925g.com/zixun_page6.html/",
+				"https://www.925g.com/zixun_page7.html/",
+				"https://www.925g.com/zixun_page8.html/",
+				"https://www.925g.com/zixun_page9.html/",
+			}
 		},
-		DetailMaxCoroutine: 1,
-	}
-
-	spider.Start(f)
-
-}
-
-
-
-```
-
-**代理(ProxyAddress)**
-
-```
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	//只爬列表
-	f := form.Form{
-
-		Host:             "https://store.shopping.yahoo.co.jp",
-		Channel:          "/sakuranokoi/5bb3a2a955a.html?page=[PAGE]#CentSrchFilter1",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "#itmlst > ul > li",
-		ListHrefSelector: " div:nth-child(1) > div > div > a",
+		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
+		HrefSelector: " a",
 		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, Selector: "#shpMain > div.gdColumns.gd3ColumnItem > div.gd3ColumnItem2 > div.mdItemName > p.elCatchCopy"},
-			"img":   {Types: fileTypes.SingleImage, Selector: "#itmbasic > div.elMain > ul > li.elPanel.isNew > a > img"},
-		},
-		DetailMaxCoroutine: 2,
-		ProxyAddress:       "socks5://127.0.0.1:4781",
-		
-	}
+			"title": {ExcelHeader: "J", Types: fileTypes.Text, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1"},
+			"img": {ExcelHeader: "H", Types: fileTypes.Image, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd img:nth-child(1)", ImageDir: "app", ImagePrefix: func(form *form.Form, path string) string {
 
-	spider.Start(f)
+				return "app"
+			}},
+			"content": {ExcelHeader: "I", Types: fileTypes.HtmlWithImage, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd", ImagePrefix: func(form *form.Form, path string) string {
 
-}
-
-```
-
-**设置http的header(HttpHeader)**
-
-```
-
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	f := form.Form{
-
-		Host:             "https://www.doyo.cn",
-		Channel:          "/game/2-1-[PAGE].html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
-		ListHrefSelector: " div > a:nth-child(1)",
-		DetailFields: map[string]form.Field{
-			"content": {Types: fileTypes.HtmlWithImage, Selector: "#hiddenDetail > div", ExcelHeader: "C"},
-		},
-		DetailMaxCoroutine: 5,
-		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
-		
-	}
-
-	spider.Start(f)
-}
-
-
-
-```
-
-
-
-**自定义excel表头(ExcelHeader)**
-
-```
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-)
-
-func main() {
-
-	
-	f := form.Form{
-
-		Host:             "https://www.doyo.cn",
-		Channel:          "/game/2-1-[PAGE].html",
-		Limit:            5,
-		PageStart:        1,
-		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
-		ListHrefSelector: " div > a:nth-child(1)",
-		DetailFields: map[string]form.Field{
-			"img":         {Types: fileTypes.SingleImage, Selector: " body > div.game_wrap.w1200.clearfix > div.game_l > div.game_info > div.img_logo > img", ExcelHeader: "A"},
-			"title":       {Types: fileTypes.SingleField, Selector: "body > div.game_wrap.w1200.clearfix > div.game_l > div.game_info > div.info > h1", ExcelHeader: "B"},
-			"content":     {Types: fileTypes.HtmlWithImage, Selector: "#hiddenDetail > div", ExcelHeader: "C"},
-			"screenshots": {Types: fileTypes.ListImages, Selector: "#slider3 > ul img", ExcelHeader: "D"},
-			"size":        {Types: fileTypes.SingleField, Selector: "body > div.game_wrap.w1200.clearfix > div.game_l > div.detail_info > div.info.clearfix > span:nth-child(1) > em", ExcelHeader: "E"},
-		},
-		DetailMaxCoroutine: 5,
-		CustomExcelHeader:  true,
-	}
-
-	spider.Start(f)
-}
-
-
-```
-
-**自定义格式转换(ConversionFormatFunc)**
-
-```
-package main
-
-import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-	"github.com/PuerkitoBio/goquery"
-	"strings"
-)
-
-func main() {
-
-	f := form.Form{
-
-		Host:             "http://www.gj078.cn",
-		Channel:          "/sports/index_[PAGE].html",
-		Limit:            1,
-		PageStart:        1,
-		ListSelector:     "#recent-content > div",
-		ListHrefSelector: " div > a",
-		DetailFields: map[string]form.Field{
-
-			"title": {Types: fileTypes.SingleField, Selector: "#main > article > header > h1", ExcelHeader: "G"},
-			"content": {Types: fileTypes.HtmlWithImage, Selector: "#main > article > div.entry-content", ExcelHeader: "E", ImagePrefix: "/api/uploads", ImageDir: "news/[random:1-100]"},
-			"desc":    {Types: fileTypes.Attr, Selector: "meta[name=\"description\"]", AttrKey: "content", ExcelHeader: "H", ConversionFormatFunc: getDesc},
-			"keyword": {Types: fileTypes.Attr, Selector: "meta[name=\"keywords\"]", AttrKey: "content", ExcelHeader: "K"},
+				return "/api"
+			}},
 		},
 		ListFields: map[string]form.Field{
-			"img": {Types: fileTypes.SingleImage, Selector: " div > a > div > img", ExcelHeader: "F", ImageDir: "news/[random:1-100]"},
+
+			"desc": {ExcelHeader: "K", Types: fileTypes.Text, Selector: "  a > div > p"},
 		},
-		HttpHeader:        map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
-		CustomExcelHeader: true,
-	}
+		CustomExcelHeader:     true,
+		DetailCoroutineNumber: 2,
+	})
 
-	spider.Start(f)
+	s.Start()
 
 }
-
-func getDesc(data string, resList map[string]string) string {
-
-	if data == "" {
-
-		doc, err := goquery.NewDocumentFromReader(strings.NewReader(resList["content"]))
-
-		if err != nil {
-
-			return ""
-		}
-
-		return doc.Text()
-
-	}
-
-	return data
-}
-
-
-
 ```
 
-**根据某个单字段命名图片文件夹(\[singleField:title\])**
 
-
-```
+**详情页中间层**
+```go
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
-	"github.com/PeterYangs/article-spider/spider"
-	"encoding/json"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
+)
+
+func main() {
+
+	s := spider.NewSpider()
+
+	s.LoadForm(form.CustomForm{
+		Host:               "https://www.ahjingcheng.com",
+		Channel:            "/show/dongzuo--------[PAGE]---/",
+		ListSelector:       "body > div:nth-child(5) > div > div.col-lg-wide-75.col-xs-1.padding-0 > div:nth-child(2) > div > div.stui-pannel_bd > ul > li",
+		HrefSelector:       " div > a",
+		PageStart:          1,
+		Length:             2,
+		MiddleHrefSelector: []string{"body > div:nth-child(3) > div > div.col-lg-wide-75.col-xs-1.padding-0 > div:nth-child(1) > div > div:nth-child(2) > div.stui-content__thumb > a"},
+		DetailFields: map[string]form.Field{
+			"url": {Types: fileTypes.Regular, Selector: `"url":"([0-9A-Za-z/\\._:]+)","url_next"`, RegularIndex: 1},
+		},
+
+		//CustomExcelHeader:     true,
+		DetailCoroutineNumber: 1,
+		HttpHeader: map[string]string{
+			"cookie":     "Hm_lvt_66246be1ec92d6574526bda37cf445cc=1633767654; Hm_lvt_56a5b64a8f7a92a018377c693e064bdf=1633767654; recente=%5B%7B%22vod_name%22%3A%22%E4%B8%80%E7%BA%A7%E6%8C%87%E6%8E%A7%22%2C%22vod_url%22%3A%22https%3A%2F%2Fwww.ahjingcheng.com%2Fplay%2F119516-1-1%2F%22%2C%22vod_part%22%3A%22%E6%AD%A3%E7%89%87%22%7D%2C%7B%22vod_name%22%3A%22%E5%85%BB%E8%80%81%E5%BA%84%E5%9B%AD%22%2C%22vod_url%22%3A%22https%3A%2F%2Fwww.ahjingcheng.com%2Fplay%2F119506-1-1%2F%22%2C%22vod_part%22%3A%221080P%22%7D%2C%7B%22vod_name%22%3A%22%E4%B8%96%E7%95%8C%E4%B8%8A%E6%9C%80%E7%BE%8E%E4%B8%BD%E7%9A%84%E6%88%91%E7%9A%84%E5%A5%B3%22%2C%22vod_url%22%3A%22https%3A%2F%2Fwww.ahjingcheng.com%2Fplay%2F59426-1-1%2F%22%2C%22vod_part%22%3A%22%E5%85%A8%E9%9B%86%22%7D%2C%7B%22vod_name%22%3A%22%E6%9C%BA%E6%A2%B0%E5%B8%882%EF%BC%9A%E5%A4%8D%E6%B4%BB%E8%8B%B1%E6%96%87%E7%89%88%22%2C%22vod_url%22%3A%22https%3A%2F%2Fwww.ahjingcheng.com%2Fplay%2F91322-1-1%2F%22%2C%22vod_part%22%3A%22%E9%AB%98%E6%B8%85%22%7D%5D; Hm_lvt_66246be1ec92d6574526bda37cf445cc=1633767654; Hm_lvt_56a5b64a8f7a92a018377c693e064bdf=1633767654; PHPSESSID=7sfu1ui3crco1a817vocccl2u1; Hm_lpvt_66246be1ec92d6574526bda37cf445cc=1633914645; Hm_lpvt_56a5b64a8f7a92a018377c693e064bdf=1633914645",
+			"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+		},
+	})
+
+	s.Start()
+
+}
+```
+
+**自行处理爬取结果**
+```go
+package main
+
+import (
 	"fmt"
-	"github.com/PeterYangs/tools"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
 
-	f := form.Form{
+	s := spider.NewSpider()
 
-		Host:             "https://www.doyo.cn",
-		Channel:          "/game/2-1-[PAGE].html",
-		Limit:            1,
-		PageStart:        1,
-		ListSelector:     "body > div.mobile_game_wrap.w1168.clearfix.bg > div > div > div.tab_box > div > div > ul > li",
-		ListHrefSelector: " div > a:nth-child(1)",
-		DetailFields: map[string]form.Field{
-		
-			"title": {Types: fileTypes.SingleField, Selector: "body > div.game_wrap.w1200.clearfix > div.game_l > div.game_info > div.info > h1"},	
-			"screenshots": {Types: fileTypes.ListImages, Selector: "#slider3 > ul img", ExcelHeader: "D", ImageDir: "[singleField:title]"},
-		
+	s.LoadForm(form.CustomForm{
+		Host:         "https://www.925g.com",
+		Channel:      "/zixun_page[PAGE].html/",
+		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
+		HrefSelector: " a",
+		PageStart:    1,
+		Length:       10,
+		ListFields: map[string]form.Field{
+
+			"title": {ExcelHeader: "K", Types: fileTypes.Text, Selector: " a > div > span"},
 		},
-		DetailMaxCoroutine: 5,
-		HttpHeader:         map[string]string{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"},
+		CustomExcelHeader:     true,
+		DetailCoroutineNumber: 2,
+		ResultCallback: func(item map[string]string, form *form.Form) {
 
-	}
+			for s2, s3 := range item {
 
-	spider.Start(f)
+				fmt.Println(s2, ":", s3)
+
+			}
+
+		},
+	})
+
+	s.Start()
+
 }
-
-
 ```
 
-**浏览器自动化模式爬取**
-
-```
+**爬取列表是api的网页**
+```go
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/chromedpSpider"
-	"github.com/PeterYangs/article-spider/fileTypes"
-	"github.com/PeterYangs/article-spider/form"
+	"encoding/json"
+	"github.com/PeterYangs/article-spider/v2/fileTypes"
+	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
 
-	f := form.Form{
+	s := spider.NewSpider()
 
-		Host:                "https://down.gamersky.com",
-		Channel:             "/Special/bigpc/",
-		Limit:               2,
-		WaitForListSelector: "body > div.Mid > div.Mid2 > ul > li:nth-child(1)",
-		ListSelector:        "body > div.Mid > div.Mid2 > ul > li",
-		ListHrefSelector:    "div.tit > a",
+	s.LoadForm(form.CustomForm{
+		Host:      "http://www.tiyuxiu.com",
+		Channel:   "/data/list_0_[PAGE].json?__t=16339338",
+		PageStart: 1,
+		Length:    10,
 		DetailFields: map[string]form.Field{
-			"title": {Types: fileTypes.SingleField, Selector: "body > div.Mid > div.Mid2 > div.Mid2_L > div.Mid2L_ctt.block > div.Mid2L_actdl2 > div.tit"},
-			"img":   {Types: fileTypes.SingleImage, Selector: "body > div.Mid > div.Mid2 > div.Mid2_L > div.Mid2L_ctt.block > div.Mid2L_actdl2 > div.game > div.img > img", ImageDir: "demo"},
+
+			"title": {Types: fileTypes.Text, Selector: "h1"},
 		},
+		//CustomExcelHeader:     true,
+		DetailCoroutineNumber: 2,
+		ApiConversion: func(html string, form2 *form.Form) []string {
 
-		NextSelector: "#pe100_page_jdgame > a.p1.nexe",
-	}
+			type list struct {
+				Url string
+			}
 
+			var l []list
 
+			json.Unmarshal([]byte(html), &l)
 
-	chromedpSpider.Start(f)
+			var temp []string
+
+			for _, l2 := range l {
+
+				temp = append(temp, l2.Url)
+
+			}
+
+			return temp
+		},
+	})
+
+	s.StartApi()
 
 }
 
-
-
-
 ```
-
-
-**web面板**
-
-打开dist下的exe文件运行，监听8089端口
-
-![avatar](/web/static/web.png)
-
-
 
