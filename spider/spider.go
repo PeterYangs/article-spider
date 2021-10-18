@@ -48,6 +48,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		MiddleSelector:             cf.MiddleHrefSelector,
 		ResultCallback:             cf.ResultCallback,
 		ApiConversion:              cf.ApiConversion,
+		ChannelFunc:                cf.ChannelFunc,
 	}
 
 	s.form = f
@@ -192,11 +193,13 @@ func (s *Spider) Start() {
 
 func (s *Spider) checkLink() {
 
-	hostLast := tools.SubStr(s.form.Host, len(s.form.Host)-1, 1)
+	//if s.form.ChannelFunc == nil {
+
+	hostLast := tools.SubStr(s.form.Host, -1, -1)
 
 	if hostLast == "/" {
 
-		s.form.Host = tools.SubStr(s.form.Host, 0, len(s.form.Host)-1)
+		s.form.Host = tools.SubStr(s.form.Host, 0, -2)
 	}
 
 	ChannelFirst := tools.SubStr(s.form.Channel, 0, 1)
@@ -205,6 +208,8 @@ func (s *Spider) checkLink() {
 
 		s.form.Channel = "/" + s.form.Channel
 	}
+
+	//}
 
 }
 
@@ -215,45 +220,51 @@ func (s *Spider) getChannelList(callback func(listUrl string)) {
 
 	case mode.Normal, mode.Api:
 
-		//if form.ChannelFunc == nil {
+		if s.form.ChannelFunc == nil {
 
-		//当前页码
-		var pageCurrent int
+			//当前页码
+			var pageCurrent int
 
-		//form.Progress.Store("maxPage", float32(form.PageStart+form.Limit))
-		//form.Progress.Store("currentPage", float32(0))
+			//form.Progress.Store("maxPage", float32(form.PageStart+form.Limit))
+			//form.Progress.Store("currentPage", float32(0))
 
-		for pageCurrent = s.form.PageStart; pageCurrent < s.form.PageStart+s.form.Length; pageCurrent++ {
+			for pageCurrent = s.form.PageStart; pageCurrent < s.form.PageStart+s.form.Length; pageCurrent++ {
 
-			//当前列表url
-			url := s.form.Host + strings.Replace(s.form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+				//当前列表url
+				url := s.form.Host + strings.Replace(s.form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
-			callback(url)
+				callback(url)
 
+				//currentPage, _ := form.Progress.Load("currentPage")
+
+				////这里有点恶心，有没有简单的写法
+				//c := currentPage.(float32)
+				//c++
+				//form.Progress.Store("currentPage", c)
+
+			}
+
+			return
+		}
+
+		cList := s.form.ChannelFunc(s.form)
+
+		s.form.Length = len(cList)
+
+		//自定义栏目
+		for _, i := range cList {
+
+			callback(i)
+
+			//callback(form.Host + i)
+			//
 			//currentPage, _ := form.Progress.Load("currentPage")
-
-			////这里有点恶心，有没有简单的写法
+			//
 			//c := currentPage.(float32)
 			//c++
 			//form.Progress.Store("currentPage", c)
 
 		}
-
-		return
-		//}
-
-		////自定义栏目
-		//for _, i := range form.ChannelFunc(form) {
-		//
-		//	callback(form.Host + i)
-		//
-		//	currentPage, _ := form.Progress.Load("currentPage")
-		//
-		//	c := currentPage.(float32)
-		//	c++
-		//	form.Progress.Store("currentPage", c)
-		//
-		//}
 
 		//case mode.Auto:
 		//
