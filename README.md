@@ -7,6 +7,8 @@
 go get github.com/PeterYangs/article-spider/v2
 ```
 
+[v1版本](https://github.com/PeterYangs/article-spider/tree/v1)
+
 **流程图**
 
 ![](process.png)流程图
