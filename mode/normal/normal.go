@@ -95,6 +95,7 @@ func (n *normal) GetList(listUrl string) {
 
 			}
 
+			//解析列表选择器
 			storage, err = n.form.ResolveSelector(t, n.form.ListFields, listUrl)
 
 			if err != nil {
@@ -106,7 +107,8 @@ func (n *normal) GetList(listUrl string) {
 
 		}
 
-		if len(n.form.DetailFields) > 0 {
+		//如果详情选择器为空就跳过
+		if len(n.form.DetailFields) <= 0 {
 
 			n.form.Storage <- storage
 
