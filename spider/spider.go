@@ -5,6 +5,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/article-spider/v2/mode/api"
+	"github.com/PeterYangs/article-spider/v2/mode/auto"
 	"github.com/PeterYangs/article-spider/v2/mode/normal"
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/article-spider/v2/result"
@@ -189,6 +190,43 @@ func (s *Spider) Start() {
 	close(s.form.Storage)
 
 	s.form.Wait.Wait()
+}
+
+func (s *Spider) StartAuto() {
+
+	s.form.Mode = mode.Auto
+
+	//消息处理服务
+	go s.Notice.Service(func() {
+
+		s.form.Wait.Done()
+	})
+
+	r := result.NewResult(s.form)
+
+	//excel处理等待标记
+	s.form.Wait.Add(1)
+
+	//处理结果服务
+	go r.Work()
+
+	//初始化http客户端
+	s.loadClient()
+
+	//消息关闭等待标记
+	s.form.Wait.Add(1)
+
+	n := auto.NewAuto(s.form)
+
+	n.GetList()
+
+	//等待详情协程处理完毕
+	s.form.DetailWait.Wait()
+
+	close(s.form.Storage)
+
+	s.form.Wait.Wait()
+
 }
 
 func (s *Spider) checkLink() {
