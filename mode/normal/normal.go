@@ -112,6 +112,9 @@ func (n *normal) GetList(listUrl string) {
 
 			n.form.Storage <- storage
 
+			//相当于详情完成一个
+			n.form.CurrentIndex++
+
 			return
 
 		}
@@ -124,6 +127,8 @@ func (n *normal) GetList(listUrl string) {
 		go n.GetDetail(n.form.GetHref(href), storage)
 
 	}).Size()
+
+	//n.form.Notice.PushMessage(notice.NewError(size))
 
 	if n.form.DetailSize == 0 && size > 0 {
 
