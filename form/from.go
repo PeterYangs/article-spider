@@ -40,6 +40,9 @@ type CustomForm struct {
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
+	NextSelector               string                                   //下一页选择器（用于自动化爬取）
+	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
+	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
 }
 
 type Form struct {
@@ -74,6 +77,10 @@ type Form struct {
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
+	NextSelector               string                                   //下一页选择器（用于自动化爬取）
+	PageCurrent                int                                      //当前页码（用于自动化爬取）
+	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
+	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
 }
 
 type Field struct {

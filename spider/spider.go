@@ -50,6 +50,9 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		ResultCallback:             cf.ResultCallback,
 		ApiConversion:              cf.ApiConversion,
 		ChannelFunc:                cf.ChannelFunc,
+		NextSelector:               cf.NextSelector,
+		ListWaitSelector:           cf.ListWaitSelector,
+		DetailWaitSelector:         cf.DetailWaitSelector,
 	}
 
 	s.form = f

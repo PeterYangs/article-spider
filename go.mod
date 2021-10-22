@@ -7,7 +7,7 @@ require (
 	github.com/PeterYangs/request v0.0.14
 	github.com/PeterYangs/tools v0.2.36
 	github.com/PuerkitoBio/goquery v1.6.1
-	github.com/chromedp/cdproto v0.0.0-20211019232255-96776d03ee97 // indirect
+	github.com/chromedp/cdproto v0.0.0-20211019232255-96776d03ee97
 	github.com/chromedp/chromedp v0.7.4
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/satori/go.uuid v1.2.0
