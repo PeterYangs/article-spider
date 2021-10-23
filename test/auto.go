@@ -26,6 +26,9 @@ func main() {
 				return "app"
 			}},
 		},
+		ListFields: map[string]form.Field{
+			"desc": {Types: fileTypes.Text, Selector: " a > div > p"},
+		},
 	})
 
 	s.StartAuto()

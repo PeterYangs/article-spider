@@ -71,6 +71,43 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		storage := make(map[string]string)
 
+		//列表选择器不为空时
+		if len(a.form.ListFields) > 0 {
+
+			t, err := s.Html()
+
+			if err != nil {
+
+				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+
+			}
+
+			//解析列表选择器
+			storage, err = a.form.ResolveSelector(t, a.form.ListFields, a.form.Host)
+
+			if err != nil {
+
+				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				return
+			}
+
+		}
+
+		//如果详情选择器为空就跳过
+		if len(a.form.DetailFields) <= 0 {
+
+			a.form.Storage <- storage
+
+			//相当于详情完成一个
+			a.form.CurrentIndex++
+
+			return
+
+		}
+
 		clickSelector := a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
 
 		clickLength := doc.Find(clickSelector).Size()
