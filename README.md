@@ -59,6 +59,37 @@ func main() {
 
 }
 ```
+
+**常用属性**
+```
+Host                       string                                   //网站域名
+Channel                    string                                   //栏目链接，页码用[PAGE]替换
+PageStart                  int                                      //页码起始页
+Length                     int                                      //爬取页码长度
+ListSelector               string                                   //列表选择器
+HrefSelector               string                                   //a链接选择器，相对于列表选择器
+DisableAutoCoding          bool                                     //是否自动转码
+LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
+DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+AllowImageExtension        []string                                 //允许下载的图片拓展名
+DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
+DetailFields               map[string]Field                         //详情页面字段选择器
+ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
+CustomExcelHeader          bool                                     //自定义Excel表格头部
+DetailCoroutineNumber      int                                      //爬取详情页协程数
+HttpTimeout                time.Duration                            //请求超时时间
+HttpHeader                 map[string]string                        //header
+MiddleHrefSelector         []string                                 //中间层a链接选择器，当详情页有多层时使用
+ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
+ApiConversion              func(html string, form *Form) []string   //api获取链接
+ChannelFunc                func(form *Form) []string                //自定义栏目链接
+NextSelector               string                                   //下一页选择器（用于自动化爬取）
+ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
+DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
+```
+
+
+
 **自定义分页链接**
 
 ```go
@@ -269,12 +300,15 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host:               "https://www.925g.com",
-		Channel:            "/zixun/",
-		ListSelector:       "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
-		HrefSelector:       "  a",
-		NextSelector:       "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > ul > li:nth-child(11) > a",
-		ListWaitSelector:   "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li:nth-child(1)",
+		Host:         "https://www.925g.com",
+		Channel:      "/zixun/",
+		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
+		HrefSelector: "  a",
+		//下一页选择器
+		NextSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > ul > li:nth-child(11) > a",
+		//列表等待选择器
+		ListWaitSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li:nth-child(1)",
+		//详情等待选择器
 		DetailWaitSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1",
 		Length:             3,
 		DetailFields: map[string]form.Field{
@@ -284,10 +318,14 @@ func main() {
 				return "app"
 			}},
 		},
+		ListFields: map[string]form.Field{
+			"desc": {Types: fileTypes.Text, Selector: " a > div > p"},
+		},
 	})
 
 	s.StartAuto()
 
 }
+
 ```
 
