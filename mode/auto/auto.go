@@ -4,7 +4,10 @@ import (
 	"context"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"strconv"
@@ -37,6 +40,7 @@ func (a *auto) GetList() {
 
 	chromedp.Run(
 		cxt,
+		a.setcookies(a.getCookieMap(a.form.AutoCookieString)),
 		chromedp.Navigate(a.form.Host+a.form.Channel),
 	)
 
@@ -295,5 +299,83 @@ func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan
 		return cxt, cancel
 
 	}
+
+}
+
+func (a *auto) setcookies(cookies map[string]string) chromedp.Tasks {
+	//if len(cookies)%2 != 0 {
+	//	panic("length of cookies must be divisible by 2")
+	//}
+	return chromedp.Tasks{
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			// create cookie expiration
+			expr := cdp.TimeSinceEpoch(time.Now().Add(180 * 24 * time.Hour))
+			// add cookies to chrome
+			//for i := 0; i < len(cookies); i += 2 {
+			//	err := network.SetCookie(cookies[i], cookies[i+1]).
+			//		WithExpires(&expr).
+			//		WithDomain("localhost").
+			//		WithHTTPOnly(true).
+			//		Do(ctx)
+			//	if err != nil {
+			//		return err
+			//	}
+			//
+			//	//network.SetCookie()
+			//
+			//
+			//}
+
+			for s, s2 := range cookies {
+
+				err := network.SetCookie(s, s2).
+					WithExpires(&expr).
+					WithDomain("www.925g.com").
+					WithHTTPOnly(true).
+					Do(ctx)
+
+				if err != nil {
+					return err
+				}
+
+			}
+
+			return nil
+		}),
+		// navigate to site
+		//chromedp.Navigate(host),
+		//// read the returned values
+		//chromedp.Text(`#result`, res, chromedp.ByID, chromedp.NodeVisible),
+		// read network values
+		//chromedp.ActionFunc(func(ctx context.Context) error {
+		//	cookies, err := network.GetAllCookies().Do(ctx)
+		//	if err != nil {
+		//		return err
+		//	}
+		//
+		//	for i, cookie := range cookies {
+		//		log.Printf("chrome cookie %d: %+v", i, cookie)
+		//	}
+		//
+		//	return nil
+		//}),
+	}
+}
+
+func (a *auto) getCookieMap(cookie string) map[string]string {
+
+	cookieMap := make(map[string]string)
+
+	arr := tools.Explode("; ", cookie)
+
+	for _, s := range arr {
+
+		index := strings.Index(s, "=")
+
+		cookieMap[s[:index]] = s[index+1:]
+
+	}
+
+	return cookieMap
 
 }
