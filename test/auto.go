@@ -11,12 +11,15 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host:               "https://www.925g.com",
-		Channel:            "/zixun/",
-		ListSelector:       "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
-		HrefSelector:       "  a",
-		NextSelector:       "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > ul > li:nth-child(11) > a",
-		ListWaitSelector:   "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li:nth-child(1)",
+		Host:         "https://www.925g.com",
+		Channel:      "/zixun/",
+		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
+		HrefSelector: "  a",
+		//下一页选择器
+		NextSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > ul > li:nth-child(11) > a",
+		//列表等待选择器
+		ListWaitSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li:nth-child(1)",
+		//详情等待选择器
 		DetailWaitSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1",
 		Length:             3,
 		DetailFields: map[string]form.Field{
