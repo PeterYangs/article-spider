@@ -38,11 +38,29 @@ func (a *auto) GetList() {
 		}
 	})
 
-	chromedp.Run(
-		cxt,
-		a.setcookies(a.getCookieMap(a.form.AutoCookieString)),
-		chromedp.Navigate(a.form.Host+a.form.Channel),
-	)
+	if a.form.HttpHeader["cookie"] != "" {
+
+		chromedp.Run(
+			cxt,
+			a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"])),
+			chromedp.Navigate(a.form.Host+a.form.Channel),
+		)
+
+		//panic("xx")
+	} else {
+
+		chromedp.Run(
+			cxt,
+			//a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"])),
+			chromedp.Navigate(a.form.Host+a.form.Channel),
+		)
+	}
+
+	//chromedp.Run(
+	//	cxt,
+	//	//a.setcookies(a.getCookieMap(a.form.AutoCookieString)),
+	//	chromedp.Navigate(a.form.Host+a.form.Channel),
+	//)
 
 	a.dealList(cxt, cancel, ch)
 

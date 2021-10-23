@@ -53,7 +53,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		NextSelector:               cf.NextSelector,
 		ListWaitSelector:           cf.ListWaitSelector,
 		DetailWaitSelector:         cf.DetailWaitSelector,
-		AutoCookieString:           cf.AutoCookieString,
+		//AutoCookieString:           cf.AutoCookieString,
 	}
 
 	s.form = f
@@ -78,19 +78,19 @@ func (s *Spider) loadClient() *Spider {
 		client.Timeout(s.form.HttpTimeout)
 	}
 
-	tempMap := make(map[string]string)
+	//tempMap := make(map[string]string)
+	//
+	//for s2, s3 := range s.form.HttpHeader {
+	//
+	//	tempMap[s2] = s3
+	//}
+	//
+	//if s.form.AutoCookieString != "" {
+	//
+	//	tempMap["cookie"] = s.form.AutoCookieString
+	//}
 
-	for s2, s3 := range s.form.HttpHeader {
-
-		tempMap[s2] = s3
-	}
-
-	if s.form.AutoCookieString != "" {
-
-		tempMap["cookie"] = s.form.AutoCookieString
-	}
-
-	client.Header(tempMap)
+	client.Header(s.form.HttpHeader)
 
 	client.ReTry(1)
 

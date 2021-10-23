@@ -43,7 +43,7 @@ type CustomForm struct {
 	NextSelector               string                                   //下一页选择器（用于自动化爬取）
 	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	AutoCookieString           string                                   //设置cookie（用于自动化爬取）
+	//AutoCookieString           string                                   //设置cookie（用于自动化爬取）
 }
 
 type Form struct {
@@ -82,7 +82,7 @@ type Form struct {
 	PageCurrent                int                                      //当前页码（用于自动化爬取）
 	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	AutoCookieString           string                                   //设置cookie（用于自动化爬取）
+	//AutoCookieString           string                                   //设置cookie（用于自动化爬取）
 }
 
 type Field struct {
