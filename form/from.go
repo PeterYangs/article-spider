@@ -106,6 +106,8 @@ func (f *Form) DealCoding(html string, header http2.Header) (string, error) {
 
 		charset := f.GetCharsetByContentType(headerContentType)
 
+		charset = strings.ToLower(charset)
+
 		switch charset {
 
 		case "gbk":
@@ -123,6 +125,10 @@ func (f *Form) DealCoding(html string, header http2.Header) (string, error) {
 		case "utf8":
 
 			return html, nil
+
+		case "euc-jp":
+
+			return string(tools.ConvertToByte(html, "euc-jp", "utf8")), nil
 
 		}
 
@@ -158,6 +164,10 @@ func (f *Form) DealCoding(html string, header http2.Header) (string, error) {
 
 		return html, nil
 
+	case "euc-jp":
+
+		return string(tools.ConvertToByte(html, "euc-jp", "utf8")), nil
+
 	}
 
 	contentType, _ = code.Find("meta[http-equiv=\"Content-Type\"]").Attr("content")
@@ -173,6 +183,10 @@ func (f *Form) DealCoding(html string, header http2.Header) (string, error) {
 	case "gb2312":
 
 		return string(tools.ConvertToByte(html, "gbk", "utf8")), nil
+
+	case "euc-jp":
+
+		return string(tools.ConvertToByte(html, "euc-jp", "utf8")), nil
 
 	}
 
