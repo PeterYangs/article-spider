@@ -285,14 +285,13 @@ func main() {
 ```
 
 **自动化模式**
-
 ```go
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+"github.com/PeterYangs/article-spider/v2/fileTypes"
+"github.com/PeterYangs/article-spider/v2/form"
+"github.com/PeterYangs/article-spider/v2/spider"
 )
 
 func main() {
@@ -321,11 +320,14 @@ func main() {
 		ListFields: map[string]form.Field{
 			"desc": {Types: fileTypes.Text, Selector: " a > div > p"},
 		},
+		//header
+		HttpHeader: map[string]string{
+			"cookie": "xx",
+		},
 	})
 
 	s.StartAuto()
 
 }
-
 ```
 
