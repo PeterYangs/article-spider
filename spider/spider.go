@@ -94,6 +94,12 @@ func (s *Spider) loadClient() *Spider {
 
 	client.ReTry(1)
 
+	if s.form.HttpProxy != "" {
+
+		client.Proxy(s.form.HttpProxy)
+
+	}
+
 	s.form.Client = client
 
 	return s

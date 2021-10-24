@@ -36,6 +36,7 @@ type CustomForm struct {
 	DetailCoroutineNumber      int                                      //爬取详情页协程数
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
+	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
 	MiddleHrefSelector         []string                                 //中间层a链接选择器，当详情页有多层时使用
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
@@ -71,6 +72,7 @@ type Form struct {
 	DetailWait                 sync.WaitGroup
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
+	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
 	DetailSize                 int                                      //每个列表的详情数量
 	Total                      int                                      //预计爬取总数
 	CurrentIndex               int                                      //当前爬取数量
