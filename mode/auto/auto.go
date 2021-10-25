@@ -2,6 +2,7 @@ package auto
 
 import (
 	"context"
+	"errors"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/tools"
@@ -10,6 +11,7 @@ import (
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -40,9 +42,18 @@ func (a *auto) GetList() {
 
 	if a.form.HttpHeader["cookie"] != "" {
 
+		task, err := a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"]))
+
+		if err != nil {
+
+			a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+			return
+		}
+
 		chromedp.Run(
 			cxt,
-			a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"])),
+			task,
 			chromedp.Navigate(a.form.Host+a.form.Channel),
 		)
 
@@ -329,10 +340,15 @@ func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan
 
 }
 
-func (a *auto) setcookies(cookies map[string]string) chromedp.Tasks {
-	//if len(cookies)%2 != 0 {
-	//	panic("length of cookies must be divisible by 2")
-	//}
+func (a *auto) setcookies(cookies map[string]string) (chromedp.Tasks, error) {
+
+	re1 := regexp.MustCompile("^(http|https)://([^/]+).*$").FindStringSubmatch(a.form.Host)
+
+	if len(re1) <= 0 {
+
+		return nil, errors.New("或者domain失败，请检查host设置")
+	}
+
 	return chromedp.Tasks{
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// create cookie expiration
@@ -357,7 +373,7 @@ func (a *auto) setcookies(cookies map[string]string) chromedp.Tasks {
 
 				err := network.SetCookie(s, s2).
 					WithExpires(&expr).
-					WithDomain("www.925g.com").
+					WithDomain(re1[2]).
 					WithHTTPOnly(true).
 					Do(ctx)
 
@@ -386,7 +402,7 @@ func (a *auto) setcookies(cookies map[string]string) chromedp.Tasks {
 		//
 		//	return nil
 		//}),
-	}
+	}, nil
 }
 
 func (a *auto) getCookieMap(cookie string) map[string]string {

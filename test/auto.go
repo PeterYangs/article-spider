@@ -34,7 +34,7 @@ func main() {
 		},
 		//cookie
 		HttpHeader: map[string]string{
-			"cookie": "CNZZDATA1278942394=499160135-1634952571-%7C1634952571; Hm_lvt_46233f03c62deb1e98a07bf1e1708415=1634959257; Hm_lpvt_46233f03c62deb1e98a07bf1e1708415=1634959383; PHPSESSID=lchdl81cdggfcbp694gf3894lh; user_cookie=9X18yQilnW; url_data=https://www.925g.com/; UM_distinctid=17cab2a6d0a8af-0933cba3984f97-c343365-1fa400-17cab2a6d0be92; UM_distinctid=17cabec696cd0e-07f763e7354ff6-c343365-1fa400-17cabec696ded4; Hm_lvt_46233f03c62deb1e98a07bf1e1708415=1634971970; Hm_lpvt_46233f03c62deb1e98a07bf1e1708415=1634972020",
+			"cookie": "user_cookie=Vmod7XlkHN; UM_distinctid=17b805b421c1e0-0005d3dc1ac8ea-c343365-1fa400-17b805b421dda7; url_data=https://www.925g.com/zixun/,https://www.925g.com/; PHPSESSID=3m0ee50ba4r40jq3fleob2n71i; CNZZDATA1278942394=1852940385-1600066493-%7C1635143024; Hm_lvt_46233f03c62deb1e98a07bf1e1708415=1634807167,1634887947,1634955841,1635153418; Hm_lpvt_46233f03c62deb1e98a07bf1e1708415=1635153430",
 		},
 	})
 
