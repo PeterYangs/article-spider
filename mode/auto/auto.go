@@ -281,6 +281,15 @@ func (a *auto) createContext() (context.Context, context.CancelFunc) {
 		chromedp.WindowSize(1920, 1080),
 	)
 
+	//设置代理
+	if a.form.HttpProxy != "" {
+
+		opts = append(opts,
+			chromedp.ProxyServer(a.form.HttpProxy),
+		)
+
+	}
+
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 
 	// create chrome instance
