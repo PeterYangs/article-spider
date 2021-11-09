@@ -30,7 +30,7 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host:         "https://www.925g.com",
+		Host:         "https://www.xxx.com",
 		Channel:      "/zixun_page[PAGE].html/",
 		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
 		HrefSelector: " a",
@@ -107,7 +107,7 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host: "https://www.925g.com",
+		Host: "https://www.xxx.com",
 		ChannelFunc: func(form *form.Form) []string {
 			return []string{
 				"https://www.925g.com/zixun_page1.html/",
@@ -203,7 +203,7 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host:         "https://www.925g.com",
+		Host:         "https://www.xxx.com",
 		Channel:      "/zixun_page[PAGE].html/",
 		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
 		HrefSelector: " a",
@@ -300,7 +300,7 @@ func main() {
 	s := spider.NewSpider()
 
 	s.LoadForm(form.CustomForm{
-		Host:         "https://www.925g.com",
+		Host:         "https://www.xxx.com",
 		Channel:      "/zixun/",
 		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
 		HrefSelector: "  a",
