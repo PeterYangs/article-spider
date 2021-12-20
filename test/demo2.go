@@ -33,7 +33,9 @@ func main() {
 			"desc": {ExcelHeader: "K", Types: fileTypes.Text, Selector: "  a > div > p"},
 		},
 		CustomExcelHeader:     true,
-		DetailCoroutineNumber: 2,
+		DetailCoroutineNumber: 5,
+		//HttpProxy: "127.0.0.1:4780",
+		//HttpHeader:
 	})
 
 	s.Start()
