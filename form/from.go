@@ -7,6 +7,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
+	"os"
 
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
@@ -570,7 +571,9 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		//panic(dir)
 
 		//设置文件夹
-		err := tools.MkDirDepth("image/" + dir)
+		//err := tools.MkDirDepth("image/" + dir)
+
+		err := os.MkdirAll("image/"+dir, 0755)
 
 		if err != nil {
 
