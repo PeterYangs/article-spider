@@ -2,7 +2,6 @@ package normal
 
 import (
 	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -22,7 +21,9 @@ func (n *normal) GetList(listUrl string) {
 
 	if err != nil {
 
-		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		n.form.Notice.Error(err.Error())
 
 		return
 
@@ -37,7 +38,9 @@ func (n *normal) GetList(listUrl string) {
 
 		if err != nil {
 
-			n.form.Notice.PushMessage(notice.NewError(err.Error()))
+			//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+			n.form.Notice.Error(err.Error())
 
 			return
 
@@ -49,7 +52,9 @@ func (n *normal) GetList(listUrl string) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 
-		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		n.form.Notice.Error(err.Error())
 
 		return
 
@@ -77,7 +82,9 @@ func (n *normal) GetList(listUrl string) {
 
 		if href == "" || isFind == false {
 
-			n.form.Notice.PushMessage(notice.NewError("a链接为空"))
+			//n.form.Notice.PushMessage(notice.NewError("a链接为空,当前链接为:", listUrl))
+
+			n.form.Notice.Error("a链接为空,当前链接为:", listUrl)
 
 			return
 		}
@@ -89,7 +96,9 @@ func (n *normal) GetList(listUrl string) {
 
 			if err != nil {
 
-				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				n.form.Notice.Error(err.Error())
 
 				return
 
@@ -100,7 +109,9 @@ func (n *normal) GetList(listUrl string) {
 
 			if err != nil {
 
-				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				n.form.Notice.Error(err.Error())
 
 				return
 			}
@@ -141,7 +152,10 @@ func (n *normal) GetList(listUrl string) {
 
 	if size <= 0 {
 
-		n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
+		//n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
+
+		n.form.Notice.Error("a链接未发现")
+
 	}
 
 }
@@ -162,7 +176,9 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	if err != nil {
 
-		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		n.form.Notice.Error(err.Error())
 
 		return
 
@@ -177,7 +193,9 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				n.form.Notice.Error(err.Error())
 
 				return
 
@@ -196,7 +214,9 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				n.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				n.form.Notice.Error(err.Error())
 
 				return
 
@@ -210,7 +230,9 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 
 	if err != nil {
 
-		n.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		n.form.Notice.Error(err.Error())
 
 		return
 	}

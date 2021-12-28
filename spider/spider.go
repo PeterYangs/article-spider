@@ -11,6 +11,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/result"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -19,11 +20,12 @@ import (
 type Spider struct {
 	form   *form.Form
 	Notice *notice.Notice
+	debug  bool
 }
 
 func NewSpider() *Spider {
 
-	return &Spider{Notice: notice.NewNotice()}
+	return &Spider{}
 }
 
 func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
@@ -56,6 +58,8 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		//AutoCookieString:           cf.AutoCookieString,
 	}
 
+	s.Notice = notice.NewNotice()
+
 	s.form = f
 
 	//通知服务
@@ -67,6 +71,17 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 	s.form.Wait = sync.WaitGroup{}
 
 	return s
+}
+
+func (s *Spider) SetDebug(b bool) {
+
+	s.debug = b
+
+}
+
+func (s *Spider) GetDebug() bool {
+
+	return s.debug
 }
 
 func (s *Spider) loadClient() *Spider {
@@ -107,6 +122,9 @@ func (s *Spider) loadClient() *Spider {
 }
 
 func (s *Spider) StartApi() {
+
+	//创建图片文件夹
+	os.MkdirAll(conf.Conf.ImageDir, 0755)
 
 	s.form.Mode = mode.Api
 
@@ -163,6 +181,9 @@ func (s *Spider) StartApi() {
 // Start 普通模式爬取
 func (s *Spider) Start() {
 
+	//创建图片文件夹
+	os.MkdirAll(conf.Conf.ImageDir, 0755)
+
 	s.form.Mode = mode.Normal
 
 	detailMaxCoroutines := conf.Conf.DetailMaxCoroutines
@@ -215,6 +236,9 @@ func (s *Spider) Start() {
 }
 
 func (s *Spider) StartAuto() {
+
+	//创建图片文件夹
+	os.MkdirAll(conf.Conf.ImageDir, 0755)
 
 	s.form.Mode = mode.Auto
 

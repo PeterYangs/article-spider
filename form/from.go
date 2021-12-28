@@ -2,11 +2,13 @@ package form
 
 import (
 	"errors"
+	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/fileTypes"
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
+	"os"
 
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
@@ -89,12 +91,12 @@ type Form struct {
 
 type Field struct {
 	Types        fileTypes.FieldTypes
-	Selector     string                               //字段选择器
-	AttrKey      string                               //属性值参数
-	ImagePrefix  func(form *Form, path string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir     string                               //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader  string                               //excel表头，需要CustomExcelHeader为true,例：A
-	RegularIndex int                                  //正则匹配中的反向引用的下标，默认是1
+	Selector     string                                    //字段选择器
+	AttrKey      string                                    //属性值参数
+	ImagePrefix  func(form *Form, imageName string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir     string                                    //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader  string                                    //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex int                                       //正则匹配中的反向引用的下标，默认是1
 }
 
 // DealCoding 解决编码问题
@@ -304,7 +306,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				res.Store(field, "")
 
-				f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+				//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+				f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
 				break
 
@@ -327,7 +330,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+
+					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
 					return
 
@@ -337,7 +342,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+					//f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
+
+					f.Notice.Error(err.Error() + ",源链接：" + originUrl)
 
 					return
 
@@ -353,7 +360,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					if err != nil {
 
-						f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",富文本内容"))
+						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",富文本内容"))
+
+						f.Notice.Error(err.Error()+",源链接："+originUrl, ",富文本内容")
 
 						return
 					}
@@ -398,7 +407,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+
+					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
 					return
 				}
@@ -432,7 +443,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					if err != nil {
 
-						f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+
+						f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
 						return
 					}
@@ -570,13 +583,15 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		//panic(dir)
 
 		//设置文件夹
-		err := tools.MkDirDepth("image/" + dir)
+		err := os.MkdirAll(conf.Conf.ImageDir+"/"+dir, 0755)
 
 		if err != nil {
 
 			//ErrorLine(form, err.Error())
 
-			f.Notice.PushMessage(notice.NewError(err.Error()))
+			//f.Notice.PushMessage(notice.NewError(err.Error()))
+
+			f.Notice.Error(err.Error())
 
 			//return
 		}
@@ -608,7 +623,9 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 			//ErrorLine(form, "图片拓展名异常:"+imgUrl)
 
-			f.Notice.PushMessage(notice.NewError("图片拓展名异常:" + imgUrl))
+			//f.Notice.PushMessage(notice.NewError("图片拓展名异常:" + imgUrl))
+
+			f.Notice.Error("图片拓展名异常:" + imgUrl)
 
 			//获取默认图片
 			if f.DefaultImg != nil {
@@ -625,7 +642,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	//imgErr := f.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
 
-	imgErr := f.Client.R().Download(imgUrl, "image/"+imgName)
+	imgErr := f.Client.R().Download(imgUrl, conf.Conf.ImageDir+"/"+imgName)
 
 	if imgErr != nil {
 
@@ -633,7 +650,9 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 		//ErrorLine(form, msg)
 
-		f.Notice.PushMessage(notice.NewError(msg))
+		//f.Notice.PushMessage(notice.NewError(msg))
+
+		f.Notice.Error(msg)
 
 		//获取默认图片
 		if f.DefaultImg != nil {

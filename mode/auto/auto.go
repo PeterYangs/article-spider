@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
@@ -46,7 +45,9 @@ func (a *auto) GetList() {
 
 		if err != nil {
 
-			a.form.Notice.PushMessage(notice.NewError(err.Error()))
+			//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+			a.form.Notice.Error(err.Error())
 
 			return
 		}
@@ -93,7 +94,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		a.form.Notice.Error(err.Error())
 
 		return
 
@@ -111,7 +114,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 			if err != nil {
 
-				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				a.form.Notice.Error(err.Error())
 
 				return
 
@@ -122,7 +127,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 			if err != nil {
 
-				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				a.form.Notice.Error(err.Error())
 
 				return
 			}
@@ -147,7 +154,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		if clickLength <= 0 {
 
-			a.form.Notice.PushMessage(notice.NewError("未找到详情选择器"))
+			//a.form.Notice.PushMessage(notice.NewError("未找到详情选择器"))
+
+			a.form.Notice.Error("未找到详情选择器")
 
 			return
 		}
@@ -161,7 +170,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		if e != nil {
 
-			a.form.Notice.PushMessage(notice.NewError(e.Error()))
+			//a.form.Notice.PushMessage(notice.NewError(e.Error()))
+
+			a.form.Notice.Error(e.Error())
 
 		}
 
@@ -196,14 +207,18 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 	if size <= 0 {
 
-		a.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
+		//a.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
+
+		a.form.Notice.Error("a链接未发现")
 	}
 
 	cxt, cancel = a.clickNext(cxt, cancel, ch)
 
 	if a.form.PageCurrent >= a.form.Length {
 
-		a.form.Notice.PushMessage(notice.NewError("完成"))
+		//a.form.Notice.PushMessage(notice.NewError("完成"))
+
+		a.form.Notice.Error("完成")
 
 		return
 
@@ -237,14 +252,18 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 
 	if e != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(e.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(e.Error()))
+
+		a.form.Notice.Error(e.Error())
 	}
 
 	res, err := a.form.ResolveSelector(html, a.form.DetailFields, a.form.Host)
 
 	if err != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		a.form.Notice.Error(err.Error())
 
 		return
 	}

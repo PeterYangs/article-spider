@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -22,7 +21,9 @@ func (a *api) GetList(listUrl string) {
 
 	if err != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		a.form.Notice.Error(err.Error())
 
 		return
 
@@ -30,7 +31,9 @@ func (a *api) GetList(listUrl string) {
 
 	if a.form.ApiConversion == nil {
 
-		a.form.Notice.PushMessage(notice.NewError("api转换函数未配置"))
+		//a.form.Notice.PushMessage(notice.NewError("api转换函数未配置"))
+
+		a.form.Notice.Error("api转换函数未配置")
 
 		return
 	}
@@ -39,7 +42,9 @@ func (a *api) GetList(listUrl string) {
 
 	if len(hrefList) <= 0 {
 
-		a.form.Notice.PushMessage(notice.NewError("api解析链接长度为0"))
+		//a.form.Notice.PushMessage(notice.NewError("api解析链接长度为0"))
+
+		a.form.Notice.Error("api解析链接长度为0")
 
 		return
 	}
@@ -82,7 +87,9 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 
 	if err != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		a.form.Notice.Error(err.Error())
 
 		return
 
@@ -97,7 +104,9 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				a.form.Notice.Error(err.Error())
 
 				return
 
@@ -116,7 +125,9 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				a.form.Notice.PushMessage(notice.NewError(err.Error()))
+				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				a.form.Notice.Error(err.Error())
 
 				return
 
@@ -130,7 +141,9 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 
 	if err != nil {
 
-		a.form.Notice.PushMessage(notice.NewError(err.Error()))
+		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		a.form.Notice.Error(err.Error())
 
 		return
 	}

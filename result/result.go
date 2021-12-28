@@ -5,9 +5,9 @@ import (
 	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/tools"
 	"github.com/shopspring/decimal"
+	"time"
 )
 
 type result struct {
@@ -22,6 +22,12 @@ func NewResult(form *form.Form) *result {
 func (r *result) Work() {
 
 	defer func() {
+
+		fmt.Println("准备退出")
+
+		time.Sleep(10 * time.Second)
+
+		fmt.Println("等待完毕")
 
 		r.form.Wait.Done()
 
@@ -55,7 +61,11 @@ func (r *result) Work() {
 
 		if r.form.Total != 0 {
 
-			fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
+			//fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
+
+			//fmt.Println("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+
+			r.form.Notice.Process("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
 
 		}
 
@@ -65,7 +75,9 @@ func (r *result) Work() {
 
 		filename := exc.Save()
 
-		r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
+		//r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
+
+		r.form.Notice.Log("excel文件为:" + filename)
 
 	}
 

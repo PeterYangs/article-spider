@@ -8,10 +8,11 @@ import (
 type types int
 
 const (
-	Info  = 0x00000
-	Debug = 0x00001
-	Error = 0x00002
-	Log   = 0x00003
+	Info    = 0x00000
+	Debug   = 0x00001
+	Error   = 0x00002
+	Log     = 0x00003
+	Process = 0x00004
 )
 
 type message struct {
@@ -19,28 +20,41 @@ type message struct {
 	content []interface{}
 }
 
-func NewInfo(content ...interface{}) *message {
+func (n *Notice) Info(content ...interface{}) {
 
-	return &message{types: Info, content: content}
+	n.ch <- &message{types: Info, content: content}
 }
 
-func NewError(content ...interface{}) *message {
+func (n *Notice) Error(content ...interface{}) {
 
-	return &message{types: Error, content: content}
+	//if n.spider.GetDebug() {
+
+	//content = append(content, string(debug.Stack()))
+	//}
+
+	n.ch <- &message{types: Error, content: content}
 }
 
-func NewDebug(content ...interface{}) *message {
+func (n *Notice) Debug(content ...interface{}) {
 
-	return &message{types: Debug, content: content}
+	n.ch <- &message{types: Debug, content: content}
 }
 
-func NewLog(content ...interface{}) *message {
+func (n *Notice) Log(content ...interface{}) {
 
-	return &message{types: Log, content: content}
+	//fmt.Println("nice啊")
+
+	n.ch <- &message{types: Log, content: content}
+}
+
+func (n *Notice) Process(content ...interface{}) {
+
+	n.ch <- &message{types: Process, content: content}
 }
 
 type Notice struct {
 	ch chan *message
+	//spider *spider.Spider
 }
 
 func NewNotice() *Notice {
@@ -49,14 +63,15 @@ func NewNotice() *Notice {
 
 	return &Notice{
 		ch: ch,
+		//spider: s,
 	}
 }
 
-func (n *Notice) PushMessage(message *message) {
-
-	n.ch <- message
-
-}
+//func (n *Notice) PushMessage(message *message) {
+//
+//	n.ch <- message
+//
+//}
 
 func (n *Notice) Service(closeEvent func()) {
 
@@ -78,8 +93,14 @@ func (n *Notice) Service(closeEvent func()) {
 
 			log.Println(m.content...)
 
+		case Process:
+			fmt.Print("\033[u\033[K")
+			fmt.Print(m.content, "\r")
+
 		default:
+			fmt.Print("\033[u\033[K")
 			fmt.Println(m.content...)
+			fmt.Println()
 		}
 
 	}
