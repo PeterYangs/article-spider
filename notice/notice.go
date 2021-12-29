@@ -112,6 +112,7 @@ func (n *Notice) Service(closeEvent func()) {
 		default:
 
 			fmt.Println()
+			fmt.Println()
 			//fmt.Print("\033[u\033[K")
 			fmt.Println(m.content...)
 			fmt.Println()

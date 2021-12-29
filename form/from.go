@@ -326,17 +326,17 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			wait.Add(1)
 
-			go func(item Field, field string) {
+			go func(_item Field, field string) {
 
 				defer wait.Done()
 
-				html_, err := doc.Find(item.Selector).Html()
+				html_, err := doc.Find(_item.Selector).Html()
 
 				if err != nil {
 
 					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
-					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
+					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 					return
 
@@ -373,15 +373,15 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					waitImg.Add(1)
 
-					go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field) {
 
 						defer waitImg.Done()
 
-						imgName := f.DownImg(img, item, res)
+						imgName := f.DownImg(img, __item, res)
 
 						imgList.Store(imgName, img)
 
-					}(&waitImg, &imgList)
+					}(&waitImg, &imgList, _item)
 
 				})
 
@@ -403,22 +403,22 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			wait.Add(1)
 
-			go func(item Field, field string) {
+			go func(_item Field, field string) {
 
 				defer wait.Done()
 
-				imgUrl, err := f.getImageLink(doc.Find(item.Selector))
+				imgUrl, err := f.getImageLink(doc.Find(_item.Selector))
 
 				if err != nil {
 
 					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
-					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
+					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 					return
 				}
 
-				imgName := f.DownImg(imgUrl, item, res)
+				imgName := f.DownImg(imgUrl, _item, res)
 
 				res.Store(field, imgName)
 
