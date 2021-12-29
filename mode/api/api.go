@@ -125,8 +125,6 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
-
 				a.form.Notice.Error(err.Error())
 
 				return
