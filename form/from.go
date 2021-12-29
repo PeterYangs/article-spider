@@ -275,7 +275,11 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 	}
 
 	//解析详情页面选择器
-	for field, item := range selector {
+	for fieldT, itemT := range selector {
+
+		field := fieldT
+
+		item := itemT
 
 		switch item.Types {
 
@@ -437,7 +441,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				//sync.
 
-				doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+				doc.Find(_item.Selector).Each(func(i int, selection *goquery.Selection) {
 
 					imgUrl, err := f.getImageLink(selection)
 
@@ -445,22 +449,24 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
-						f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
+						f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+
+						//fmt.Println("------------------", _item.Selector)
 
 						return
 					}
 
 					waitImg.Add(1)
 
-					go func(waitImg *sync.WaitGroup, imgList *sync.Map) {
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field) {
 
 						defer waitImg.Done()
 
-						imgName := f.DownImg(imgUrl, item, res)
+						imgName := f.DownImg(imgUrl, __item, res)
 
 						imgList.Store(imgName, "")
 
-					}(&waitImg, &imgList)
+					}(&waitImg, &imgList, _item)
 
 				})
 

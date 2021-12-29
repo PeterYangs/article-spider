@@ -96,13 +96,13 @@ func (n *Notice) Service(closeEvent func()) {
 		//_ = m
 
 		switch m.types {
-		case Log:
-			fmt.Print("\033[u\033[K")
-			fmt.Println(m.content...)
-
-		case Debug:
-			fmt.Print("\033[u\033[K")
-			fmt.Println(m.content...)
+		//case Log:
+		//	fmt.Print("\033[u\033[K")
+		//	fmt.Println(m.content...)
+		//
+		//case Debug:
+		//	fmt.Print("\033[u\033[K")
+		//	fmt.Println(m.content...)
 
 		case Process:
 			fmt.Print("\033[u\033[K")
@@ -110,7 +110,9 @@ func (n *Notice) Service(closeEvent func()) {
 			fmt.Print("\r")
 
 		default:
-			fmt.Print("\033[u\033[K")
+
+			fmt.Println()
+			//fmt.Print("\033[u\033[K")
 			fmt.Println(m.content...)
 			fmt.Println()
 		}
