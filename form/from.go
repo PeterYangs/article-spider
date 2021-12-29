@@ -27,26 +27,25 @@ type CustomForm struct {
 	Length                     int                                      //爬取页码长度
 	ListSelector               string                                   //列表选择器
 	HrefSelector               string                                   //a链接选择器，相对于列表选择器
-	DisableAutoCoding          bool                                     //是否自动转码
+	DisableAutoCoding          bool                                     //是否禁用自动转码
 	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
-	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png,且跳过图片拓展检查
 	AllowImageExtension        []string                                 //允许下载的图片拓展名
 	DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
 	DetailFields               map[string]Field                         //详情页面字段选择器
 	ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
 	CustomExcelHeader          bool                                     //自定义Excel表格头部
-	DetailCoroutineNumber      int                                      //爬取详情页协程数
+	DetailCoroutineNumber      int                                      //爬取详情页协程数(最大设置为30)
 	HttpTimeout                time.Duration                            //请求超时时间
-	HttpHeader                 map[string]string                        //header
-	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
-	MiddleHrefSelector         []string                                 //中间层a链接选择器，当详情页有多层时使用
+	HttpHeader                 map[string]string                        //header（支持cookie）
+	HttpProxy                  string                                   //代理
+	MiddleHrefSelector         []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
 	NextSelector               string                                   //下一页选择器（用于自动化爬取）
 	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	//AutoCookieString           string                                   //设置cookie（用于自动化爬取）
 }
 
 type Form struct {
@@ -58,7 +57,7 @@ type Form struct {
 	ListSelector               string          //列表选择器
 	HrefSelector               string          //a链接选择器，相对于列表选择器
 	Mode                       mode.Mode
-	DisableAutoCoding          bool //是否自动转码
+	DisableAutoCoding          bool //是否禁用自动转码
 	Notice                     *notice.Notice
 	Wait                       sync.WaitGroup
 	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
@@ -78,7 +77,7 @@ type Form struct {
 	DetailSize                 int                                      //每个列表的详情数量
 	Total                      int                                      //预计爬取总数
 	CurrentIndex               int                                      //当前爬取数量
-	MiddleSelector             []string                                 //中间层选择器，当详情页有多层时使用
+	MiddleSelector             []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
