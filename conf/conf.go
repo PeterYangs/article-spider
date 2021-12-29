@@ -9,5 +9,5 @@ type conf struct {
 var Conf = conf{
 	DetailMaxCoroutines: 30,
 	MaxStrLength:        60,
-	ImageDir:            "cccc",
+	ImageDir:            "image",
 }

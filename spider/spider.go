@@ -20,12 +20,12 @@ import (
 type Spider struct {
 	form   *form.Form
 	Notice *notice.Notice
-	debug  bool
+	//debug  bool
 }
 
 func NewSpider() *Spider {
 
-	return &Spider{}
+	return &Spider{Notice: notice.NewNotice()}
 }
 
 func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
@@ -58,7 +58,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		//AutoCookieString:           cf.AutoCookieString,
 	}
 
-	s.Notice = notice.NewNotice()
+	//s.Notice = notice.NewNotice()
 
 	s.form = f
 
@@ -75,14 +75,14 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 
 func (s *Spider) SetDebug(b bool) {
 
-	s.debug = b
+	s.Notice.SetDebug(b)
 
 }
 
-func (s *Spider) GetDebug() bool {
-
-	return s.debug
-}
+//func (s *Spider) GetDebug() bool {
+//
+//	return s.debug
+//}
 
 func (s *Spider) loadClient() *Spider {
 

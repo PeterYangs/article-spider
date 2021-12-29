@@ -370,4 +370,9 @@ func main() {
 
 }
 ```
+**debug**
+```go
+s := spider.NewSpider()
 
+s.SetDebug(true)
+```

@@ -1,13 +1,11 @@
 package result
 
 import (
-	"fmt"
 	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/tools"
 	"github.com/shopspring/decimal"
-	"time"
 )
 
 type result struct {
@@ -23,11 +21,11 @@ func (r *result) Work() {
 
 	defer func() {
 
-		fmt.Println("准备退出")
-
-		time.Sleep(10 * time.Second)
-
-		fmt.Println("等待完毕")
+		//fmt.Println("准备退出")
+		//
+		//time.Sleep(10 * time.Second)
+		//
+		//fmt.Println("等待完毕")
 
 		r.form.Wait.Done()
 

@@ -2,7 +2,7 @@ package notice
 
 import (
 	"fmt"
-	"log"
+	"runtime/debug"
 )
 
 type types int
@@ -27,10 +27,11 @@ func (n *Notice) Info(content ...interface{}) {
 
 func (n *Notice) Error(content ...interface{}) {
 
-	//if n.spider.GetDebug() {
+	if n.debug {
 
-	//content = append(content, string(debug.Stack()))
-	//}
+		content = append(content, string(debug.Stack()))
+
+	}
 
 	n.ch <- &message{types: Error, content: content}
 }
@@ -55,6 +56,8 @@ func (n *Notice) Process(content ...interface{}) {
 type Notice struct {
 	ch chan *message
 	//spider *spider.Spider
+	//form *form.Form
+	debug bool
 }
 
 func NewNotice() *Notice {
@@ -64,7 +67,13 @@ func NewNotice() *Notice {
 	return &Notice{
 		ch: ch,
 		//spider: s,
+
 	}
+}
+
+func (n *Notice) SetDebug(debug bool) {
+
+	n.debug = debug
 }
 
 //func (n *Notice) PushMessage(message *message) {
@@ -84,18 +93,21 @@ func (n *Notice) Service(closeEvent func()) {
 
 		//fmt.Println(m.content...)
 
+		//_ = m
+
 		switch m.types {
 		case Log:
-
-			log.Println(m.content...)
+			fmt.Print("\033[u\033[K")
+			fmt.Println(m.content...)
 
 		case Debug:
-
-			log.Println(m.content...)
+			fmt.Print("\033[u\033[K")
+			fmt.Println(m.content...)
 
 		case Process:
 			fmt.Print("\033[u\033[K")
-			fmt.Print(m.content, "\r")
+			fmt.Print(m.content...)
+			fmt.Print("\r")
 
 		default:
 			fmt.Print("\033[u\033[K")
