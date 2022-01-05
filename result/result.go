@@ -4,6 +4,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/shopspring/decimal"
 )
@@ -57,13 +58,22 @@ func (r *result) Work() {
 			break
 		}
 
-		if r.form.Total != 0 {
+		//fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
 
-			//fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
+		//fmt.Println("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
 
-			//fmt.Println("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+		switch r.form.Mode {
 
-			r.form.Notice.Process("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+		case mode.Auto:
+
+			r.form.Notice.Process("当前页码：", r.form.AutoPage+1, "/", r.form.Length, tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+		default:
+
+			if r.form.Total != 0 {
+
+				r.form.Notice.Process("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+
+			}
 
 		}
 

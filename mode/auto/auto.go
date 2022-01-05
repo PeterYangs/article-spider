@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
@@ -17,7 +18,10 @@ import (
 )
 
 type auto struct {
-	form *form.Form
+	form      *form.Form
+	listIndex int //当前列表进行个数
+	page      int //当前页码
+	size      int //第一页列表长度
 }
 
 func NewAuto(form *form.Form) *auto {
@@ -45,8 +49,6 @@ func (a *auto) GetList() {
 
 		if err != nil {
 
-			//a.form.Notice.PushMessage(notice.NewError(err.Error()))
-
 			a.form.Notice.Error(err.Error())
 
 			return
@@ -58,32 +60,59 @@ func (a *auto) GetList() {
 			chromedp.Navigate(a.form.Host+a.form.Channel),
 		)
 
-		//panic("xx")
 	} else {
 
 		chromedp.Run(
 			cxt,
-			//a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"])),
 			chromedp.Navigate(a.form.Host+a.form.Channel),
 		)
 	}
 
-	//chromedp.Run(
-	//	cxt,
-	//	//a.setcookies(a.getCookieMap(a.form.AutoCookieString)),
-	//	chromedp.Navigate(a.form.Host+a.form.Channel),
-	//)
+	//执行前置事件
+	if a.form.AutoPrefixEvent != nil {
 
-	a.dealList(cxt, cancel, ch)
+		a.form.AutoPrefixEvent(cxt)
+
+	}
+
+	for {
+
+		var ListErr error
+
+		cxt, cancel, ListErr = a.dealList(cxt, cancel, ch)
+
+		if ListErr != nil {
+
+			a.form.Notice.Error(ListErr.Error())
+		}
+
+		if a.page >= a.form.Length {
+
+			a.form.Notice.Error("完成")
+
+			return
+
+		}
+
+	}
 
 }
 
-func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan target.ID) {
+func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan target.ID) (context.Context, context.CancelFunc, error) {
+
+	defer func() {
+
+		a.page++
+
+		a.form.AutoPage = a.page
+
+	}()
 
 	var html string
 
 	listCxt, _ := context.WithTimeout(cxt, 3*time.Second)
 
+	//获取列表页面的html
 	chromedp.Run(
 		listCxt,
 		chromedp.WaitVisible(a.form.ListWaitSelector, chromedp.ByQuery),
@@ -94,16 +123,28 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 
-		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
-
-		a.form.Notice.Error(err.Error())
-
-		return
+		return cxt, cancel, err
 
 	}
 
+	size := doc.Find(a.form.ListSelector).Size()
+
+	if a.size == 0 {
+
+		a.size = size
+	}
+
 	//查找列表中的a链接
-	size := doc.Find(a.form.ListSelector).Each(func(i int, s *goquery.Selection) {
+	doc.Find(a.form.ListSelector).Each(func(i int, s *goquery.Selection) {
+
+		//不要把上一页的长度也计算进去
+		if a.form.NextPageMode == mode.LoadMore {
+
+			if i+1 > a.size {
+
+				return
+			}
+		}
 
 		storage := make(map[string]string)
 
@@ -113,8 +154,6 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			t, err := s.Html()
 
 			if err != nil {
-
-				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 				a.form.Notice.Error(err.Error())
 
@@ -126,8 +165,6 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			storage, err = a.form.ResolveSelector(t, a.form.ListFields, a.form.Host)
 
 			if err != nil {
-
-				//a.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 				a.form.Notice.Error(err.Error())
 
@@ -148,21 +185,56 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		}
 
-		clickSelector := a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
+		//详情点击选择器
+		var clickSelector string
 
-		clickLength := doc.Find(clickSelector).Size()
+		switch a.form.NextPageMode {
 
-		if clickLength <= 0 {
+		case mode.Pagination:
 
-			//a.form.Notice.PushMessage(notice.NewError("未找到详情选择器"))
+			//获取列表中的a链接选择器
+			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
 
-			a.form.Notice.Error("未找到详情选择器")
+			break
+
+		case mode.LoadMore:
+
+			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(a.listIndex+1) + ")" + " > " + a.form.HrefSelector
+
+			a.listIndex++
+
+		default:
+
+			//获取列表中的a链接选择器
+			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
+
+		}
+
+		cxtW, _ := context.WithTimeout(cxt, 3*time.Second)
+
+		//点击详情选择器
+		e := chromedp.Run(
+			cxtW,
+			chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
+			//chromedp.Click(clickSelector, chromedp.NodeVisible),
+		)
+
+		if e != nil {
+
+			a.form.Notice.Error("未找到详情选择器:", clickSelector, e)
+
+			if a.form.NextPageMode == mode.LoadMore {
+
+				//点击下一页
+				cxt, cancel = a.clickNext(cxt, cancel, ch)
+
+			}
 
 			return
 		}
 
 		//点击详情选择器
-		e := chromedp.Run(
+		e = chromedp.Run(
 			cxt,
 			chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
 			chromedp.Click(clickSelector, chromedp.NodeVisible),
@@ -172,11 +244,13 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 			//a.form.Notice.PushMessage(notice.NewError(e.Error()))
 
-			a.form.Notice.Error(e.Error())
+			a.form.Notice.Error("点击详情选择器错误", e.Error())
+
+			return
 
 		}
 
-		waitNewTab := time.After(2 * time.Second)
+		waitNewTab := time.After(3 * time.Second)
 
 		select {
 
@@ -194,39 +268,10 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 	}).Size()
 
-	a.form.PageCurrent++
-
-	if a.form.DetailSize == 0 && size > 0 {
-
-		a.form.DetailSize = size
-
-		//计算大概爬取总数量
-		a.form.Total = a.form.Length * size
-
-	}
-
-	if size <= 0 {
-
-		//a.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
-
-		a.form.Notice.Error("a链接未发现")
-	}
-
+	//点击下一页
 	cxt, cancel = a.clickNext(cxt, cancel, ch)
 
-	if a.form.PageCurrent >= a.form.Length {
-
-		//a.form.Notice.PushMessage(notice.NewError("完成"))
-
-		a.form.Notice.Error("完成")
-
-		return
-
-	} else {
-
-		a.dealList(cxt, cancel, ch)
-
-	}
+	return cxt, cancel, nil
 
 }
 

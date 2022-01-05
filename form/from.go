@@ -8,6 +8,7 @@ import (
 	"github.com/PeterYangs/article-spider/v2/notice"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
+	"golang.org/x/net/context"
 	"os"
 
 	"github.com/PuerkitoBio/goquery"
@@ -46,6 +47,9 @@ type CustomForm struct {
 	NextSelector               string                                   //下一页选择器（用于自动化爬取）
 	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
+	NextPageMode               mode.NextPageMode                        //下一页模式（目前支持常规分页和加载更多）
+	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
+
 }
 
 type Form struct {
@@ -85,7 +89,9 @@ type Form struct {
 	PageCurrent                int                                      //当前页码（用于自动化爬取）
 	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	//AutoCookieString           string                                   //设置cookie（用于自动化爬取）
+	NextPageMode               mode.NextPageMode                        //下一页模式（用于自动化爬取,目前支持常规分页和加载更多）
+	AutoPage                   int                                      //自动化模式当前页码
+	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
 }
 
 type Field struct {
