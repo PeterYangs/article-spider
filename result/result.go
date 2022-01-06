@@ -1,7 +1,6 @@
 package result
 
 import (
-	"github.com/PeterYangs/article-spider/v2/conf"
 	"github.com/PeterYangs/article-spider/v2/excel"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/mode"
@@ -66,12 +65,12 @@ func (r *result) Work() {
 
 		case mode.Auto:
 
-			r.form.Notice.Process("当前页码：", r.form.AutoPage+1, "/", r.form.Length, tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+			r.form.Notice.Process("当前页码：", r.form.AutoPage+1, "/", r.form.Length, tools.SubStr(content, 0, r.form.Conf.MaxStrLength))
 		default:
 
 			if r.form.Total != 0 {
 
-				r.form.Notice.Process("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
+				r.form.Notice.Process("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, r.form.Conf.MaxStrLength))
 
 			}
 

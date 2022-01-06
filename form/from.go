@@ -92,6 +92,7 @@ type Form struct {
 	NextPageMode               mode.NextPageMode                        //下一页模式（用于自动化爬取,目前支持常规分页和加载更多）
 	AutoPage                   int                                      //自动化模式当前页码
 	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
+	Conf                       *conf.Conf
 }
 
 type Field struct {
@@ -594,7 +595,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		//panic(dir)
 
 		//设置文件夹
-		err := os.MkdirAll(conf.Conf.ImageDir+"/"+dir, 0755)
+		err := os.MkdirAll(f.Conf.ImageDir+"/"+dir, 0755)
 
 		if err != nil {
 
@@ -653,7 +654,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	//imgErr := f.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
 
-	imgErr := f.Client.R().Download(imgUrl, conf.Conf.ImageDir+"/"+imgName)
+	imgErr := f.Client.R().Download(imgUrl, f.Conf.ImageDir+"/"+imgName)
 
 	if imgErr != nil {
 

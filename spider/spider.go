@@ -72,6 +72,8 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 
 	s.form.Wait = sync.WaitGroup{}
 
+	s.form.Conf = conf.NewConf()
+
 	return s
 }
 
@@ -126,11 +128,11 @@ func (s *Spider) loadClient() *Spider {
 func (s *Spider) StartApi() {
 
 	//创建图片文件夹
-	os.MkdirAll(conf.Conf.ImageDir, 0755)
+	os.MkdirAll(s.form.Conf.ImageDir, 0755)
 
 	s.form.Mode = mode.Api
 
-	detailMaxCoroutines := conf.Conf.DetailMaxCoroutines
+	detailMaxCoroutines := s.form.Conf.DetailMaxCoroutines
 
 	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
 	if s.form.DetailCoroutineNumber > detailMaxCoroutines || s.form.DetailCoroutineNumber == 0 {
@@ -184,11 +186,11 @@ func (s *Spider) StartApi() {
 func (s *Spider) Start() {
 
 	//创建图片文件夹
-	os.MkdirAll(conf.Conf.ImageDir, 0755)
+	os.MkdirAll(s.form.Conf.ImageDir, 0755)
 
 	s.form.Mode = mode.Normal
 
-	detailMaxCoroutines := conf.Conf.DetailMaxCoroutines
+	detailMaxCoroutines := s.form.Conf.DetailMaxCoroutines
 
 	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
 	if s.form.DetailCoroutineNumber > detailMaxCoroutines || s.form.DetailCoroutineNumber == 0 {
@@ -240,7 +242,7 @@ func (s *Spider) Start() {
 func (s *Spider) StartAuto() {
 
 	//创建图片文件夹
-	os.MkdirAll(conf.Conf.ImageDir, 0755)
+	os.MkdirAll(s.form.Conf.ImageDir, 0755)
 
 	s.form.Mode = mode.Auto
 
