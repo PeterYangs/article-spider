@@ -3,6 +3,7 @@ package auto
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/PeterYangs/article-spider/v2/form"
 	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/tools"
@@ -110,7 +111,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 	var html string
 
-	listCxt, _ := context.WithTimeout(cxt, 3*time.Second)
+	listCxt, _ := context.WithTimeout(cxt, 6*time.Second)
 
 	//获取列表页面的html
 	chromedp.Run(
@@ -210,7 +211,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		}
 
-		cxtW, _ := context.WithTimeout(cxt, 3*time.Second)
+		cxtW, _ := context.WithTimeout(cxt, 6*time.Second)
 
 		//点击详情选择器
 		e := chromedp.Run(
@@ -233,12 +234,79 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			return
 		}
 
-		//点击详情选择器
-		e = chromedp.Run(
-			cxt,
-			chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
-			chromedp.Click(clickSelector, chromedp.NodeVisible),
-		)
+		////等待详情选择器
+		//chromedp.Run(
+		//	cxt,
+		//	chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
+		//)
+
+		href := ""
+
+		isFind := false
+
+		if a.form.NextPageMode == mode.LoadMore {
+
+			href, isFind = doc.Find(clickSelector).Attr("href")
+
+			if !isFind {
+
+				return
+			}
+
+		} else {
+
+			//a链接是列表的情况
+			if a.form.HrefSelector == "" {
+
+				href, isFind = s.Attr("href")
+
+			} else {
+
+				href, isFind = s.Find(a.form.HrefSelector).Attr("href")
+
+			}
+
+		}
+
+		fmt.Println(a.form.AutoDetailForceNewTab, isFind, href)
+
+		//点击详情页强制打开新窗口
+		if a.form.AutoDetailForceNewTab && isFind && href != "" {
+
+			tag := target.CreateTarget("")
+
+			detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(target.ID(tag.BrowserContextID)))
+
+			e = chromedp.Run(detailCxt, chromedp.Navigate(a.form.GetHref(href)))
+
+			a.GetDetail(detailCxt, storage, true, NewTabCancel)
+
+		} else {
+
+			//点击详情选择器
+			e = chromedp.Run(
+				cxt,
+				chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
+				chromedp.Click(clickSelector, chromedp.NodeVisible),
+			)
+
+			waitNewTab := time.After(6 * time.Second)
+
+			select {
+
+			case TargetID := <-ch:
+
+				detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(TargetID))
+
+				a.GetDetail(detailCxt, storage, true, NewTabCancel)
+
+			case <-waitNewTab:
+
+				a.GetDetail(cxt, storage, false, cancel)
+
+			}
+
+		}
 
 		if e != nil {
 
@@ -247,22 +315,6 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			a.form.Notice.Error("点击详情选择器错误", e.Error())
 
 			return
-
-		}
-
-		waitNewTab := time.After(3 * time.Second)
-
-		select {
-
-		case TargetID := <-ch:
-
-			detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(TargetID))
-
-			a.GetDetail(detailCxt, storage, true, NewTabCancel)
-
-		case <-waitNewTab:
-
-			a.GetDetail(cxt, storage, false, cancel)
 
 		}
 
@@ -285,7 +337,7 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 
 	html := ""
 
-	tempCxt, _ := context.WithTimeout(detailCxt, 5*time.Second)
+	tempCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
 
 	e := chromedp.Run(tempCxt,
 		chromedp.WaitVisible(a.form.DetailWaitSelector, chromedp.ByQuery),
@@ -333,7 +385,7 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 
 	} else {
 
-		backCxt, _ := context.WithTimeout(detailCxt, 3*time.Second)
+		backCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
 
 		//返回上一页
 		chromedp.Run(backCxt,
@@ -377,14 +429,15 @@ func (a *auto) createContext() (context.Context, context.CancelFunc) {
 
 }
 
+//点击下一页
 func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan target.ID) (context.Context, context.CancelFunc) {
 
-	clickCxt, _ := context.WithTimeout(cxt, 3*time.Second)
+	clickCxt, _ := context.WithTimeout(cxt, 6*time.Second)
 
 	//点击下一页
 	chromedp.Run(clickCxt, chromedp.Click(a.form.NextSelector, chromedp.ByQuery))
 
-	waitNewTab := time.After(1 * time.Second)
+	waitNewTab := time.After(3 * time.Second)
 
 	select {
 
@@ -392,6 +445,7 @@ func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan
 
 		detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(TargetID))
 
+		//新开标签关闭上一页标签
 		cancel()
 
 		return detailCxt, NewTabCancel

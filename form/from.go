@@ -49,7 +49,7 @@ type CustomForm struct {
 	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
 	NextPageMode               mode.NextPageMode                        //下一页模式（目前支持常规分页和加载更多）
 	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
-
+	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
 }
 
 type Form struct {
@@ -93,6 +93,7 @@ type Form struct {
 	AutoPage                   int                                      //自动化模式当前页码
 	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
 	Conf                       *conf.Conf
+	AutoDetailForceNewTab      bool //自动模式详情页强制打开新窗口(必须是a链接)
 }
 
 type Field struct {

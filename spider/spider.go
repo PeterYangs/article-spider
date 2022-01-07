@@ -57,6 +57,7 @@ func (s *Spider) LoadForm(cf form.CustomForm) *Spider {
 		DetailWaitSelector:         cf.DetailWaitSelector,
 		NextPageMode:               cf.NextPageMode,
 		AutoPrefixEvent:            cf.AutoPrefixEvent,
+		AutoDetailForceNewTab:      cf.AutoDetailForceNewTab,
 		//AutoCookieString:           cf.AutoCookieString,
 	}
 
