@@ -1,11 +1,23 @@
 package article_spider
 
-import "github.com/PeterYangs/request"
+import (
+	"context"
+	"github.com/PeterYangs/request"
+	"strconv"
+	"strings"
+	"sync"
+)
 
 type Spider struct {
-	form   Form
-	mode   Mode
-	client *request.Client
+	form                Form
+	mode                Mode
+	client              *request.Client
+	detailCoroutineChan chan bool
+	cxt                 context.Context
+	cancel              context.CancelFunc
+	wait                sync.WaitGroup
+	notice              *Notice
+	imageDir            string
 }
 
 func NewSpider(f Form, mode Mode) *Spider {
@@ -27,16 +39,72 @@ func NewSpider(f Form, mode Mode) *Spider {
 
 	}
 
-	return &Spider{form: f, mode: mode, client: client}
+	detailMaxCoroutines := 30
+
+	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
+	if f.DetailCoroutineNumber < detailMaxCoroutines && f.DetailCoroutineNumber != 0 {
+
+		detailMaxCoroutines = f.DetailCoroutineNumber
+
+	}
+
+	cxt, cancel := context.WithCancel(context.Background())
+
+	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image"}
 }
 
 func (s *Spider) Start() {
+
+	s.notice = NewNotice(s)
+
+	s.form.s = s
 
 	switch s.mode {
 
 	case Normal:
 
 		NewNormal(s).Start()
+
+	}
+
+}
+
+//--------------------------------------------------------------------------------------------
+
+// GetChannelList 获取栏目链接
+func (s *Spider) getChannelList(callback func(listUrl string)) {
+
+	switch s.mode {
+
+	case Normal, Api:
+
+		if s.form.ChannelFunc == nil {
+
+			//当前页码
+			var pageCurrent int
+
+			for pageCurrent = s.form.PageStart; pageCurrent < s.form.PageStart+s.form.Length; pageCurrent++ {
+
+				//当前列表url
+				url := s.form.Host + strings.Replace(s.form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
+
+				callback(url)
+
+			}
+
+			return
+		}
+
+		cList := s.form.ChannelFunc(&s.form)
+
+		s.form.Length = len(cList)
+
+		//自定义栏目
+		for _, i := range cList {
+
+			callback(i)
+
+		}
 
 	}
 
