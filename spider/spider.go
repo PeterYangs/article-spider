@@ -1,14 +1,14 @@
 package spider
 
 import (
-	"github.com/PeterYangs/article-spider/v2/conf"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/mode"
-	"github.com/PeterYangs/article-spider/v2/mode/api"
-	"github.com/PeterYangs/article-spider/v2/mode/auto"
-	"github.com/PeterYangs/article-spider/v2/mode/normal"
-	"github.com/PeterYangs/article-spider/v2/notice"
-	"github.com/PeterYangs/article-spider/v2/result"
+	"github.com/PeterYangs/article-spider/v3/conf"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/mode"
+	"github.com/PeterYangs/article-spider/v3/mode/api"
+	"github.com/PeterYangs/article-spider/v3/mode/auto"
+	"github.com/PeterYangs/article-spider/v3/mode/normal"
+	"github.com/PeterYangs/article-spider/v3/notice"
+	"github.com/PeterYangs/article-spider/v3/result"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
 	"os"

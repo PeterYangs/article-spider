@@ -3,7 +3,7 @@
 **安装**
 
 ```shell
-go get github.com/PeterYangs/article-spider/v2
+go get github.com/PeterYangs/article-spider/v3
 ```
 
 [v1版本](https://github.com/PeterYangs/article-spider/tree/v1)
@@ -18,9 +18,9 @@ go get github.com/PeterYangs/article-spider/v2
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -96,9 +96,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -124,9 +124,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -180,9 +180,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -221,9 +221,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -266,9 +266,9 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -320,9 +320,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {
@@ -368,10 +368,10 @@ package main
 
 import (
 	"context"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/mode"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/mode"
+	"github.com/PeterYangs/article-spider/v3/spider"
 	"github.com/chromedp/chromedp"
 )
 
@@ -433,9 +433,9 @@ func main() {
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 )
 
 func main() {

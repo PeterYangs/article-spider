@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/spider"
 	"time"
 )
 

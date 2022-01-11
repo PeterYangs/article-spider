@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/mode"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/mode"
+	"github.com/PeterYangs/article-spider/v3/spider"
 	"github.com/chromedp/chromedp"
 )
 

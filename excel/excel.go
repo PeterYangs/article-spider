@@ -2,8 +2,8 @@ package excel
 
 import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
-	"github.com/PeterYangs/article-spider/v2/form"
-	ff "github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v3/form"
+	ff "github.com/PeterYangs/article-spider/v3/form"
 	uuid "github.com/satori/go.uuid"
 	"os"
 	"strconv"

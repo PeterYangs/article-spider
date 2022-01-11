@@ -2,10 +2,10 @@ package form
 
 import (
 	"errors"
-	"github.com/PeterYangs/article-spider/v2/conf"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/mode"
-	"github.com/PeterYangs/article-spider/v2/notice"
+	"github.com/PeterYangs/article-spider/v3/conf"
+	"github.com/PeterYangs/article-spider/v3/fileTypes"
+	"github.com/PeterYangs/article-spider/v3/mode"
+	"github.com/PeterYangs/article-spider/v3/notice"
 	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
 	"golang.org/x/net/context"

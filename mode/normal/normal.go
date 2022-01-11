@@ -1,7 +1,7 @@
 package normal
 
 import (
-	"github.com/PeterYangs/article-spider/v2/form"
+	"github.com/PeterYangs/article-spider/v3/form"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )

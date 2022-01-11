@@ -1,9 +1,9 @@
 package result
 
 import (
-	"github.com/PeterYangs/article-spider/v2/excel"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/mode"
+	"github.com/PeterYangs/article-spider/v3/excel"
+	"github.com/PeterYangs/article-spider/v3/form"
+	"github.com/PeterYangs/article-spider/v3/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/shopspring/decimal"
 )
