@@ -13,6 +13,8 @@ func (n normal) Start() {
 	//TODO implement me
 	//panic("implement me")
 
+	//n.s.form.
+
 }
 
 func (n normal) GetList() {
