@@ -2,6 +2,7 @@ package article_spider
 
 import (
 	"fmt"
+	"log"
 	"runtime/debug"
 )
 
@@ -13,6 +14,7 @@ const (
 	Error   = 0x00002
 	Log     = 0x00003
 	Process = 0x00004
+	Finish  = 0x00005
 )
 
 type message struct {
@@ -53,6 +55,11 @@ func (n *Notice) Process(content ...interface{}) {
 	n.ch <- &message{types: Process, content: content}
 }
 
+func (n *Notice) Finish(content ...interface{}) {
+
+	n.ch <- &message{types: Finish, content: content}
+}
+
 type Notice struct {
 	ch chan *message
 	s  *Spider
@@ -70,6 +77,10 @@ func NewNotice(s *Spider) *Notice {
 
 func (n *Notice) Service() {
 
+	n.s.wait.Add(1)
+
+	defer n.s.wait.Done()
+
 	for {
 
 		select {
@@ -82,6 +93,16 @@ func (n *Notice) Service() {
 				fmt.Print(m.content...)
 				fmt.Print("\r")
 
+			case Finish:
+
+				fmt.Println()
+				fmt.Println()
+				log.Println(m.content...)
+				fmt.Println()
+				fmt.Println()
+
+				return
+
 			default:
 
 				fmt.Println()
@@ -90,10 +111,6 @@ func (n *Notice) Service() {
 				fmt.Println(m.content...)
 				fmt.Println()
 			}
-
-		case <-n.s.cxt.Done():
-
-			return
 
 		}
 

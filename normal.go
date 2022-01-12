@@ -26,6 +26,10 @@ func (n normal) Start() {
 
 	})
 
+	n.s.detailWait.Wait()
+
+	n.s.cancel()
+
 }
 
 func (n normal) GetList(listUrl string) {
@@ -91,36 +95,30 @@ func (n normal) GetList(listUrl string) {
 
 		if href == "" || isFind == false {
 
-			//n.form.Notice.PushMessage(notice.NewError("a链接为空,当前链接为:", listUrl))
-
-			n.form.Notice.Error("a链接为空,当前链接为:", listUrl)
+			n.s.notice.Error("a链接为空,当前链接为:", listUrl)
 
 			return
 		}
 
 		//列表选择器不为空时
-		if len(n.form.ListFields) > 0 {
+		if len(n.s.form.ListFields) > 0 {
 
 			t, err := s.Html()
 
 			if err != nil {
 
-				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
-
-				n.form.Notice.Error(err.Error())
+				n.s.notice.Error(err.Error())
 
 				return
 
 			}
 
 			//解析列表选择器
-			storage, err = n.form.ResolveSelector(t, n.form.ListFields, listUrl)
+			storage, err = n.s.form.ResolveSelector(t, n.s.form.ListFields, listUrl)
 
 			if err != nil {
 
-				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
-
-				n.form.Notice.Error(err.Error())
+				n.s.notice.Error(err.Error())
 
 				return
 			}
@@ -128,34 +126,42 @@ func (n normal) GetList(listUrl string) {
 		}
 
 		//如果详情选择器为空就跳过
-		if len(n.form.DetailFields) <= 0 {
+		if len(n.s.form.DetailFields) <= 0 {
 
-			n.form.Storage <- storage
+			//n.s.form.Storage <- storage
+
+			n.s.result.Push(storage)
 
 			//相当于详情完成一个
-			n.form.CurrentIndex++
+			//n.form.CurrentIndex++
+
+			n.s.currentIndex++
 
 			return
 
 		}
 
 		//控制协程并发数
-		n.form.DetailCoroutineChan <- true
+		//n.form.DetailCoroutineChan <- true
 
-		n.form.DetailWait.Add(1)
+		n.s.detailCoroutineChan <- true
 
-		go n.GetDetail(n.form.GetHref(href), storage)
+		//n.form.DetailWait.Add(1)
+
+		n.s.detailWait.Add(1)
+
+		go n.GetDetail(n.s.form.GetHref(href), storage)
 
 	}).Size()
 
 	//n.form.Notice.PushMessage(notice.NewError(size))
 
-	if n.form.DetailSize == 0 && size > 0 {
+	if n.s.detailSize == 0 && size > 0 {
 
-		n.form.DetailSize = size
+		n.s.detailSize = size
 
 		//计算大概爬取总数量
-		n.form.Total = n.form.Length * size
+		n.s.total = n.s.form.Length * size
 
 	}
 
@@ -163,12 +169,105 @@ func (n normal) GetList(listUrl string) {
 
 		//n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
 
-		n.form.Notice.Error("a链接未发现")
+		//n.form.Notice.Error("a链接未发现")
+
+		n.s.notice.Error("a链接未发现")
 
 	}
 
 }
 
-func (n normal) GetDetail() {
+func (n normal) GetDetail(detailUrl string, storage map[string]string) {
+
+	defer func() {
+
+		<-n.s.detailCoroutineChan
+
+		//n.form.DetailWait.Done()
+
+		n.s.detailWait.Done()
+
+		//n.form.CurrentIndex++
+
+		n.s.currentIndex++
+
+	}()
+
+	html, err := n.s.form.GetHtml(detailUrl)
+
+	if err != nil {
+
+		//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+		//n.form.Notice.Error(err.Error())
+
+		return
+
+	}
+
+	//中间链接（中间页面）
+	if len(n.s.form.MiddleSelector) > 0 {
+
+		for _, s := range n.s.form.MiddleSelector {
+
+			doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+			if err != nil {
+
+				n.s.notice.Error(err.Error())
+
+				return
+
+			}
+
+			href, b := doc.Find(s).Attr("href")
+
+			if !b {
+
+				return
+			}
+
+			href = n.s.form.GetHref(href)
+
+			html, err = n.s.form.GetHtml(href)
+
+			if err != nil {
+
+				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
+
+				n.s.notice.Error(err.Error())
+
+				return
+
+			}
+
+		}
+
+	}
+
+	res, err := n.s.form.ResolveSelector(html, n.s.form.DetailFields, detailUrl)
+
+	if err != nil {
+
+		n.s.notice.Error(err.Error())
+
+		return
+	}
+
+	//合并列表结果
+	for s, s2 := range res {
+
+		storage[s] = s2
+
+	}
+
+	for s, s2 := range storage {
+
+		storage[s] = strings.TrimSpace(s2)
+	}
+
+	//n.form.Storage <- storage
+
+	n.s.result.Push(storage)
 
 }

@@ -21,12 +21,6 @@ func (r *result) Work() {
 
 	defer func() {
 
-		//fmt.Println("准备退出")
-		//
-		//time.Sleep(10 * time.Second)
-		//
-		//fmt.Println("等待完毕")
-
 		r.form.Wait.Done()
 
 		r.form.Notice.Close()
@@ -57,10 +51,6 @@ func (r *result) Work() {
 			break
 		}
 
-		//fmt.Print("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength)+"", "\r")
-
-		//fmt.Println("当前进度：", decimal.NewFromInt(int64(r.form.CurrentIndex)).Div(decimal.NewFromInt(int64(r.form.Total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, conf.Conf.MaxStrLength))
-
 		switch r.form.Mode {
 
 		case mode.Auto:
@@ -81,8 +71,6 @@ func (r *result) Work() {
 	if r.form.ResultCallback == nil {
 
 		filename := exc.Save()
-
-		//r.form.Notice.PushMessage(notice.NewLog("excel文件为:" + filename))
 
 		r.form.Notice.Log("excel文件为:" + filename)
 

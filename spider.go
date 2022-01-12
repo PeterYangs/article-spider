@@ -2,6 +2,7 @@ package article_spider
 
 import (
 	"context"
+	"fmt"
 	"github.com/PeterYangs/request"
 	"strconv"
 	"strings"
@@ -18,6 +19,13 @@ type Spider struct {
 	wait                sync.WaitGroup
 	notice              *Notice
 	imageDir            string
+	result              *result
+	excel               *excel
+	currentIndex        int
+	detailWait          sync.WaitGroup //详情等待
+	detailSize          int
+	total               int
+	autoPage            int //自动化模式当前页码
 }
 
 func NewSpider(f Form, mode Mode) *Spider {
@@ -50,12 +58,20 @@ func NewSpider(f Form, mode Mode) *Spider {
 
 	cxt, cancel := context.WithCancel(context.Background())
 
-	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image"}
+	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image", detailWait: sync.WaitGroup{}}
 }
 
 func (s *Spider) Start() {
 
 	s.notice = NewNotice(s)
+
+	s.result = NewResult(s)
+
+	s.excel = NewExcel(s)
+
+	go s.notice.Service()
+
+	go s.result.Work()
 
 	s.form.s = s
 
@@ -66,6 +82,12 @@ func (s *Spider) Start() {
 		NewNormal(s).Start()
 
 	}
+
+	s.wait.Wait()
+
+	fmt.Println("finish")
+
+	//select {}
 
 }
 

@@ -15,24 +15,27 @@ import (
 )
 
 type Form struct {
-	Host                       string                              //网站域名
-	Channel                    string                              //栏目链接，页码用[PAGE]替换
-	PageStart                  int                                 //页码起始页
-	Length                     int                                 //爬取页码长度
-	ListSelector               string                              //列表选择器
-	HrefSelector               string                              //a链接选择器，相对于列表选择器
-	DisableAutoCoding          bool                                //是否禁用自动转码
-	DetailFields               map[string]Field                    //详情页面字段选择器
-	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
-	HttpTimeout                time.Duration                       //请求超时时间
-	HttpHeader                 map[string]string                   //header
-	HttpProxy                  string                              //代理（暂不支持auto模式，但是下载图片只有的）
-	ChannelFunc                func(form *Form) []string           //自定义栏目链接
-	DetailCoroutineNumber      int                                 //爬取详情页协程数
-	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
-	DisableImageExtensionCheck bool                                //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
-	AllowImageExtension        []string                            //允许下载的图片拓展名
-	DefaultImg                 func(form *Form, item Field) string //图片出错时，设置默认图片
+	Host                       string                                   //网站域名
+	Channel                    string                                   //栏目链接，页码用[PAGE]替换
+	PageStart                  int                                      //页码起始页
+	Length                     int                                      //爬取页码长度
+	ListSelector               string                                   //列表选择器
+	HrefSelector               string                                   //a链接选择器，相对于列表选择器
+	DisableAutoCoding          bool                                     //是否禁用自动转码
+	DetailFields               map[string]Field                         //详情页面字段选择器
+	ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
+	HttpTimeout                time.Duration                            //请求超时时间
+	HttpHeader                 map[string]string                        //header
+	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
+	ChannelFunc                func(form *Form) []string                //自定义栏目链接
+	DetailCoroutineNumber      int                                      //爬取详情页协程数
+	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
+	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	AllowImageExtension        []string                                 //允许下载的图片拓展名
+	DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
+	MiddleSelector             []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
+	CustomExcelHeader          bool                                     //自定义Excel表格头部
+	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	s                          *Spider
 }
 
