@@ -26,6 +26,7 @@ type Spider struct {
 	detailSize          int
 	total               int
 	autoPage            int //自动化模式当前页码
+	debug               bool
 }
 
 func NewSpider(f Form, mode Mode) *Spider {
@@ -59,6 +60,13 @@ func NewSpider(f Form, mode Mode) *Spider {
 	cxt, cancel := context.WithCancel(context.Background())
 
 	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image", detailWait: sync.WaitGroup{}}
+}
+
+func (s *Spider) Debug() *Spider {
+
+	s.debug = true
+
+	return s
 }
 
 func (s *Spider) Start() {

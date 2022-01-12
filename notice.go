@@ -29,11 +29,11 @@ func (n *Notice) Info(content ...interface{}) {
 
 func (n *Notice) Error(content ...interface{}) {
 
-	//if n.debug {
+	if n.s.debug {
 
-	content = append(content, string(debug.Stack()))
+		content = append(content, string(debug.Stack()))
 
-	//}
+	}
 
 	n.ch <- &message{types: Error, content: content}
 }

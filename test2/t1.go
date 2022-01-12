@@ -24,8 +24,8 @@ func main() {
 				return "/api"
 			}},
 		},
-		ListFields: map[string]articleSpider.Field{},
-		//CustomExcelHeader:     true,
+		ListFields:            map[string]articleSpider.Field{},
+		CustomExcelHeader:     true,
 		DetailCoroutineNumber: 5,
 	}
 
