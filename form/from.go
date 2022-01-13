@@ -97,13 +97,14 @@ type Form struct {
 }
 
 type Field struct {
-	Types        fileTypes.FieldTypes
-	Selector     string                                    //字段选择器
-	AttrKey      string                                    //属性值参数
-	ImagePrefix  func(form *Form, imageName string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir     string                                    //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader  string                                    //excel表头，需要CustomExcelHeader为true,例：A
-	RegularIndex int                                       //正则匹配中的反向引用的下标，默认是1
+	Types          fileTypes.FieldTypes
+	Selector       string                                              //字段选择器
+	AttrKey        string                                              //属性值参数
+	ImagePrefix    func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir       string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader    string                                              //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex   int                                                 //正则匹配中的反向引用的下标，默认是1
+	ConversionFunc func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 }
 
 // DealCoding 解决编码问题

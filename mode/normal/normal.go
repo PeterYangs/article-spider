@@ -249,6 +249,33 @@ func (n *normal) GetDetail(detailUrl string, storage map[string]string) {
 		storage[s] = strings.TrimSpace(s2)
 	}
 
+	////合并列表和详情选择器
+	//var all = make(map[string]form.Field)
+	//
+	//tempRes := storage
+	//
+	//for i, v := range n.form.ListFields {
+	//
+	//	all[i] = v
+	//
+	//}
+	//
+	//for i, v := range n.form.DetailFields {
+	//
+	//	all[i] = v
+	//
+	//}
+	//
+	//for i, v := range all {
+	//
+	//	if v.ConversionFunc != nil {
+	//
+	//		tempRes[i] = v.ConversionFunc(storage[i], storage)
+	//
+	//	}
+	//
+	//}
+
 	n.form.Storage <- storage
 
 }
