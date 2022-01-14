@@ -607,6 +607,8 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection) (string, error) {
 // DownImg 下载图片（包括生成文件夹）
 func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
+	url = strings.Replace(url, "\n", "", -1)
+
 	//获取完整链接
 	imgUrl := f.GetHref(url)
 
