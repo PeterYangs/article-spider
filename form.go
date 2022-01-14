@@ -36,17 +36,19 @@ type Form struct {
 	MiddleSelector             []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
 	CustomExcelHeader          bool                                     //自定义Excel表格头部
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
+	ApiConversion              func(html string, form *Form) []string   //api获取链接
 	s                          *Spider
 }
 
 type Field struct {
-	Types        FieldTypes
-	Selector     string                                    //字段选择器
-	AttrKey      string                                    //属性值参数
-	ImagePrefix  func(form *Form, imageName string) string //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir     string                                    //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader  string                                    //excel表头，需要CustomExcelHeader为true,例：A
-	RegularIndex int                                       //正则匹配中的反向引用的下标，默认是1
+	Types          FieldTypes
+	Selector       string                                              //字段选择器
+	AttrKey        string                                              //属性值参数
+	ImagePrefix    func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir       string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader    string                                              //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex   int                                                 //正则匹配中的反向引用的下标，默认是1
+	ConversionFunc func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 }
 
 // DealCoding 解决编码问题

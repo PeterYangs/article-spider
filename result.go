@@ -47,6 +47,36 @@ func (r *result) Work() {
 
 		case m := <-r.storage:
 
+			//合并列表和详情选择器
+			var all = make(map[string]Field)
+
+			tempRes := m
+
+			for i, v := range r.s.form.ListFields {
+
+				all[i] = v
+
+			}
+
+			for i, v := range r.s.form.DetailFields {
+
+				all[i] = v
+
+			}
+
+			for i, v := range all {
+
+				//自定义转换
+				if v.ConversionFunc != nil {
+
+					tempRes[i] = v.ConversionFunc(m[i], m)
+
+				}
+
+			}
+
+			m = tempRes
+
 			//自定义结果处理
 			if r.s.form.ResultCallback != nil {
 

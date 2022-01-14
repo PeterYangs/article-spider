@@ -89,6 +89,12 @@ func (s *Spider) Start() {
 
 		NewNormal(s).Start()
 
+	case Api:
+
+		//panic("你xx")
+
+		NewApi(s).Start()
+
 	}
 
 	s.wait.Wait()
