@@ -35,6 +35,10 @@ func (r *result) Work() {
 
 			r.s.notice.Finish("excel文件为:" + filename)
 
+		} else {
+
+			r.s.notice.Finish("输出完毕")
+
 		}
 
 		r.s.wait.Done()

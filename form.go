@@ -27,7 +27,7 @@ type Form struct {
 	ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
-	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
+	HttpProxy                  string                                   //代理
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
 	DetailCoroutineNumber      int                                      //爬取详情页协程数
 	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original

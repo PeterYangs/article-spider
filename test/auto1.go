@@ -27,16 +27,12 @@ func main() {
 				return "app"
 			}},
 		},
-		//ListFields: map[string]articleSpider.Field{
-		//	"desc": {Types: articleSpider.Text, Selector: " a > div > p"},
-		//},
+
 		//cookie
 		HttpHeader: map[string]string{
 			"cookie": "user_cookie=Vmod7XlkHN; UM_distinctid=17b805b421c1e0-0005d3dc1ac8ea-c343365-1fa400-17b805b421dda7; url_data=https://www.925g.com/zixun/,https://www.925g.com/; PHPSESSID=3m0ee50ba4r40jq3fleob2n71i; CNZZDATA1278942394=1852940385-1600066493-%7C1635143024; Hm_lvt_46233f03c62deb1e98a07bf1e1708415=1634807167,1634887947,1634955841,1635153418; Hm_lpvt_46233f03c62deb1e98a07bf1e1708415=1635153430",
 		},
 	}, articleSpider.Auto)
-
-	s.Debug()
 
 	err := s.Start()
 
