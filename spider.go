@@ -69,7 +69,7 @@ func (s *Spider) Debug() *Spider {
 	return s
 }
 
-func (s *Spider) Start() {
+func (s *Spider) Start() error {
 
 	s.notice = NewNotice(s)
 
@@ -83,6 +83,8 @@ func (s *Spider) Start() {
 
 	s.form.s = s
 
+	var err error
+
 	switch s.mode {
 
 	case Normal:
@@ -91,9 +93,11 @@ func (s *Spider) Start() {
 
 	case Api:
 
-		//panic("你xx")
-
 		NewApi(s).Start()
+
+	case Auto:
+
+		err = NewAuto(s).Start()
 
 	}
 
@@ -101,7 +105,7 @@ func (s *Spider) Start() {
 
 	fmt.Println("finish")
 
-	//select {}
+	return err
 
 }
 

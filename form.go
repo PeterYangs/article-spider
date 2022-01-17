@@ -1,6 +1,7 @@
 package article_spider
 
 import (
+	"context"
 	"errors"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
@@ -37,6 +38,12 @@ type Form struct {
 	CustomExcelHeader          bool                                     //自定义Excel表格头部
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
+	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
+	AutoListWaitSelector       string                                   //列表等待选择器（用于自动化爬取）
+	AutoNextPageMode           NextPageMode                             //下一页模式（用于自动化爬取,目前支持常规分页和加载更多）
+	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
+	AutoDetailWaitSelector     string                                   //详情等待选择器（用于自动化爬取）
+	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）
 	s                          *Spider
 }
 
