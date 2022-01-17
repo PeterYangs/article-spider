@@ -2,29 +2,25 @@ package main
 
 import (
 	"fmt"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	articleSpider "github.com/PeterYangs/article-spider/v3"
 )
 
 func main() {
 
-	s := spider.NewSpider()
-
-	s.LoadForm(form.CustomForm{
+	f := articleSpider.Form{
 		Host:         "https://www.925g.com",
 		Channel:      "/zixun_page[PAGE].html/",
 		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
 		HrefSelector: " a",
 		PageStart:    1,
 		Length:       10,
-		ListFields: map[string]form.Field{
+		ListFields: map[string]articleSpider.Field{
 
-			"title": {ExcelHeader: "K", Types: fileTypes.Text, Selector: " a > div > span"},
+			"title": {ExcelHeader: "K", Types: articleSpider.Text, Selector: " a > div > span"},
 		},
 		CustomExcelHeader:     true,
 		DetailCoroutineNumber: 2,
-		ResultCallback: func(item map[string]string, form *form.Form) {
+		ResultCallback: func(item map[string]string, form *articleSpider.Form) {
 
 			for s2, s3 := range item {
 
@@ -33,7 +29,9 @@ func main() {
 			}
 
 		},
-	})
+	}
+
+	s := articleSpider.NewSpider(f, articleSpider.Normal)
 
 	s.Start()
 

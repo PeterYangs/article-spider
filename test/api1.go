@@ -2,27 +2,24 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/spider"
+	articleSpider "github.com/PeterYangs/article-spider/v3"
 )
 
 func main() {
 
-	s := spider.NewSpider()
-
-	s.LoadForm(form.CustomForm{
+	f := articleSpider.Form{
 		Host:      "http://www.tiyuxiu.com",
 		Channel:   "/data/list_0_[PAGE].json?__t=16339338",
 		PageStart: 1,
 		Length:    10,
-		DetailFields: map[string]form.Field{
+		DetailFields: map[string]articleSpider.Field{
 
-			"title": {Types: fileTypes.Text, Selector: "h1"},
+			"title":   {Types: articleSpider.Text, Selector: "h1"},
+			"content": {Types: articleSpider.HtmlWithImage, Selector: "#main-content"},
 		},
 		//CustomExcelHeader:     true,
 		DetailCoroutineNumber: 2,
-		ApiConversion: func(html string, form2 *form.Form) []string {
+		ApiConversion: func(html string, form *articleSpider.Form) []string {
 
 			type list struct {
 				Url string
@@ -41,9 +38,11 @@ func main() {
 			}
 
 			return temp
+
 		},
-	})
+	}
 
-	s.StartApi()
+	s := articleSpider.NewSpider(f, articleSpider.Api).Debug()
 
+	s.Start()
 }

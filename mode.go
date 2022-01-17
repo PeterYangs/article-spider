@@ -1,4 +1,4 @@
-package mode
+package article_spider
 
 type Mode int
 

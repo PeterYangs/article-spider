@@ -1,19 +1,13 @@
-package form
+package article_spider
 
 import (
+	"context"
 	"errors"
-	"github.com/PeterYangs/article-spider/v2/conf"
-	"github.com/PeterYangs/article-spider/v2/fileTypes"
-	"github.com/PeterYangs/article-spider/v2/mode"
-	"github.com/PeterYangs/article-spider/v2/notice"
-	"github.com/PeterYangs/request"
 	"github.com/PeterYangs/tools"
-	"golang.org/x/net/context"
-	"os"
-
 	"github.com/PuerkitoBio/goquery"
 	uuid "github.com/satori/go.uuid"
 	http2 "net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,7 +15,7 @@ import (
 	"time"
 )
 
-type CustomForm struct {
+type Form struct {
 	Host                       string                                   //网站域名
 	Channel                    string                                   //栏目链接，页码用[PAGE]替换
 	PageStart                  int                                      //页码起始页
@@ -29,75 +23,32 @@ type CustomForm struct {
 	ListSelector               string                                   //列表选择器
 	HrefSelector               string                                   //a链接选择器，相对于列表选择器
 	DisableAutoCoding          bool                                     //是否禁用自动转码
-	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
-	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png,且跳过图片拓展检查
-	AllowImageExtension        []string                                 //允许下载的图片拓展名
-	DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
 	DetailFields               map[string]Field                         //详情页面字段选择器
 	ListFields                 map[string]Field                         //列表页面字段选择器,暂不支持api爬取
-	CustomExcelHeader          bool                                     //自定义Excel表格头部
-	DetailCoroutineNumber      int                                      //爬取详情页协程数(最大设置为30)
-	HttpTimeout                time.Duration                            //请求超时时间
-	HttpHeader                 map[string]string                        //header（支持cookie）
-	HttpProxy                  string                                   //代理
-	MiddleHrefSelector         []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
-	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
-	ApiConversion              func(html string, form *Form) []string   //api获取链接
-	ChannelFunc                func(form *Form) []string                //自定义栏目链接
-	NextSelector               string                                   //下一页选择器（用于自动化爬取）
-	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
-	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	NextPageMode               mode.NextPageMode                        //下一页模式（目前支持常规分页和加载更多）
-	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
-	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
-}
-
-type Form struct {
-	Host                       string          //网站域名
-	Channel                    string          //栏目链接，页码用[PAGE]替换
-	PageStart                  int             //页码起始页
-	Length                     int             //爬取页码长度
-	Client                     *request.Client //http客户端
-	ListSelector               string          //列表选择器
-	HrefSelector               string          //a链接选择器，相对于列表选择器
-	Mode                       mode.Mode
-	DisableAutoCoding          bool //是否禁用自动转码
-	Notice                     *notice.Notice
-	Wait                       sync.WaitGroup
-	LazyImageAttrName          string                              //懒加载图片属性，默认为data-original
-	DisableImageExtensionCheck bool                                //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
-	AllowImageExtension        []string                            //允许下载的图片拓展名
-	DefaultImg                 func(form *Form, item Field) string //图片出错时，设置默认图片
-	DetailFields               map[string]Field                    //详情页面字段选择器
-	ListFields                 map[string]Field                    //列表页面字段选择器,暂不支持api爬取
-	Storage                    chan map[string]string              //数据结果通道
-	CustomExcelHeader          bool                                //自定义Excel表格头部
-	DetailCoroutineNumber      int                                 //爬取详情页协程数
-	DetailCoroutineChan        chan bool                           //限制详情页并发chan
-	DetailWait                 sync.WaitGroup
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
-	HttpProxy                  string                                   //代理（暂不支持auto模式，但是下载图片只有的）
-	DetailSize                 int                                      //每个列表的详情数量
-	Total                      int                                      //预计爬取总数
-	CurrentIndex               int                                      //当前爬取数量
+	HttpProxy                  string                                   //代理
+	ChannelFunc                func(form *Form) []string                //自定义栏目链接
+	DetailCoroutineNumber      int                                      //爬取详情页协程数
+	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
+	DisableImageExtensionCheck bool                                     //禁用图片拓展名检查，禁用后所有图片拓展名强制为png
+	AllowImageExtension        []string                                 //允许下载的图片拓展名
+	DefaultImg                 func(form *Form, item Field) string      //图片出错时，设置默认图片
 	MiddleSelector             []string                                 //中间层选择器(a链接选择器)，当详情页有多层时使用，暂不支持自动模式
+	CustomExcelHeader          bool                                     //自定义Excel表格头部
 	ResultCallback             func(item map[string]string, form *Form) //自定义获取爬取结果回调
 	ApiConversion              func(html string, form *Form) []string   //api获取链接
-	ChannelFunc                func(form *Form) []string                //自定义栏目链接
-	NextSelector               string                                   //下一页选择器（用于自动化爬取）
-	PageCurrent                int                                      //当前页码（用于自动化爬取）
-	ListWaitSelector           string                                   //列表等待选择器（用于自动化爬取）
-	DetailWaitSelector         string                                   //详情等待选择器（用于自动化爬取）
-	NextPageMode               mode.NextPageMode                        //下一页模式（用于自动化爬取,目前支持常规分页和加载更多）
-	AutoPage                   int                                      //自动化模式当前页码
 	AutoPrefixEvent            func(chromedpCtx context.Context)        //自动爬取模式前置事件
-	Conf                       *conf.Conf
-	AutoDetailForceNewTab      bool //自动模式详情页强制打开新窗口(必须是a链接)
+	AutoListWaitSelector       string                                   //列表等待选择器（用于自动化爬取）
+	AutoNextPageMode           NextPageMode                             //下一页模式（用于自动化爬取,目前支持常规分页和加载更多）
+	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
+	AutoDetailWaitSelector     string                                   //详情等待选择器（用于自动化爬取）
+	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）
+	s                          *Spider
 }
 
 type Field struct {
-	Types          fileTypes.FieldTypes
+	Types          FieldTypes
 	Selector       string                                              //字段选择器
 	AttrKey        string                                              //属性值参数
 	ImagePrefix    func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
@@ -320,7 +271,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 		switch item.Types {
 
 		//单个文字字段
-		case fileTypes.Text:
+		case Text:
 
 			v := doc.Find(item.Selector).Text()
 
@@ -329,7 +280,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			break
 
 		//单个文字字段
-		case fileTypes.Attr:
+		case Attr:
 
 			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
 
@@ -338,7 +289,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			break
 
 		//只爬html（不包括图片）
-		case fileTypes.OnlyHtml:
+		case OnlyHtml:
 
 			v, err := doc.Find(item.Selector).Html()
 
@@ -346,8 +297,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				res.Store(field, "")
 
-				//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
-				f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
+				f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
 				break
 
@@ -358,7 +308,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			break
 
 		//爬取html，包括图片
-		case fileTypes.HtmlWithImage:
+		case HtmlWithImage:
 
 			wait.Add(1)
 
@@ -372,7 +322,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
 
-					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+					f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 					return
 
@@ -384,7 +334,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					//f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
-					f.Notice.Error(err.Error() + ",源链接：" + originUrl)
+					f.s.notice.Error(err.Error() + ",源链接：" + originUrl)
 
 					return
 
@@ -402,7 +352,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",富文本内容"))
 
-						f.Notice.Error(err.Error()+",源链接："+originUrl, ",富文本内容")
+						f.s.notice.Error(err.Error()+",源链接："+originUrl, ",富文本内容")
 
 						return
 					}
@@ -435,7 +385,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			}(item, field)
 
 		//单个图片
-		case fileTypes.Image:
+		case Image:
 
 			wait.Add(1)
 
@@ -447,9 +397,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				if err != nil {
 
-					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
-
-					f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+					f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 					return
 				}
@@ -463,7 +411,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			break
 
 		//多个图片
-		case fileTypes.MultipleImages:
+		case MultipleImages:
 
 			wait.Add(1)
 
@@ -475,19 +423,13 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				var imgList = sync.Map{}
 
-				//sync.
-
 				doc.Find(_item.Selector).Each(func(i int, selection *goquery.Selection) {
 
 					imgUrl, err := f.getImageLink(selection)
 
 					if err != nil {
 
-						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
-
-						f.Notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
-
-						//fmt.Println("------------------", _item.Selector)
+						f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 						return
 					}
@@ -524,12 +466,12 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			}(item, field)
 
 		//固定数据
-		case fileTypes.Fixed:
+		case Fixed:
 
 			res.Store(field, item.Selector)
 
 		//正则
-		case fileTypes.Regular:
+		case Regular:
 
 			reg := regexp.MustCompile(item.Selector).FindStringSubmatch(html)
 
@@ -627,17 +569,12 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		//panic(dir)
 
 		//设置文件夹
-		err := os.MkdirAll(f.Conf.ImageDir+"/"+dir, 0755)
+		err := os.MkdirAll(f.s.imageDir+"/"+dir, 0755)
 
 		if err != nil {
 
-			//ErrorLine(form, err.Error())
+			f.s.notice.Error(err.Error())
 
-			//f.Notice.PushMessage(notice.NewError(err.Error()))
-
-			f.Notice.Error(err.Error())
-
-			//return
 		}
 	}
 
@@ -665,11 +602,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 		if !tools.In_array(allowImage, strings.ToLower(ex)) {
 
-			//ErrorLine(form, "图片拓展名异常:"+imgUrl)
-
-			//f.Notice.PushMessage(notice.NewError("图片拓展名异常:" + imgUrl))
-
-			f.Notice.Error("图片拓展名异常:" + imgUrl)
+			f.s.notice.Error("图片拓展名异常:" + imgUrl)
 
 			//获取默认图片
 			if f.DefaultImg != nil {
@@ -684,19 +617,13 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
-	//imgErr := f.Client.Request().DownloadFile(imgUrl, "image/"+imgName)
-
-	imgErr := f.Client.R().Download(imgUrl, f.Conf.ImageDir+"/"+imgName)
+	imgErr := f.s.client.R().Download(imgUrl, f.s.imageDir+"/"+imgName)
 
 	if imgErr != nil {
 
 		msg := imgErr.Error()
 
-		//ErrorLine(form, msg)
-
-		//f.Notice.PushMessage(notice.NewError(msg))
-
-		f.Notice.Error(msg)
+		f.s.notice.Error(msg)
 
 		//获取默认图片
 		if f.DefaultImg != nil {
@@ -823,7 +750,7 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 // GetHtml 从链接中获取html
 func (f *Form) GetHtml(url string) (string, error) {
 
-	content, header, err := f.Client.R().GetToContentWithHeader(f.GetHref(url))
+	content, header, err := f.s.client.R().GetToContentWithHeader(f.GetHref(url))
 
 	if err != nil {
 

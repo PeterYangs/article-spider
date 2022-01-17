@@ -1,7 +1,8 @@
-package notice
+package article_spider
 
 import (
 	"fmt"
+	"log"
 	"runtime/debug"
 )
 
@@ -13,6 +14,7 @@ const (
 	Error   = 0x00002
 	Log     = 0x00003
 	Process = 0x00004
+	Finish  = 0x00005
 )
 
 type message struct {
@@ -27,7 +29,7 @@ func (n *Notice) Info(content ...interface{}) {
 
 func (n *Notice) Error(content ...interface{}) {
 
-	if n.debug {
+	if n.s.debug {
 
 		content = append(content, string(debug.Stack()))
 
@@ -53,76 +55,65 @@ func (n *Notice) Process(content ...interface{}) {
 	n.ch <- &message{types: Process, content: content}
 }
 
-type Notice struct {
-	ch chan *message
-	//spider *spider.Spider
-	//form *form.Form
-	debug bool
+func (n *Notice) Finish(content ...interface{}) {
+
+	n.ch <- &message{types: Finish, content: content}
 }
 
-func NewNotice() *Notice {
+type Notice struct {
+	ch chan *message
+	s  *Spider
+}
+
+func NewNotice(s *Spider) *Notice {
 
 	ch := make(chan *message, 10)
 
 	return &Notice{
 		ch: ch,
-		//spider: s,
-
+		s:  s,
 	}
 }
 
-func (n *Notice) SetDebug(debug bool) {
+func (n *Notice) Service() {
 
-	n.debug = debug
-}
+	n.s.wait.Add(1)
 
-//func (n *Notice) PushMessage(message *message) {
-//
-//	n.ch <- message
-//
-//}
+	defer n.s.wait.Done()
 
-func (n *Notice) Service(closeEvent func()) {
+	for {
 
-	defer func() {
+		select {
+		case m := <-n.ch:
 
-		closeEvent()
-	}()
+			switch m.types {
 
-	for m := range n.ch {
+			case Process:
+				fmt.Print("\033[u\033[K")
+				fmt.Print(m.content...)
+				fmt.Print("\r")
 
-		//fmt.Println(m.content...)
+			case Finish:
 
-		//_ = m
+				fmt.Println()
+				fmt.Println()
+				log.Println(m.content...)
+				fmt.Println()
+				fmt.Println()
 
-		switch m.types {
-		//case Log:
-		//	fmt.Print("\033[u\033[K")
-		//	fmt.Println(m.content...)
-		//
-		//case Debug:
-		//	fmt.Print("\033[u\033[K")
-		//	fmt.Println(m.content...)
+				return
 
-		case Process:
-			fmt.Print("\033[u\033[K")
-			fmt.Print(m.content...)
-			fmt.Print("\r")
+			default:
 
-		default:
+				fmt.Println()
+				fmt.Println()
+				//fmt.Print("\033[u\033[K")
+				fmt.Println(m.content...)
+				fmt.Println()
+			}
 
-			fmt.Println()
-			fmt.Println()
-			//fmt.Print("\033[u\033[K")
-			fmt.Println(m.content...)
-			fmt.Println()
 		}
 
 	}
-
-}
-func (n *Notice) Close() {
-
-	close(n.ch)
 
 }

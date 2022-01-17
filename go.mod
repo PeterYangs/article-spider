@@ -1,4 +1,4 @@
-module github.com/PeterYangs/article-spider/v2
+module github.com/PeterYangs/article-spider/v3
 
 go 1.15
 

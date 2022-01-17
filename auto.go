@@ -1,11 +1,9 @@
-package auto
+package article_spider
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/PeterYangs/article-spider/v2/form"
-	"github.com/PeterYangs/article-spider/v2/mode"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
@@ -19,18 +17,23 @@ import (
 )
 
 type auto struct {
-	form      *form.Form
+	s         *Spider
 	listIndex int //当前列表进行个数
 	page      int //当前页码
 	size      int //第一页列表长度
 }
 
-func NewAuto(form *form.Form) *auto {
+func NewAuto(s *Spider) *auto {
 
-	return &auto{form: form}
+	return &auto{s: s}
 }
 
-func (a *auto) GetList() {
+func (a *auto) Start() error {
+
+	if a.s.form.AutoDetailWaitSelector == "" {
+
+		return errors.New("详情等待选择器未配置")
+	}
 
 	cxt, cancel := a.createContext()
 
@@ -44,37 +47,45 @@ func (a *auto) GetList() {
 		}
 	})
 
-	if a.form.HttpHeader["cookie"] != "" {
+	if a.s.form.HttpHeader["cookie"] != "" {
 
-		task, err := a.setcookies(a.getCookieMap(a.form.HttpHeader["cookie"]))
+		task, err := a.setcookies(a.getCookieMap(a.s.form.HttpHeader["cookie"]))
 
 		if err != nil {
 
-			a.form.Notice.Error(err.Error())
+			a.s.notice.Error(err.Error())
 
-			return
+			return nil
 		}
 
 		chromedp.Run(
 			cxt,
 			task,
-			chromedp.Navigate(a.form.Host+a.form.Channel),
+			chromedp.Navigate(a.s.form.Host+a.s.form.Channel),
 		)
 
 	} else {
 
 		chromedp.Run(
 			cxt,
-			chromedp.Navigate(a.form.Host+a.form.Channel),
+			chromedp.Navigate(a.s.form.Host+a.s.form.Channel),
 		)
 	}
 
 	//执行前置事件
-	if a.form.AutoPrefixEvent != nil {
+	if a.s.form.AutoPrefixEvent != nil {
 
-		a.form.AutoPrefixEvent(cxt)
+		a.s.form.AutoPrefixEvent(cxt)
 
 	}
+
+	a.GetList(cxt, cancel, ch)
+
+	return nil
+
+}
+
+func (a *auto) GetList(cxt context.Context, cancel context.CancelFunc, ch chan target.ID) {
 
 	for {
 
@@ -84,12 +95,12 @@ func (a *auto) GetList() {
 
 		if ListErr != nil {
 
-			a.form.Notice.Error(ListErr.Error())
+			a.s.notice.Error(ListErr.Error())
 		}
 
-		if a.page >= a.form.Length {
+		if a.page >= a.s.form.Length {
 
-			a.form.Notice.Error("完成")
+			a.s.cancel()
 
 			return
 
@@ -105,30 +116,58 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		a.page++
 
-		a.form.AutoPage = a.page
+		a.s.autoPage = a.page
 
 	}()
 
+	if a.s.form.AutoListWaitSelector != "" {
+
+		listCxt, _ := context.WithTimeout(cxt, 6*time.Second)
+
+		//等待选择器
+		chromedp.Run(
+			listCxt,
+			chromedp.WaitVisible(a.s.form.AutoListWaitSelector, chromedp.ByQuery),
+		)
+
+	} else {
+
+		listCxt, _ := context.WithTimeout(cxt, 6*time.Second)
+
+		//等待选择器
+		chromedp.Run(
+			listCxt,
+			chromedp.WaitVisible(a.s.form.ListSelector+":nth-child(1)", chromedp.ByQuery),
+		)
+
+	}
+
 	var html string
 
-	listCxt, _ := context.WithTimeout(cxt, 6*time.Second)
+	htmlCxt, _ := context.WithTimeout(cxt, 6*time.Second)
 
-	//获取列表页面的html
-	chromedp.Run(
-		listCxt,
-		chromedp.WaitVisible(a.form.ListWaitSelector, chromedp.ByQuery),
-		chromedp.OuterHTML("html", &html, chromedp.ByQuery),
-	)
+	e := chromedp.Run(htmlCxt, chromedp.OuterHTML("html", &html, chromedp.ByQuery))
+
+	if e != nil {
+
+		return cxt, cancel, errors.New(fmt.Sprint("获取html失败", e))
+	}
+
+	if html == "" {
+
+		return cxt, cancel, errors.New(fmt.Sprint("html为空"))
+	}
 
 	//goquery加载html
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+
 	if err != nil {
 
 		return cxt, cancel, err
 
 	}
 
-	size := doc.Find(a.form.ListSelector).Size()
+	size := doc.Find(a.s.form.ListSelector).Size()
 
 	if a.size == 0 {
 
@@ -136,10 +175,10 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 	}
 
 	//查找列表中的a链接
-	doc.Find(a.form.ListSelector).Each(func(i int, s *goquery.Selection) {
+	doc.Find(a.s.form.ListSelector).Each(func(i int, s *goquery.Selection) {
 
 		//不要把上一页的长度也计算进去
-		if a.form.NextPageMode == mode.LoadMore {
+		if a.s.form.AutoNextPageMode == LoadMore {
 
 			if i+1 > a.size {
 
@@ -150,24 +189,24 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 		storage := make(map[string]string)
 
 		//列表选择器不为空时
-		if len(a.form.ListFields) > 0 {
+		if len(a.s.form.ListFields) > 0 {
 
 			t, err := s.Html()
 
 			if err != nil {
 
-				a.form.Notice.Error(err.Error())
+				a.s.notice.Error(err.Error())
 
 				return
 
 			}
 
 			//解析列表选择器
-			storage, err = a.form.ResolveSelector(t, a.form.ListFields, a.form.Host)
+			storage, err = a.s.form.ResolveSelector(t, a.s.form.ListFields, a.s.form.Host)
 
 			if err != nil {
 
-				a.form.Notice.Error(err.Error())
+				a.s.notice.Error(err.Error())
 
 				return
 			}
@@ -175,12 +214,12 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 		}
 
 		//如果详情选择器为空就跳过
-		if len(a.form.DetailFields) <= 0 {
+		if len(a.s.form.DetailFields) <= 0 {
 
-			a.form.Storage <- storage
+			a.s.result.Push(storage)
 
 			//相当于详情完成一个
-			a.form.CurrentIndex++
+			a.s.currentIndex++
 
 			return
 
@@ -189,25 +228,25 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 		//详情点击选择器
 		var clickSelector string
 
-		switch a.form.NextPageMode {
+		switch a.s.form.AutoNextPageMode {
 
-		case mode.Pagination:
+		case Pagination:
 
 			//获取列表中的a链接选择器
-			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
+			clickSelector = a.s.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.s.form.HrefSelector
 
 			break
 
-		case mode.LoadMore:
+		case LoadMore:
 
-			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(a.listIndex+1) + ")" + " > " + a.form.HrefSelector
+			clickSelector = a.s.form.ListSelector + ":nth-child(" + strconv.Itoa(a.listIndex+1) + ")" + " > " + a.s.form.HrefSelector
 
 			a.listIndex++
 
 		default:
 
 			//获取列表中的a链接选择器
-			clickSelector = a.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.form.HrefSelector
+			clickSelector = a.s.form.ListSelector + ":nth-child(" + strconv.Itoa(i+1) + ")" + " > " + a.s.form.HrefSelector
 
 		}
 
@@ -222,9 +261,9 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		if e != nil {
 
-			a.form.Notice.Error("未找到详情选择器:", clickSelector, e)
+			a.s.notice.Error("未找到详情选择器:", clickSelector, e)
 
-			if a.form.NextPageMode == mode.LoadMore {
+			if a.s.form.AutoNextPageMode == LoadMore {
 
 				//点击下一页
 				cxt, cancel = a.clickNext(cxt, cancel, ch)
@@ -244,7 +283,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		isFind := false
 
-		if a.form.NextPageMode == mode.LoadMore {
+		if a.s.form.AutoNextPageMode == LoadMore {
 
 			href, isFind = doc.Find(clickSelector).Attr("href")
 
@@ -256,28 +295,28 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 		} else {
 
 			//a链接是列表的情况
-			if a.form.HrefSelector == "" {
+			if a.s.form.HrefSelector == "" {
 
 				href, isFind = s.Attr("href")
 
 			} else {
 
-				href, isFind = s.Find(a.form.HrefSelector).Attr("href")
+				href, isFind = s.Find(a.s.form.HrefSelector).Attr("href")
 
 			}
 
 		}
 
-		fmt.Println(a.form.AutoDetailForceNewTab, isFind, href)
+		//fmt.Println(a.s.form.AutoDetailForceNewTab, isFind, href)
 
 		//点击详情页强制打开新窗口
-		if a.form.AutoDetailForceNewTab && isFind && href != "" {
+		if a.s.form.AutoDetailForceNewTab && isFind && href != "" {
 
 			tag := target.CreateTarget("")
 
 			detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(target.ID(tag.BrowserContextID)))
 
-			e = chromedp.Run(detailCxt, chromedp.Navigate(a.form.GetHref(href)))
+			e = chromedp.Run(detailCxt, chromedp.Navigate(a.s.form.GetHref(href)))
 
 			a.GetDetail(detailCxt, storage, true, NewTabCancel)
 
@@ -310,9 +349,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		if e != nil {
 
-			//a.form.Notice.PushMessage(notice.NewError(e.Error()))
-
-			a.form.Notice.Error("点击详情选择器错误", e.Error())
+			a.s.notice.Error("点击详情选择器错误", e.Error())
 
 			return
 
@@ -331,36 +368,74 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 
 	defer func() {
 
-		a.form.CurrentIndex++
+		a.s.currentIndex++
+
+		if isNewTab {
+
+			cancel()
+
+		} else {
+
+			backCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
+
+			//返回上一页
+			chromedp.Run(backCxt,
+				chromedp.NavigateBack(),
+				chromedp.Sleep(1*time.Second),
+			)
+
+		}
 
 	}()
 
+	if a.s.form.AutoDetailWaitSelector != "" {
+
+		detailWaitCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
+
+		e := chromedp.Run(detailWaitCxt,
+			chromedp.WaitVisible(a.s.form.AutoDetailWaitSelector, chromedp.ByQuery),
+			//chromedp.Wait
+			//chromedp.OuterHTML("html", &html, chromedp.ByQuery),
+		)
+
+		if e != nil {
+
+			a.s.notice.Error(e.Error())
+		}
+
+	}
+
 	html := ""
 
-	tempCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
+	htmlCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
 
-	e := chromedp.Run(tempCxt,
-		chromedp.WaitVisible(a.form.DetailWaitSelector, chromedp.ByQuery),
-		//chromedp.Wait
-		chromedp.OuterHTML("html", &html, chromedp.ByQuery),
-	)
-
-	//fmt.Println(html)
+	e := chromedp.Run(htmlCxt, chromedp.OuterHTML("html", &html, chromedp.ByQuery))
 
 	if e != nil {
 
-		//a.form.Notice.PushMessage(notice.NewError(e.Error()))
+		a.s.notice.Error(fmt.Sprint("获取html失败", e))
 
-		a.form.Notice.Error(e.Error())
+		//return cxt, cancel, errors.New()
+
+		return
 	}
 
-	res, err := a.form.ResolveSelector(html, a.form.DetailFields, a.form.Host)
+	if html == "" {
+
+		a.s.notice.Error(fmt.Sprint("html为空"))
+
+		//return cxt, cancel, errors.New()
+
+		return
+	}
+
+	res, err := a.s.form.ResolveSelector(html, a.s.form.DetailFields, a.s.form.Host)
 
 	if err != nil {
 
 		//a.form.Notice.PushMessage(notice.NewError(err.Error()))
 
-		a.form.Notice.Error(err.Error())
+		a.s.notice.Error(err.Error())
 
 		return
 	}
@@ -377,23 +452,9 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 		storage[s] = strings.TrimSpace(s2)
 	}
 
-	a.form.Storage <- storage
+	//a.form.Storage <- storage
 
-	if isNewTab {
-
-		cancel()
-
-	} else {
-
-		backCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
-
-		//返回上一页
-		chromedp.Run(backCxt,
-			chromedp.NavigateBack(),
-			chromedp.Sleep(1*time.Second),
-		)
-
-	}
+	a.s.result.Push(storage)
 
 }
 
@@ -409,10 +470,10 @@ func (a *auto) createContext() (context.Context, context.CancelFunc) {
 	)
 
 	//设置代理
-	if a.form.HttpProxy != "" {
+	if a.s.form.HttpProxy != "" {
 
 		opts = append(opts,
-			chromedp.ProxyServer(a.form.HttpProxy),
+			chromedp.ProxyServer(a.s.form.HttpProxy),
 		)
 
 	}
@@ -435,7 +496,7 @@ func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan
 	clickCxt, _ := context.WithTimeout(cxt, 6*time.Second)
 
 	//点击下一页
-	chromedp.Run(clickCxt, chromedp.Click(a.form.NextSelector, chromedp.ByQuery))
+	chromedp.Run(clickCxt, chromedp.Click(a.s.form.AutoNextSelector, chromedp.ByQuery))
 
 	waitNewTab := time.After(3 * time.Second)
 
@@ -460,7 +521,7 @@ func (a *auto) clickNext(cxt context.Context, cancel context.CancelFunc, ch chan
 
 func (a *auto) setcookies(cookies map[string]string) (chromedp.Tasks, error) {
 
-	re1 := regexp.MustCompile("^(http|https)://([^/]+).*$").FindStringSubmatch(a.form.Host)
+	re1 := regexp.MustCompile("^(http|https)://([^/]+).*$").FindStringSubmatch(a.s.form.Host)
 
 	if len(re1) <= 0 {
 

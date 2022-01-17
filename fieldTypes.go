@@ -1,4 +1,4 @@
-package fileTypes
+package article_spider
 
 type FieldTypes int
 
