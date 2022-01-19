@@ -561,12 +561,10 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	dir := ""
 
-	if item.ImageDir != "" {
+	if f.s.imageDir != "" {
 
 		//获取图片文件夹
 		dir = f.GetDir(item.ImageDir, res)
-
-		//panic(dir)
 
 		//设置文件夹
 		err := os.MkdirAll(f.s.imageDir+"/"+dir, 0755)
