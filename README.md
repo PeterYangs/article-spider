@@ -3,6 +3,8 @@
 [中文文档](https://www.kancloud.cn/peter_yang/article-spiderv3/2624485)
 <hr/>
 
+声明：该爬虫仅供学习使用，如产生任何法律后果，本人概不负责
+
 **安装**
 
 ```shell
