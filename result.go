@@ -3,6 +3,7 @@ package article_spider
 import (
 	"github.com/PeterYangs/tools"
 	"github.com/shopspring/decimal"
+	"strings"
 )
 
 type result struct {
@@ -108,12 +109,12 @@ func (r *result) Work() {
 
 			case Auto:
 
-				r.s.notice.Process("当前页码：", r.s.autoPage+1, "/", r.s.form.Length, tools.SubStr(content, 0, 30))
+				r.s.notice.Process("当前页码：", r.s.autoPage+1, "/", r.s.form.Length, strings.Replace(tools.SubStr(content, 0, 30), "\n", "", -1))
 			default:
 
 				if r.s.total != 0 {
 
-					r.s.notice.Process("当前进度：", decimal.NewFromInt(int64(r.s.currentIndex)).Div(decimal.NewFromInt(int64(r.s.total))).Mul(decimal.NewFromInt(100)).String(), "%,", tools.SubStr(content, 0, 30))
+					r.s.notice.Process("当前进度：", decimal.NewFromInt(int64(r.s.currentIndex)).Div(decimal.NewFromInt(int64(r.s.total))).Mul(decimal.NewFromInt(100)).String(), "%,", strings.Replace(tools.SubStr(content, 0, 30), "\n", "", -1))
 
 				} else {
 
