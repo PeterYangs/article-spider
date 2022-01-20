@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/PeterYangs/request"
+	"github.com/PeterYangs/tools"
 	"strconv"
 	"strings"
 	"sync"
@@ -70,6 +71,21 @@ func (s *Spider) Debug() *Spider {
 }
 
 func (s *Spider) Start() error {
+
+	//对输入的域名和栏目进行处理
+	hostLast := tools.SubStr(s.form.Host, len(s.form.Host)-1, 1)
+
+	if hostLast == "/" {
+
+		s.form.Host = tools.SubStr(s.form.Host, 0, len(s.form.Host)-1)
+	}
+
+	ChannelFirst := tools.SubStr(s.form.Channel, 0, 1)
+
+	if ChannelFirst != "/" {
+
+		s.form.Channel = "/" + s.form.Channel
+	}
 
 	s.notice = NewNotice(s)
 
@@ -142,7 +158,14 @@ func (s *Spider) getChannelList(callback func(listUrl string)) {
 		//自定义栏目
 		for _, i := range cList {
 
-			callback(i)
+			ChannelFirst := tools.SubStr(i, 0, 1)
+
+			if ChannelFirst != "/" {
+
+				i = "/" + i
+			}
+
+			callback(s.form.Host + i)
 
 		}
 

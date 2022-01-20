@@ -156,15 +156,15 @@ func main() {
 		ChannelFunc: func(form *articleSpider.Form) []string {
 
 			return []string{
-				"https://www.925g.com/zixun_page1.html/",
-				"https://www.925g.com/zixun_page2.html/",
-				"https://www.925g.com/zixun_page3.html/",
-				"https://www.925g.com/zixun_page4.html/",
-				"https://www.925g.com/zixun_page5.html/",
-				"https://www.925g.com/zixun_page6.html/",
-				"https://www.925g.com/zixun_page7.html/",
-				"https://www.925g.com/zixun_page8.html/",
-				"https://www.925g.com/zixun_page9.html/",
+				"/zixun_page1.html/",
+				"/zixun_page2.html/",
+				"/zixun_page3.html/",
+				"/zixun_page4.html/",
+				"/zixun_page5.html/",
+				"/zixun_page6.html/",
+				"/zixun_page7.html/",
+				"/zixun_page8.html/",
+				"/zixun_page9.html/",
 			}
 		},
 		ListSelector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.bdDiv > div > ul > li",
