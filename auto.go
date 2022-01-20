@@ -307,8 +307,6 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 		}
 
-		//fmt.Println(a.s.form.AutoDetailForceNewTab, isFind, href)
-
 		//点击详情页强制打开新窗口
 		if a.s.form.AutoDetailForceNewTab && isFind && href != "" {
 
@@ -326,8 +324,15 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			e = chromedp.Run(
 				cxt,
 				chromedp.WaitVisible(clickSelector, chromedp.ByQuery),
-				chromedp.Click(clickSelector, chromedp.NodeVisible),
+				chromedp.Click(clickSelector, chromedp.ByQuery),
 			)
+
+			if e != nil {
+
+				a.s.notice.Error("点击详情失败:", e)
+
+				return
+			}
 
 			waitNewTab := time.After(6 * time.Second)
 
@@ -340,6 +345,21 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 				a.GetDetail(detailCxt, storage, true, NewTabCancel)
 
 			case <-waitNewTab:
+
+				//验证是否点击了详情页面
+				w, _ := context.WithTimeout(cxt, 3*time.Second)
+
+				e = chromedp.Run(
+					w,
+					chromedp.WaitVisible(a.s.form.AutoDetailWaitSelector, chromedp.ByQuery),
+				)
+
+				if e != nil {
+
+					a.s.notice.Error("等待详情选择器失败:", e)
+
+					return
+				}
 
 				a.GetDetail(cxt, storage, false, cancel)
 
@@ -375,6 +395,8 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 			cancel()
 
 		} else {
+
+			//panic("返回上一页")
 
 			backCxt, _ := context.WithTimeout(detailCxt, 6*time.Second)
 

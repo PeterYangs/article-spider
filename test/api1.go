@@ -17,8 +17,6 @@ func main() {
 			"title":   {Types: articleSpider.Text, Selector: "h1"},
 			"content": {Types: articleSpider.HtmlWithImage, Selector: "#main-content"},
 		},
-		//CustomExcelHeader:     true,
-		DetailCoroutineNumber: 2,
 		ApiConversion: func(html string, form *articleSpider.Form) []string {
 
 			type list struct {
@@ -42,7 +40,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Api).Debug()
+	s := articleSpider.NewSpider(f, articleSpider.Api)
 
 	s.Start()
 }
