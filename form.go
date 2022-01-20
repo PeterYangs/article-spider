@@ -48,14 +48,15 @@ type Form struct {
 }
 
 type Field struct {
-	Types          FieldTypes
-	Selector       string                                              //字段选择器
-	AttrKey        string                                              //属性值参数
-	ImagePrefix    func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir       string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader    string                                              //excel表头，需要CustomExcelHeader为true,例：A
-	RegularIndex   int                                                 //正则匹配中的反向引用的下标，默认是1
-	ConversionFunc func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
+	Types             FieldTypes
+	Selector          string                                              //字段选择器
+	AttrKey           string                                              //属性值参数
+	ImagePrefix       func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir          string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader       string                                              //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex      int                                                 //正则匹配中的反向引用的下标，默认是1
+	ConversionFunc    func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
+	LazyImageAttrName string                                              //懒加载图片属性，默认为data-original
 }
 
 // DealCoding 解决编码问题
@@ -346,11 +347,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
 
-					img, err := f.getImageLink(selection)
+					img, err := f.getImageLink(selection, _item)
 
 					if err != nil {
-
-						//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",富文本内容"))
 
 						f.s.notice.Error(err.Error()+",源链接："+originUrl, ",富文本内容")
 
@@ -393,7 +392,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				defer wait.Done()
 
-				imgUrl, err := f.getImageLink(doc.Find(_item.Selector))
+				imgUrl, err := f.getImageLink(doc.Find(_item.Selector), _item)
 
 				if err != nil {
 
@@ -425,7 +424,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				doc.Find(_item.Selector).Each(func(i int, selection *goquery.Selection) {
 
-					imgUrl, err := f.getImageLink(selection)
+					imgUrl, err := f.getImageLink(selection, _item)
 
 					if err != nil {
 
@@ -509,38 +508,39 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 }
 
 //获取图片链接
-func (f *Form) getImageLink(imageDoc *goquery.Selection) (string, error) {
+func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, error) {
 
-	if f.LazyImageAttrName != "" {
+	//懒加载图片处理
+	if item.LazyImageAttrName != "" {
 
-		imgUrl, imgBool := imageDoc.Attr(f.LazyImageAttrName)
+		//Field里面的懒加载属性
+		imgUrl, imgBool := imageDoc.Attr(item.LazyImageAttrName)
 
-		if imgBool == false || imgUrl == "" {
+		if imgBool && imgUrl != "" {
 
-			imgUrl, imgBool = imageDoc.Attr("src")
-
-			if imgBool == false || imgUrl == "" {
-
-				return "", errors.New("未找到图片链接")
-			}
-
+			return imgUrl, nil
 		}
 
-		return imgUrl, nil
+	}
+
+	//懒加载图片处理
+	if f.LazyImageAttrName != "" {
+
+		//form里面的懒加载属性
+		imgUrl, imgBool := imageDoc.Attr(f.LazyImageAttrName)
+
+		if imgBool && imgUrl != "" {
+
+			return imgUrl, nil
+		}
+
 	}
 
 	imgUrl, imgBool := imageDoc.Attr("src")
 
 	if imgBool == false || imgUrl == "" {
 
-		//懒加载
-		imgUrl, imgBool = imageDoc.Attr("data-original")
-
-		if imgBool == false || imgUrl == "" {
-
-			return "", errors.New("未找到图片链接")
-		}
-
+		return "", errors.New("未找到图片链接，请检查是否存在懒加载")
 	}
 
 	return imgUrl, nil
