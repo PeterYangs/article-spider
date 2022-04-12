@@ -484,4 +484,37 @@ func main() {
 }
 ```
 
+**排除不需要的元素**
+```go
+package main
+
+import (
+	articleSpider "github.com/PeterYangs/article-spider/v3"
+	
+)
+
+func main() {
+
+	f := articleSpider.Form{
+		Host:         "http://www.3h3.com",
+		Channel:      "/news/g_38_[PAGE].html",
+		ListSelector: "body > div.main > div > div > div.col-l > ul.ul-info > li",
+		HrefSelector: "  div.pic > a",
+		PageStart:    2,
+		Length:       1,
+		DetailFields: map[string]articleSpider.Field{
+			"content": {Types: articleSpider.HtmlWithImage, Selector: "body > div.main > div > div > div.col-l > div.art-body", NotSelector: []string{"body > div.main > div > div > div.col-l > div.art-body > div"}},
+
+		},
+
+	}
+
+	s := articleSpider.NewSpider(f, articleSpider.Normal)
+
+	s.Start()
+
+}
+
+```
+
 

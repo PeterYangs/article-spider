@@ -50,6 +50,7 @@ type Form struct {
 type Field struct {
 	Types             FieldTypes
 	Selector          string                                              //字段选择器
+	NotSelector       []string                                            //剔除选择器
 	AttrKey           string                                              //属性值参数
 	ImagePrefix       func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
 	ImageDir          string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
@@ -274,8 +275,16 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 		//单个文字字段
 		case Text:
 
-			v := doc.Find(item.Selector).Text()
+			selectors := doc.Find(item.Selector)
 
+			//排除选择器
+			for _, s := range item.NotSelector {
+
+				selectors.Find(s).Remove()
+
+			}
+
+			v := selectors.Text()
 			res.Store(field, v)
 
 			break
@@ -292,9 +301,20 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 		//只爬html（不包括图片）
 		case OnlyHtml:
 
-			v, err := doc.Find(item.Selector).Html()
+			//v, err := doc.Find(item.Selector).Html()
 
-			if err != nil {
+			selectors := doc.Find(item.Selector)
+
+			//排除选择器
+			for _, s := range item.NotSelector {
+
+				selectors.Find(s).Remove()
+
+			}
+
+			v, sErr := selectors.Html()
+
+			if sErr != nil {
 
 				res.Store(field, "")
 
@@ -317,13 +337,20 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				defer wait.Done()
 
-				html_, err := doc.Find(_item.Selector).Html()
+				selectors := doc.Find(_item.Selector)
 
-				if err != nil {
+				//排除选择器
+				for _, s := range item.NotSelector {
 
-					//f.Notice.PushMessage(notice.NewError(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector))
+					selectors.Find(s).Remove()
 
-					f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+				}
+
+				html_, sErr := selectors.Html()
+
+				if sErr != nil {
+
+					f.s.notice.Error(sErr.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
 					return
 
@@ -332,8 +359,6 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				htmlImg, err := goquery.NewDocumentFromReader(strings.NewReader(html_))
 
 				if err != nil {
-
-					//f.Notice.PushMessage(notice.NewError(err.Error() + ",源链接：" + originUrl))
 
 					f.s.notice.Error(err.Error() + ",源链接：" + originUrl)
 
