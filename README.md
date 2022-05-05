@@ -24,6 +24,7 @@ go get github.com/PeterYangs/article-spider/v4
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -52,7 +53,7 @@ func main() {
 		DetailCoroutineNumber: 5,
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal, context.Background())
 
 	s.Start()
 
@@ -100,6 +101,7 @@ func main() {
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -132,7 +134,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
@@ -146,6 +148,7 @@ func main() {
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -187,7 +190,7 @@ func main() {
 		DetailCoroutineNumber: 5,
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
@@ -201,6 +204,7 @@ func main() {
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -225,7 +229,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
@@ -240,6 +244,7 @@ package main
 
 import (
 	"fmt"
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -269,7 +274,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
@@ -283,6 +288,7 @@ func main() {
 package main
 
 import (
+	"context"
 	"encoding/json"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
@@ -324,7 +330,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Api).Debug()
+	s := articleSpider.NewSpider(f, articleSpider.Api,context.Background()).Debug()
 
 	s.Start()
 }
@@ -336,6 +342,7 @@ func main() {
 package main
 
 import (
+	"context"
 	"fmt"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
@@ -367,7 +374,7 @@ func main() {
 		HttpHeader: map[string]string{
 			"cookie": "user_cookie=Vmod7XlkHN; UM_distinctid=17b805b421c1e0-0005d3dc1ac8ea-c343365-1fa400-17b805b421dda7; url_data=https://www.925g.com/zixun/,https://www.925g.com/; PHPSESSID=3m0ee50ba4r40jq3fleob2n71i; CNZZDATA1278942394=1852940385-1600066493-%7C1635143024; Hm_lvt_46233f03c62deb1e98a07bf1e1708415=1634807167,1634887947,1634955841,1635153418; Hm_lpvt_46233f03c62deb1e98a07bf1e1708415=1635153430",
 		},
-	}, articleSpider.Auto)
+	}, articleSpider.Auto,context.Background())
 
 	err := s.Start()
 
@@ -438,7 +445,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Auto)
+	s := articleSpider.NewSpider(f, articleSpider.Auto,context.Background())
 
 	s.Start()
 
@@ -451,6 +458,7 @@ func main() {
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
@@ -477,7 +485,7 @@ func main() {
 		HttpProxy:             "http://127.0.0.1:4780",
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
@@ -489,6 +497,7 @@ func main() {
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v4"
 	
 )
@@ -509,7 +518,7 @@ func main() {
 
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal,context.Background())
 
 	s.Start()
 
