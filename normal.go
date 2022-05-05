@@ -16,9 +16,6 @@ func NewNormal(s *Spider) *normal {
 
 func (n normal) Start() {
 	//TODO implement me
-	//panic("implement me")
-
-	//n.s.form.
 
 	n.s.getChannelList(func(listUrl string) {
 
@@ -33,6 +30,16 @@ func (n normal) Start() {
 }
 
 func (n normal) GetList(listUrl string) {
+
+	select {
+
+	case <-n.s.cxt.Done():
+
+		return
+
+	default:
+
+	}
 
 	content, header, err := n.s.client.R().GetToContentWithHeader(listUrl)
 
@@ -128,12 +135,7 @@ func (n normal) GetList(listUrl string) {
 		//如果详情选择器为空就跳过
 		if len(n.s.form.DetailFields) <= 0 {
 
-			//n.s.form.Storage <- storage
-
 			n.s.result.Push(storage)
-
-			//相当于详情完成一个
-			//n.form.CurrentIndex++
 
 			n.s.currentIndex++
 
@@ -141,20 +143,13 @@ func (n normal) GetList(listUrl string) {
 
 		}
 
-		//控制协程并发数
-		//n.form.DetailCoroutineChan <- true
-
 		n.s.detailCoroutineChan <- true
-
-		//n.form.DetailWait.Add(1)
 
 		n.s.detailWait.Add(1)
 
 		go n.GetDetail(n.s.form.GetHref(href), storage)
 
 	}).Size()
-
-	//n.form.Notice.PushMessage(notice.NewError(size))
 
 	if n.s.detailSize == 0 && size > 0 {
 
@@ -166,10 +161,6 @@ func (n normal) GetList(listUrl string) {
 	}
 
 	if size <= 0 {
-
-		//n.form.Notice.PushMessage(notice.NewInfo("a链接未发现"))
-
-		//n.form.Notice.Error("a链接未发现")
 
 		n.s.notice.Error("a链接未发现")
 
@@ -183,15 +174,21 @@ func (n normal) GetDetail(detailUrl string, storage map[string]string) {
 
 		<-n.s.detailCoroutineChan
 
-		//n.form.DetailWait.Done()
-
 		n.s.detailWait.Done()
-
-		//n.form.CurrentIndex++
 
 		n.s.currentIndex++
 
 	}()
+
+	select {
+
+	case <-n.s.cxt.Done():
+
+		return
+
+	default:
+
+	}
 
 	html, err := n.s.form.GetHtml(detailUrl)
 
@@ -233,8 +230,6 @@ func (n normal) GetDetail(detailUrl string, storage map[string]string) {
 
 			if err != nil {
 
-				//n.form.Notice.PushMessage(notice.NewError(err.Error()))
-
 				n.s.notice.Error(err.Error())
 
 				return
@@ -265,8 +260,6 @@ func (n normal) GetDetail(detailUrl string, storage map[string]string) {
 
 		storage[s] = strings.TrimSpace(s2)
 	}
-
-	//n.form.Storage <- storage
 
 	n.s.result.Push(storage)
 

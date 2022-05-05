@@ -55,7 +55,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Auto)
+	s := articleSpider.NewSpider(f, articleSpider.Auto, context.Background())
 
 	s.Start()
 

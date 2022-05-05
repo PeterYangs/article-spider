@@ -42,6 +42,16 @@ func (a *api) Start() {
 
 func (a *api) GetList(listUrl string) {
 
+	select {
+
+	case <-a.s.cxt.Done():
+
+		return
+
+	default:
+
+	}
+
 	html, err := a.s.form.GetHtml(listUrl)
 
 	if err != nil {
@@ -94,6 +104,16 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 		a.s.currentIndex++
 
 	}()
+
+	select {
+
+	case <-a.s.cxt.Done():
+
+		return
+
+	default:
+
+	}
 
 	html, err := a.s.form.GetHtml(detailUrl)
 

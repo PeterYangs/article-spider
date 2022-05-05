@@ -117,3 +117,11 @@ func (n *Notice) Service() {
 	}
 
 }
+
+func (n *Notice) Stop() {
+
+	close(n.ch)
+
+	//fmt.Println("退出通知管道")
+
+}

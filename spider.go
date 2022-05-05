@@ -30,7 +30,7 @@ type Spider struct {
 	debug               bool
 }
 
-func NewSpider(f Form, mode Mode) *Spider {
+func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
 
 	client := request.NewClient()
 
@@ -58,9 +58,9 @@ func NewSpider(f Form, mode Mode) *Spider {
 
 	}
 
-	cxt, cancel := context.WithCancel(context.Background())
+	cxt2, cancel := context.WithCancel(cxt)
 
-	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image", detailWait: sync.WaitGroup{}}
+	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt2, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image", detailWait: sync.WaitGroup{}}
 }
 
 func (s *Spider) Debug() *Spider {
@@ -88,6 +88,8 @@ func (s *Spider) Start() error {
 	}
 
 	s.notice = NewNotice(s)
+
+	defer s.notice.Stop()
 
 	s.result = NewResult(s)
 

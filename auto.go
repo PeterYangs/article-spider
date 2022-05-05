@@ -89,6 +89,16 @@ func (a *auto) GetList(cxt context.Context, cancel context.CancelFunc, ch chan t
 
 	for {
 
+		select {
+
+		case <-a.s.cxt.Done():
+
+			return
+
+		default:
+
+		}
+
 		var ListErr error
 
 		cxt, cancel, ListErr = a.dealList(cxt, cancel, ch)
@@ -409,6 +419,16 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 		}
 
 	}()
+
+	select {
+
+	case <-a.s.cxt.Done():
+
+		return
+
+	default:
+
+	}
 
 	if a.s.form.AutoDetailWaitSelector != "" {
 

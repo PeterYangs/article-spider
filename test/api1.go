@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	articleSpider "github.com/PeterYangs/article-spider/v3"
+	"time"
 )
 
 func main() {
+
+	cxt, _ := context.WithTimeout(context.Background(), 10000*time.Second)
 
 	f := articleSpider.Form{
 		Host:      "http://www.tiyuxiu.com",
@@ -40,7 +44,7 @@ func main() {
 		},
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Api)
+	s := articleSpider.NewSpider(f, articleSpider.Api, cxt)
 
 	s.Start()
 }

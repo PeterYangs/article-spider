@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	articleSpider "github.com/PeterYangs/article-spider/v3"
 	"strings"
 )
@@ -33,7 +34,7 @@ func main() {
 		DetailCoroutineNumber: 5,
 	}
 
-	s := articleSpider.NewSpider(f, articleSpider.Normal)
+	s := articleSpider.NewSpider(f, articleSpider.Normal, context.Background())
 
 	s.Start()
 
