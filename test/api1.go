@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 	"time"
 )
 

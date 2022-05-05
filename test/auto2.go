@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 
 	"github.com/chromedp/chromedp"
 )

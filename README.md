@@ -8,7 +8,7 @@
 **安装**
 
 ```shell
-go get github.com/PeterYangs/article-spider/v3
+go get github.com/PeterYangs/article-spider/v4
 ```
 
 [v1版本](https://github.com/PeterYangs/article-spider/tree/v1)
@@ -24,7 +24,7 @@ go get github.com/PeterYangs/article-spider/v3
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -100,7 +100,7 @@ func main() {
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -146,7 +146,7 @@ func main() {
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -201,7 +201,7 @@ func main() {
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -240,7 +240,7 @@ package main
 
 import (
 	"fmt"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -284,7 +284,7 @@ package main
 
 import (
 	"encoding/json"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -337,7 +337,7 @@ package main
 
 import (
 	"fmt"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -385,7 +385,7 @@ package main
 
 import (
 	"context"
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 
 	"github.com/chromedp/chromedp"
 )
@@ -451,7 +451,7 @@ func main() {
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 )
 
 func main() {
@@ -489,7 +489,7 @@ func main() {
 package main
 
 import (
-	articleSpider "github.com/PeterYangs/article-spider/v3"
+	articleSpider "github.com/PeterYangs/article-spider/v4"
 	
 )
 
