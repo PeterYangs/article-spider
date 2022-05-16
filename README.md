@@ -526,4 +526,20 @@ func main() {
 
 ```
 
+**关于图片保存路径说明**
+
+**Field**中的图片路径设置
+
+
+ImageDir:图片生成路径，该路径会生成在结果中，支持动态
+ImagePrefix:图片前缀路径，不会出现在结果中
+
+全局设置
+
+SetImageDir(path),图片保存前缀，不会出现在结果中，默认是image
+
+SetSavePath(path),图片保存文件夹，不会出现在结果中
+
+图片保存路径拼接顺序：savePath+imageDir(全局)+imageDir(field)+文件名
+图片结果路径拼接顺序: imagePrefix+ImageDir+文件名
 

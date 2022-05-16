@@ -571,6 +571,18 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, er
 	return imgUrl, nil
 }
 
+func (f *Form) completePath(path string) string {
+
+	m, _ := regexp.MatchString(`.*/$`, path)
+
+	if m {
+
+		return path
+	}
+
+	return path + "/"
+}
+
 // DownImg 下载图片（包括生成文件夹）
 func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
@@ -586,20 +598,25 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	dir := ""
 
-	if f.s.imageDir != "" {
+	//if f.s.imageDir != "" {
 
-		//获取图片文件夹
-		dir = f.GetDir(item.ImageDir, res)
+	//allDir := ""
 
-		//设置文件夹
-		err := os.MkdirAll(f.s.imageDir+"/"+dir, 0755)
+	//获取图片文件夹
+	dir = f.GetDir(item.ImageDir, res)
 
-		if err != nil {
+	//判断是否是绝对路径
+	//allDir := If(f.s.imageDir == "", dir, f.s.imageDir+"/"+dir).(string)
 
-			f.s.notice.Error(err.Error())
+	//设置文件夹,图片保存路径+图片默认前缀路径+生成路径
+	err := os.MkdirAll(f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+dir, 0755)
 
-		}
+	if err != nil {
+
+		f.s.notice.Error(err.Error())
+
 	}
+	//}
 
 	ex, err := tools.GetExtensionName(imgUrl)
 
@@ -640,7 +657,16 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
-	imgErr := f.s.client.R().Download(imgUrl, f.s.imageDir+"/"+imgName)
+	var imgErr error
+
+	//if f.s.imageDir == "" {
+	//
+	//	imgErr = f.s.client.R().Download(imgUrl, imgName)
+	//
+	//} else {
+
+	imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
+	//}
 
 	if imgErr != nil {
 

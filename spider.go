@@ -28,6 +28,7 @@ type Spider struct {
 	total               int
 	autoPage            int //自动化模式当前页码
 	debug               bool
+	savePath            string //图片保存文件夹，不会出现在图片路径中，为空则为当前运行路径
 }
 
 func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
@@ -61,6 +62,19 @@ func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
 	cxt2, cancel := context.WithCancel(cxt)
 
 	return &Spider{form: f, mode: mode, client: client, detailCoroutineChan: make(chan bool, detailMaxCoroutines), cxt: cxt2, cancel: cancel, wait: sync.WaitGroup{}, imageDir: "image", detailWait: sync.WaitGroup{}}
+}
+
+// SetImageDir 设置图片文件夹
+func (s *Spider) SetImageDir(path string) {
+
+	s.imageDir = path
+
+}
+
+// SetSavePath 图片保存文件夹，不会出现在图片路径中，为空则为当前运行路径
+func (s *Spider) SetSavePath(path string) {
+
+	s.savePath = path
 }
 
 func (s *Spider) Debug() *Spider {
