@@ -573,6 +573,11 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, er
 
 func (f *Form) completePath(path string) string {
 
+	if path == "" {
+
+		return path
+	}
+
 	m, _ := regexp.MatchString(`.*/$`, path)
 
 	if m {
