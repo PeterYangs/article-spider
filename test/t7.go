@@ -15,6 +15,7 @@ func main() {
 		PageStart:    1,
 		Length:       10,
 		ListFields: map[string]articleSpider.Field{
+			//"file":{},
 			"title": {ExcelHeader: "A", Types: articleSpider.Text, Selector: "div > a > div > div.list_item_data > p.item_name > span.goods_name"},
 			"price": {ExcelHeader: "B", Types: articleSpider.Text, Selector: "div > a > div > div.list_item_data > div > div > p.selling_price > span.figure"},
 			"img": {ExcelHeader: "C", Types: articleSpider.Image, Selector: "  div > a > div > div.list_item_photo > div > div", ImageDir: "cgcosplay_image", ImagePrefix: func(form *articleSpider.Form, path string) string {

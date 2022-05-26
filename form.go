@@ -289,7 +289,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			break
 
-		//单个文字字段
+		//单个元素属性
 		case Attr:
 
 			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
@@ -433,6 +433,24 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 			}(item, field)
 
 			break
+
+		//单个文件
+		case File:
+
+			selectors := doc.Find(item.Selector)
+
+			v, ok := selectors.Attr(item.AttrKey)
+
+			if !ok {
+
+				break
+			}
+
+			imgName := f.DownImg(v, item, res)
+
+			res.Store(field, imgName)
+
+			//res.Store(field, v)
 
 		//多个图片
 		case MultipleImages:
@@ -804,7 +822,9 @@ func If(condition bool, trueVal, falseVal interface{}) interface{} {
 // GetHtml 从链接中获取html
 func (f *Form) GetHtml(url string) (string, error) {
 
-	content, header, err := f.s.client.R().GetToContentWithHeader(f.GetHref(url))
+	//content, header, err := f.s.client.R().GetToContentWithHeader(f.GetHref(url))
+
+	content, err := f.s.client.R().GetToContent(f.GetHref(url))
 
 	if err != nil {
 
@@ -817,7 +837,7 @@ func (f *Form) GetHtml(url string) (string, error) {
 	//自动转码
 	if f.DisableAutoCoding == false {
 
-		html, err = f.DealCoding(html, header)
+		html, err = f.DealCoding(html, content.Header())
 
 		if err != nil {
 

@@ -3,7 +3,7 @@ package article_spider
 import (
 	"context"
 	"fmt"
-	"github.com/PeterYangs/request"
+	"github.com/PeterYangs/request/v2"
 	"github.com/PeterYangs/tools"
 	"strconv"
 	"strings"
