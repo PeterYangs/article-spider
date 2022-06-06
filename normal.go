@@ -89,7 +89,7 @@ func (n normal) GetList(listUrl string) {
 
 		isFind := false
 
-		storage := make(map[string]string)
+		var rows *Rows = NewRows(map[string]string{})
 
 		//a链接是列表的情况
 		if n.s.form.HrefSelector == "" {
@@ -109,6 +109,8 @@ func (n normal) GetList(listUrl string) {
 			return
 		}
 
+		//var resolveErr error = nil
+
 		//列表选择器不为空时
 		if len(n.s.form.ListFields) > 0 {
 
@@ -123,7 +125,9 @@ func (n normal) GetList(listUrl string) {
 			}
 
 			//解析列表选择器
-			storage, err = n.s.form.ResolveSelector(t, n.s.form.ListFields, listUrl)
+			rows, err = n.s.form.ResolveSelector(t, n.s.form.ListFields, listUrl)
+
+			//resolveErr = storage_.err
 
 			if err != nil {
 
@@ -132,12 +136,18 @@ func (n normal) GetList(listUrl string) {
 				return
 			}
 
+			//storage = storage_.maps
+
 		}
 
 		//如果详情选择器为空就跳过
 		if len(n.s.form.DetailFields) <= 0 {
 
-			n.s.result.Push(storage)
+			//ss := NewRows(storage)
+			//
+			//ss.err = resolveErr
+
+			n.s.result.Push(rows)
 
 			n.s.currentIndex++
 
@@ -149,7 +159,7 @@ func (n normal) GetList(listUrl string) {
 
 		n.s.detailWait.Add(1)
 
-		go n.GetDetail(n.s.form.GetHref(href), storage)
+		go n.GetDetail(n.s.form.GetHref(href), rows)
 
 	}).Size()
 
@@ -170,7 +180,7 @@ func (n normal) GetList(listUrl string) {
 
 }
 
-func (n normal) GetDetail(detailUrl string, storage map[string]string) {
+func (n normal) GetDetail(detailUrl string, rows *Rows) {
 
 	defer func() {
 
@@ -252,17 +262,8 @@ func (n normal) GetDetail(detailUrl string, storage map[string]string) {
 	}
 
 	//合并列表结果
-	for s, s2 := range res {
+	rows.Add(res)
 
-		storage[s] = s2
-
-	}
-
-	for s, s2 := range storage {
-
-		storage[s] = strings.TrimSpace(s2)
-	}
-
-	n.s.result.Push(storage)
+	n.s.result.Push(rows)
 
 }

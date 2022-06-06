@@ -196,7 +196,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			}
 		}
 
-		storage := make(map[string]string)
+		var rows *Rows = NewRows(map[string]string{})
 
 		//列表选择器不为空时
 		if len(a.s.form.ListFields) > 0 {
@@ -212,7 +212,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 			}
 
 			//解析列表选择器
-			storage, err = a.s.form.ResolveSelector(t, a.s.form.ListFields, a.s.form.Host)
+			rows, err = a.s.form.ResolveSelector(t, a.s.form.ListFields, a.s.form.Host)
 
 			if err != nil {
 
@@ -221,12 +221,14 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 				return
 			}
 
+			//storage = storage_.maps
+
 		}
 
 		//如果详情选择器为空就跳过
 		if len(a.s.form.DetailFields) <= 0 {
 
-			a.s.result.Push(storage)
+			a.s.result.Push(rows)
 
 			//相当于详情完成一个
 			a.s.currentIndex++
@@ -326,7 +328,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 			e = chromedp.Run(detailCxt, chromedp.Navigate(a.s.form.GetHref(href)))
 
-			a.GetDetail(detailCxt, storage, true, NewTabCancel)
+			a.GetDetail(detailCxt, rows, true, NewTabCancel)
 
 		} else {
 
@@ -352,7 +354,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 				detailCxt, NewTabCancel := chromedp.NewContext(cxt, chromedp.WithTargetID(TargetID))
 
-				a.GetDetail(detailCxt, storage, true, NewTabCancel)
+				a.GetDetail(detailCxt, rows, true, NewTabCancel)
 
 			case <-waitNewTab:
 
@@ -371,7 +373,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 					return
 				}
 
-				a.GetDetail(cxt, storage, false, cancel)
+				a.GetDetail(cxt, rows, false, cancel)
 
 			}
 
@@ -394,7 +396,7 @@ func (a *auto) dealList(cxt context.Context, cancel context.CancelFunc, ch chan 
 
 }
 
-func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, isNewTab bool, cancel context.CancelFunc) {
+func (a *auto) GetDetail(detailCxt context.Context, rows *Rows, isNewTab bool, cancel context.CancelFunc) {
 
 	defer func() {
 
@@ -482,21 +484,23 @@ func (a *auto) GetDetail(detailCxt context.Context, storage map[string]string, i
 		return
 	}
 
-	//合并列表结果
-	for s, s2 := range res {
+	rows.Add(res)
 
-		storage[s] = s2
+	////合并列表结果
+	//for s, s2 := range res.maps {
+	//
+	//	storage[s] = s2
+	//
+	//}
 
-	}
-
-	for s, s2 := range storage {
-
-		storage[s] = strings.TrimSpace(s2)
-	}
+	//for s, s2 := range storage {
+	//
+	//	storage[s] = strings.TrimSpace(s2)
+	//}
 
 	//a.form.Storage <- storage
 
-	a.s.result.Push(storage)
+	a.s.result.Push(rows)
 
 }
 

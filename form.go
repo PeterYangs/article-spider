@@ -44,6 +44,7 @@ type Form struct {
 	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
 	AutoDetailWaitSelector     string                                   //详情等待选择器（用于自动化爬取）
 	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）
+	FilterError                bool                                     //过滤错误的行
 	s                          *Spider
 }
 
@@ -247,12 +248,14 @@ func (f *Form) GetHref(href string) string {
 }
 
 // ResolveSelector 解析选择器
-func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl string) (map[string]string, error) {
+func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl string) (*Rows, error) {
 
 	//存储结果
 	var res = &sync.Map{}
 
 	var wait = &sync.WaitGroup{}
+
+	var globalErr error = nil
 
 	//goquery加载html
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
@@ -320,6 +323,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", item.Selector)
 
+				globalErr = err
+
 				break
 
 			}
@@ -352,6 +357,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					f.s.notice.Error(sErr.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
 
+					globalErr = sErr
+
 					return
 
 				}
@@ -361,6 +368,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				if err != nil {
 
 					f.s.notice.Error(err.Error() + ",源链接：" + originUrl)
+
+					globalErr = err
 
 					return
 
@@ -377,6 +386,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					if err != nil {
 
 						f.s.notice.Error(err.Error()+",源链接："+originUrl, ",富文本内容")
+
+						globalErr = err
 
 						return
 					}
@@ -422,6 +433,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				if err != nil {
 
 					f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+
+					globalErr = err
 
 					return
 				}
@@ -472,6 +485,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					if err != nil {
 
 						f.s.notice.Error(err.Error()+",源链接："+originUrl, ",选择器：", _item.Selector)
+
+						globalErr = err
 
 						return
 					}
@@ -530,6 +545,10 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			}
 
+			globalErr = errors.New("正则匹配未找到")
+
+			f.s.notice.Error("正则匹配未找到")
+
 		}
 
 	}
@@ -546,7 +565,13 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 	})
 
-	return arr, nil
+	r := NewRows(arr)
+
+	r.err = globalErr
+
+	//fmt.Println(r.err)
+
+	return r, nil
 
 }
 

@@ -8,18 +8,51 @@ import (
 	"sync"
 )
 
+type Rows struct {
+	err  error
+	maps map[string]string
+}
+
+func NewRows(m map[string]string) *Rows {
+
+	//去空格
+	for s, s2 := range m {
+
+		m[s] = strings.TrimSpace(s2)
+	}
+
+	return &Rows{
+		maps: m,
+	}
+}
+
+// Add 合并两个结果
+func (r *Rows) Add(rr *Rows) {
+
+	if rr.err != nil {
+
+		r.err = rr.err
+	}
+
+	for s, s2 := range rr.maps {
+
+		r.maps[s] = strings.TrimSpace(s2)
+	}
+
+}
+
 type result struct {
 	s       *Spider
-	storage chan map[string]string
+	storage chan *Rows
 	lock    sync.Mutex
 }
 
 func NewResult(s *Spider) *result {
 
-	return &result{s: s, storage: make(chan map[string]string, 10), lock: sync.Mutex{}}
+	return &result{s: s, storage: make(chan *Rows, 10), lock: sync.Mutex{}}
 }
 
-func (r *result) Push(m map[string]string) {
+func (r *result) Push(i *Rows) {
 
 	r.lock.Lock()
 
@@ -33,7 +66,7 @@ func (r *result) Push(m map[string]string) {
 
 	default:
 
-		r.storage <- m
+		r.storage <- i
 	}
 
 }
@@ -67,19 +100,25 @@ func (r *result) Work() {
 
 		case m := <-r.storage:
 
-			r.do(m)
+			if m.err != nil && r.s.form.FilterError {
+
+				continue
+			}
+
+			r.do(m.maps)
 
 		case <-r.s.cxt.Done():
 
 			select {
 			case m := <-r.storage:
 
-				r.do(m)
+				if m.err != nil && r.s.form.FilterError {
+
+				}
+
+				r.do(m.maps)
+
 			default:
-
-				r.lock.Lock()
-
-				defer r.lock.Unlock()
 
 				fmt.Println()
 				fmt.Println("结果协程退出")

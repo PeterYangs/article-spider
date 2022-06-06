@@ -15,23 +15,26 @@ func main() {
 		PageStart:    1,
 		Length:       2,
 		DetailFields: map[string]articleSpider.Field{
-			"title": {ExcelHeader: "J", Types: articleSpider.Text, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1"},
-			"img":   {ExcelHeader: "H", Types: articleSpider.Image, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd img:nth-child(1)", ImageDir: "[date:md]/[random:1-100]"},
+			//"title": {ExcelHeader: "J", Types: articleSpider.Text, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.hd > h1"},
+			"img": {ExcelHeader: "H", Types: articleSpider.Image, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd img:nth-child(1)", ImageDir: "[date:md]/[random:1-100]"},
 			"content": {ExcelHeader: "I", Types: articleSpider.HtmlWithImage, Selector: "body > div.ny-container.uk-background-default > div.wrap > div > div.commonLeftDiv.uk-float-left > div > div.articleDiv > div.bd", ImagePrefix: func(form *articleSpider.Form, path string) string {
 
 				return "/api"
 			}, ImageDir: "[date:md]/[random:1-100]"},
 		},
-		ListFields:            map[string]articleSpider.Field{},
-		CustomExcelHeader:     true,
-		DetailCoroutineNumber: 5,
+		ListFields: map[string]articleSpider.Field{
+			"title": {Types: articleSpider.Text, Selector: " a > div > span"},
+		},
+		//CustomExcelHeader:     true,
+		DetailCoroutineNumber: 1,
+		FilterError:           true,
 	}
 
 	s := articleSpider.NewSpider(f, articleSpider.Normal, context.Background())
 
-	s.SetImageDir("")
-
-	s.SetSavePath("D:/down")
+	//s.SetImageDir("")
+	//
+	//s.SetSavePath("D:/down")
 
 	s.Start()
 

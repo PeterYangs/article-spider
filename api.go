@@ -87,13 +87,13 @@ func (a *api) GetList(listUrl string) {
 
 		a.s.detailWait.Add(1)
 
-		go a.GetDetail(a.s.form.GetHref(s), map[string]string{})
+		go a.GetDetail(a.s.form.GetHref(s), NewRows(map[string]string{}))
 
 	}
 
 }
 
-func (a *api) GetDetail(detailUrl string, storage map[string]string) {
+func (a *api) GetDetail(detailUrl string, row *Rows) {
 
 	defer func() {
 
@@ -172,18 +172,20 @@ func (a *api) GetDetail(detailUrl string, storage map[string]string) {
 		return
 	}
 
-	//合并列表结果
-	for s, s2 := range res {
+	row.Add(res)
 
-		storage[s] = s2
+	////合并列表结果
+	//for s, s2 := range res.maps {
+	//
+	//	storage[s] = s2
+	//
+	//}
 
-	}
+	//for s, s2 := range storage {
+	//
+	//	storage[s] = strings.TrimSpace(s2)
+	//}
 
-	for s, s2 := range storage {
-
-		storage[s] = strings.TrimSpace(s2)
-	}
-
-	a.s.result.Push(storage)
+	a.s.result.Push(res)
 
 }
