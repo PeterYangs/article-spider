@@ -91,6 +91,8 @@ func main() {
 	AutoDetailForceNewTab      bool                                     //自动模式详情页强制打开新窗口(必须是a链接)
 	AutoDetailWaitSelector     string                                   //详情等待选择器（用于自动化爬取）
 	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）                                 //详情等待选择器（用于自动化爬取）
+	FilterError                string                                   //过滤错误结果
+
 ```
 
 <br>
