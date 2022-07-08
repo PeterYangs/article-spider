@@ -398,7 +398,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						defer waitImg.Done()
 
-						imgName := f.DownImg(img, __item, res)
+						imgName, e := f.DownImg(img, __item, res)
+
+						globalErr = e
 
 						imgList.Store(imgName, img)
 
@@ -439,7 +441,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					return
 				}
 
-				imgName := f.DownImg(imgUrl, _item, res)
+				imgName, e := f.DownImg(imgUrl, _item, res)
+
+				globalErr = e
 
 				res.Store(field, imgName)
 
@@ -459,7 +463,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				break
 			}
 
-			imgName := f.DownImg(v, item, res)
+			imgName, e := f.DownImg(v, item, res)
+
+			globalErr = e
 
 			res.Store(field, imgName)
 
@@ -497,7 +503,9 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						defer waitImg.Done()
 
-						imgName := f.DownImg(imgUrl, __item, res)
+						imgName, e := f.DownImg(imgUrl, __item, res)
+
+						globalErr = e
 
 						imgList.Store(imgName, "")
 
@@ -569,8 +577,6 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 	r.err = globalErr
 
-	//fmt.Println(r.err)
-
 	return r, nil
 
 }
@@ -632,7 +638,7 @@ func (f *Form) completePath(path string) string {
 }
 
 // DownImg 下载图片（包括生成文件夹）
-func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
+func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	url = strings.Replace(url, "\n", "", -1)
 
@@ -646,15 +652,8 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	dir := ""
 
-	//if f.s.imageDir != "" {
-
-	//allDir := ""
-
 	//获取图片文件夹
 	dir = f.GetDir(item.ImageDir, res)
-
-	//判断是否是绝对路径
-	//allDir := If(f.s.imageDir == "", dir, f.s.imageDir+"/"+dir).(string)
 
 	//设置文件夹,图片保存路径+图片默认前缀路径+生成路径
 	err := os.MkdirAll(f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+dir, 0755)
@@ -663,14 +662,17 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 		f.s.notice.Error(err.Error())
 
+		return "", err
+
 	}
-	//}
 
 	ex, err := tools.GetExtensionName(imgUrl)
 
 	if err != nil {
 
 		ex = "png"
+
+		return "", err
 	}
 
 	//禁用拓展名检查
@@ -695,10 +697,10 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 			//获取默认图片
 			if f.DefaultImg != nil {
 
-				return f.DefaultImg(f, item)
+				return f.DefaultImg(f, item), errors.New("图片拓展名异常,使用默认图片")
 			}
 
-			return ""
+			return "", errors.New("图片拓展名异常")
 		}
 
 	}
@@ -707,14 +709,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 
 	var imgErr error
 
-	//if f.s.imageDir == "" {
-	//
-	//	imgErr = f.s.client.R().Download(imgUrl, imgName)
-	//
-	//} else {
-
 	imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
-	//}
 
 	if imgErr != nil {
 
@@ -725,10 +720,10 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		//获取默认图片
 		if f.DefaultImg != nil {
 
-			return f.DefaultImg(f, item)
+			return f.DefaultImg(f, item), errors.New("图片下载异常,使用默认图片：" + imgErr.Error())
 		}
 
-		return ""
+		return "", errors.New("图片下载异常")
 
 	}
 
@@ -746,7 +741,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) string {
 		prefix += "/"
 	}
 
-	return (If(item.ImagePrefix == nil, "", prefix)).(string) + imgName
+	return (If(item.ImagePrefix == nil, "", prefix)).(string) + imgName, nil
 
 }
 
