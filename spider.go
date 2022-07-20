@@ -131,6 +131,10 @@ func (s *Spider) Start() error {
 
 		err = NewAuto(s).Start()
 
+	case Url:
+
+		NewUrl(s).Start()
+
 	}
 
 	s.wait.Wait()

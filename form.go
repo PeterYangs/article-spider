@@ -45,6 +45,7 @@ type Form struct {
 	AutoDetailWaitSelector     string                                   //详情等待选择器（用于自动化爬取）
 	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）
 	FilterError                bool                                     //过滤错误的行
+	DetailUrls                 []string                                 //详情页列表
 	s                          *Spider
 }
 
