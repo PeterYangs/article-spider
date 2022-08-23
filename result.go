@@ -81,7 +81,7 @@ func (r *result) Work() {
 
 			filename := r.s.excel.Save()
 
-			r.s.notice.Finish("excel文件为:" + filename)
+			r.s.notice.Finish("excel文件为:" + "static/" + filename)
 
 		} else {
 

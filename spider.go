@@ -50,13 +50,12 @@ func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
 
 	}
 
-	detailMaxCoroutines := 30
+	detailMaxCoroutines := 1
 
-	//如果手动设置的详情协程数大于最大详情协程数或者等于0，则将设置成最大协程数
-	if f.DetailCoroutineNumber < detailMaxCoroutines && f.DetailCoroutineNumber != 0 {
+	//设置最大协程数，默认是1
+	if f.DetailCoroutineNumber != 0 {
 
 		detailMaxCoroutines = f.DetailCoroutineNumber
-
 	}
 
 	cxt2, cancel := context.WithCancel(cxt)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"runtime/debug"
+	"strings"
 )
 
 type types int
@@ -89,8 +90,9 @@ func (n *Notice) Service() {
 			switch m.types {
 
 			case Process:
-				fmt.Print("\033[u\033[K")
+				//fmt.Print("\033[u\033[K")
 				fmt.Print(m.content...)
+				fmt.Print(strings.Repeat(" ", 50))
 				fmt.Print("\r")
 
 			case Finish:

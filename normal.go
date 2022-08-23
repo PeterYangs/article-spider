@@ -102,15 +102,6 @@ func (n normal) GetList(listUrl string) {
 
 		}
 
-		if href == "" || isFind == false {
-
-			n.s.notice.Error("a链接为空,当前链接为:", listUrl)
-
-			return
-		}
-
-		//var resolveErr error = nil
-
 		//列表选择器不为空时
 		if len(n.s.form.ListFields) > 0 {
 
@@ -127,8 +118,6 @@ func (n normal) GetList(listUrl string) {
 			//解析列表选择器
 			rows, err = n.s.form.ResolveSelector(t, n.s.form.ListFields, listUrl)
 
-			//resolveErr = storage_.err
-
 			if err != nil {
 
 				n.s.notice.Error(err.Error())
@@ -136,16 +125,10 @@ func (n normal) GetList(listUrl string) {
 				return
 			}
 
-			//storage = storage_.maps
-
 		}
 
 		//如果详情选择器为空就跳过
 		if len(n.s.form.DetailFields) <= 0 {
-
-			//ss := NewRows(storage)
-			//
-			//ss.err = resolveErr
 
 			n.s.result.Push(rows)
 
@@ -153,6 +136,13 @@ func (n normal) GetList(listUrl string) {
 
 			return
 
+		}
+
+		if href == "" || isFind == false {
+
+			n.s.notice.Error("a链接为空,当前链接为:", listUrl)
+
+			return
 		}
 
 		n.s.detailCoroutineChan <- true
