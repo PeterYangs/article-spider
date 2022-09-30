@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/PeterYangs/tools"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/phpisfirstofworld/image"
 	uuid "github.com/satori/go.uuid"
 	http2 "net/http"
 	"os"
@@ -50,16 +51,17 @@ type Form struct {
 }
 
 type Field struct {
-	Types             FieldTypes
-	Selector          string                                              //字段选择器
-	NotSelector       []string                                            //剔除选择器
-	AttrKey           string                                              //属性值参数
-	ImagePrefix       func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
-	ImageDir          string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
-	ExcelHeader       string                                              //excel表头，需要CustomExcelHeader为true,例：A
-	RegularIndex      int                                                 //正则匹配中的反向引用的下标，默认是1
-	ConversionFunc    func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
-	LazyImageAttrName string                                              //懒加载图片属性，默认为data-original
+	Types              FieldTypes
+	Selector           string                                              //字段选择器
+	NotSelector        []string                                            //剔除选择器
+	AttrKey            string                                              //属性值参数
+	ImagePrefix        func(form *Form, imageName string) string           //图片路径前缀,会添加到图片路径前缀，但不会生成文件夹
+	ImageDir           string                                              //图片子文件夹，支持变量 1.[date:Y-m-d] 2.[random:1-100] 3.[singleField:title]
+	ExcelHeader        string                                              //excel表头，需要CustomExcelHeader为true,例：A
+	RegularIndex       int                                                 //正则匹配中的反向引用的下标，默认是1
+	ConversionFunc     func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
+	LazyImageAttrName  string                                              //懒加载图片属性，默认为data-original
+	ImageResizePercent int                                                 //图片缩放百分比
 }
 
 // DealCoding 解决编码问题
@@ -710,7 +712,14 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	var imgErr error
 
-	imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
+	if f.s.CustomDownloadFun != nil {
+
+		imgErr = f.s.CustomDownloadFun(imgUrl, f, item)
+
+	} else {
+
+		imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
+	}
 
 	if imgErr != nil {
 
@@ -725,6 +734,34 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 		}
 
 		return "", errors.New("图片下载异常")
+
+	}
+
+	//图片压缩
+	if item.ImageResizePercent != 0 {
+
+		imgDeal := image.NewImage()
+
+		imgRes, errRes := imgDeal.LoadImage(f.completePath(f.s.savePath) + f.completePath(f.s.imageDir) + imgName)
+
+		if errRes != nil {
+
+			//fmt.Println("图片压缩加载错误:" + errRes.Error())
+
+			return "", errors.New("图片压缩加载错误:" + errRes.Error())
+
+		}
+
+		//if errRes == nil {
+
+		ee := imgRes.ResizePercent(item.ImageResizePercent).Save(f.completePath(f.s.savePath) + f.completePath(f.s.imageDir) + imgName + "_copy.png")
+
+		if ee != nil {
+
+			return "", errors.New("图片压缩错误:" + ee.Error())
+		}
+
+		//}
 
 	}
 

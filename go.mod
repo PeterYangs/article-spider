@@ -10,6 +10,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20220321060548-7bc2623472b3
 	github.com/chromedp/chromedp v0.8.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/phpisfirstofworld/image v0.0.3
 	github.com/satori/go.uuid v1.2.0
 	github.com/shopspring/decimal v1.2.0
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
