@@ -728,7 +728,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	if f.s.CustomDownloadFun != nil {
 
-		imgErr = f.s.CustomDownloadFun(imgUrl, (If(item.ImagePrefix == nil, "", prefix)).(string)+imgName, f, item)
+		imgErr = f.s.CustomDownloadFun(imgUrl, imgName, f, item)
 
 	} else {
 
