@@ -28,8 +28,8 @@ type Spider struct {
 	total               int
 	autoPage            int //自动化模式当前页码
 	debug               bool
-	savePath            string                                         //图片保存文件夹，不会出现在图片路径中，为空则为当前运行路径
-	CustomDownloadFun   func(imgUrl string, f *Form, item Field) error //自实现图片下载
+	savePath            string                                                         //图片保存文件夹，不会出现在图片路径中，为空则为当前运行路径
+	CustomDownloadFun   func(imgUrl string, imgPath string, f *Form, item Field) error //自实现图片下载
 }
 
 func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
@@ -85,7 +85,7 @@ func (s *Spider) Debug() *Spider {
 }
 
 // CustomDownloadImage 自实现图片下载
-func (s *Spider) CustomDownloadImage(fun func(imgUrl string, f *Form, item Field) error) *Spider {
+func (s *Spider) CustomDownloadImage(fun func(imgUrl string, imgPath string, f *Form, item Field) error) *Spider {
 
 	s.CustomDownloadFun = fun
 

@@ -710,11 +710,25 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	imgName := (If(dir == "", "", dir+"/")).(string) + uuidString + "." + ex
 
+	prefix := ""
+
+	if item.ImagePrefix != nil {
+
+		prefix = item.ImagePrefix(f, imgName)
+
+	}
+
+	//自动添加斜杠
+	if tools.SubStr(prefix, -1, -1) != "/" {
+
+		prefix += "/"
+	}
+
 	var imgErr error
 
 	if f.s.CustomDownloadFun != nil {
 
-		imgErr = f.s.CustomDownloadFun(imgUrl, f, item)
+		imgErr = f.s.CustomDownloadFun(imgUrl, (If(item.ImagePrefix == nil, "", prefix)).(string)+imgName, f, item)
 
 	} else {
 
@@ -763,20 +777,6 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 		//}
 
-	}
-
-	prefix := ""
-
-	if item.ImagePrefix != nil {
-
-		prefix = item.ImagePrefix(f, imgName)
-
-	}
-
-	//自动添加斜杠
-	if tools.SubStr(prefix, -1, -1) != "/" {
-
-		prefix += "/"
 	}
 
 	return (If(item.ImagePrefix == nil, "", prefix)).(string) + imgName, nil
