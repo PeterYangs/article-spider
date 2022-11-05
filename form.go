@@ -621,6 +621,11 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, er
 
 		if imgBool && imgUrl != "" {
 
+			//填充图片src，防止图片无法显示
+			imageDoc.RemoveAttr(item.LazyImageAttrName)
+
+			imageDoc.SetAttr("src", imgUrl)
+
 			return imgUrl, nil
 		}
 
@@ -633,6 +638,11 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, er
 		imgUrl, imgBool := imageDoc.Attr(f.LazyImageAttrName)
 
 		if imgBool && imgUrl != "" {
+
+			//填充图片src，防止图片无法显示
+			imageDoc.RemoveAttr(item.LazyImageAttrName)
+
+			imageDoc.SetAttr("src", imgUrl)
 
 			return imgUrl, nil
 		}
