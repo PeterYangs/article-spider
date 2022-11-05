@@ -412,6 +412,12 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						imgName, e := f.DownImg(img, __item, res)
 
+						if e != nil {
+
+							f.s.notice.Error(e.Error()+",源链接："+originUrl, ",富文本图片下载失败", "图片地址", img)
+
+						}
+
 						globalErr = e
 
 						imgList.Store(imgName, img)
@@ -456,6 +462,11 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				imgName, e := f.DownImg(imgUrl, _item, res)
 
 				globalErr = e
+
+				if e != nil {
+
+					f.s.notice.Error(e.Error()+",源链接："+originUrl, ",选择器：", _item.Selector, "图片地址", imgUrl)
+				}
 
 				res.Store(field, imgName)
 
@@ -516,6 +527,12 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 						defer waitImg.Done()
 
 						imgName, e := f.DownImg(imgUrl, __item, res)
+
+						if e != nil {
+
+							f.s.notice.Error(e.Error()+",源链接："+originUrl, ",选择器：", _item.Selector, "图片地址", imgUrl)
+
+						}
 
 						globalErr = e
 
@@ -684,7 +701,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 		ex = "png"
 
-		return "", err
+		//return "", err
 	}
 
 	//禁用拓展名检查
