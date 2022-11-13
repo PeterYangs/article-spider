@@ -428,6 +428,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				waitImg.Wait()
 
+				html_, _ = htmlImg.Html()
+
 				imgList.Range(func(key, value interface{}) bool {
 
 					html_ = strings.Replace(html_, value.(string), key.(string), -1)
