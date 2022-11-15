@@ -655,7 +655,7 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field, originUrl s
 
 	if imgBool == false || imgUrl == "" {
 
-		return "", errors.New("未找到图片链接，请检查是否存在懒加载,源链接：" + originUrl)
+		return "", errors.New("未找到图片链接，请检查是否存在懒加载")
 	}
 
 	return imgUrl, nil

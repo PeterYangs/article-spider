@@ -1,6 +1,7 @@
 package article_spider
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"strings"
 )
@@ -138,7 +139,12 @@ func (n normal) GetList(listUrl string) {
 
 		}
 
-		if href == "" || isFind == false {
+		fmt.Println(href, "--------------")
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
+
+		if strings.TrimSpace(href) == "" || isFind == false {
 
 			n.s.notice.Error("a链接为空,当前链接为:", listUrl)
 
