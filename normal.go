@@ -105,7 +105,8 @@ func (n normal) GetList(listUrl string) {
 		//列表选择器不为空时
 		if len(n.s.form.ListFields) > 0 {
 
-			t, err := s.Html()
+			//t, err := s.Html()
+			t, err := goquery.OuterHtml(s)
 
 			if err != nil {
 
