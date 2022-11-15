@@ -393,7 +393,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				htmlImg.Find("img").Each(func(i int, selection *goquery.Selection) {
 
-					img, err := f.getImageLink(selection, _item)
+					img, err := f.getImageLink(selection, _item, originUrl)
 
 					if err != nil {
 
@@ -450,7 +450,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				defer wait.Done()
 
-				imgUrl, err := f.getImageLink(doc.Find(_item.Selector), _item)
+				imgUrl, err := f.getImageLink(doc.Find(_item.Selector), _item, originUrl)
 
 				if err != nil {
 
@@ -511,7 +511,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				doc.Find(_item.Selector).Each(func(i int, selection *goquery.Selection) {
 
-					imgUrl, err := f.getImageLink(selection, _item)
+					imgUrl, err := f.getImageLink(selection, _item, originUrl)
 
 					if err != nil {
 
@@ -613,7 +613,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 }
 
 //获取图片链接
-func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, error) {
+func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field, originUrl string) (string, error) {
 
 	//懒加载图片处理
 	if item.LazyImageAttrName != "" {
@@ -655,7 +655,7 @@ func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field) (string, er
 
 	if imgBool == false || imgUrl == "" {
 
-		return "", errors.New("未找到图片链接，请检查是否存在懒加载")
+		return "", errors.New("未找到图片链接，请检查是否存在懒加载,源链接：" + originUrl)
 	}
 
 	return imgUrl, nil
