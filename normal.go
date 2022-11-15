@@ -92,7 +92,7 @@ func (n normal) GetList(listUrl string) {
 		var rows *Rows = NewRows(map[string]string{})
 
 		//a链接是列表的情况
-		if strings.TrimSpace(n.s.form.HrefSelector) == "" || n.s.form.HrefSelector == "myself" {
+		if strings.TrimSpace(n.s.form.HrefSelector) == "" {
 
 			href, isFind = s.Attr("href")
 

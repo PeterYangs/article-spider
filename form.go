@@ -307,7 +307,16 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 		//单个元素属性
 		case Attr:
 
-			v, _ := doc.Find(item.Selector).Attr(item.AttrKey)
+			v := ""
+
+			if strings.TrimSpace(item.Selector) == "" {
+
+				v, _ = doc.Attr(item.AttrKey)
+
+			} else {
+
+				v, _ = doc.Find(item.Selector).Attr(item.AttrKey)
+			}
 
 			res.Store(field, v)
 
