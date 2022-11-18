@@ -299,7 +299,8 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			}
 
-			v := selectors.Text()
+			v := strings.TrimSpace(selectors.Text())
+
 			res.Store(field, v)
 
 			break
@@ -318,7 +319,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				v, _ = doc.Find(item.Selector).Attr(item.AttrKey)
 			}
 
-			res.Store(field, v)
+			res.Store(field, strings.TrimSpace(v))
 
 			break
 
