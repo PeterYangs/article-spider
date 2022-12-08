@@ -2,6 +2,7 @@ package article_spider
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/PeterYangs/request/v2"
 	"github.com/PeterYangs/tools"
@@ -40,6 +41,11 @@ func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
 
 		client.Timeout(f.HttpTimeout)
 	}
+
+	tr := client.GetTransport()
+
+	//跳过证书检查
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	client.Header(f.HttpHeader)
 
