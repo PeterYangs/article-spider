@@ -4,17 +4,18 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/PeterYangs/request/v2"
 	"github.com/PeterYangs/tools"
+	"github.com/go-resty/resty/v2"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Spider struct {
 	form                Form
 	mode                Mode
-	client              *request.Client
+	client              *resty.Client
 	detailCoroutineChan chan bool
 	cxt                 context.Context
 	cancel              context.CancelFunc
@@ -35,25 +36,35 @@ type Spider struct {
 
 func NewSpider(f Form, mode Mode, cxt context.Context) *Spider {
 
-	client := request.NewClient()
+	//client := request.NewClient()
+
+	client := resty.New()
 
 	if f.HttpTimeout != 0 {
 
-		client.Timeout(f.HttpTimeout)
+		client.SetTimeout(f.HttpTimeout)
+
+	} else {
+
+		//设置默认超时时间
+		client.SetTimeout(30 * time.Second)
+
 	}
 
-	tr := client.GetTransport()
-
 	//跳过证书检查
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 
-	client.Header(f.HttpHeader)
+	//设置http header
+	client.SetHeaders(f.HttpHeader)
 
-	client.ReTry(1)
+	//设置重试次数
+	client.SetRetryCount(1)
 
 	if f.HttpProxy != "" {
 
-		client.Proxy(f.HttpProxy)
+		//client.Proxy(f.HttpProxy)
+
+		client.SetProxy(f.HttpProxy)
 
 	}
 

@@ -43,7 +43,9 @@ func (n normal) GetList(listUrl string) {
 
 	//content, header, err := n.s.client.R().GetToContentWithHeader(listUrl)
 
-	content, err := n.s.client.R().GetToContent(listUrl)
+	//content, err := n.s.client.R().GetToContent(listUrl)
+
+	content, err := n.s.client.R().Get(listUrl)
 
 	if err != nil {
 
@@ -53,7 +55,7 @@ func (n normal) GetList(listUrl string) {
 
 	}
 
-	html := content.ToString()
+	html := content.String()
 
 	//自动转码
 	if n.s.form.DisableAutoCoding == false {

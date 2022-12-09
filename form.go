@@ -780,7 +780,10 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	} else {
 
-		imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
+		//imgErr = f.s.client.R().Download(imgUrl, f.completePath(f.s.savePath)+f.completePath(f.s.imageDir)+imgName)
+
+		_, imgErr = f.s.client.R().SetOutput(f.completePath(f.s.savePath) + f.completePath(f.s.imageDir) + imgName).Get(imgUrl)
+
 	}
 
 	if imgErr != nil {
@@ -930,7 +933,9 @@ func (f *Form) GetHtml(url string) (string, error) {
 
 	//content, header, err := f.s.client.R().GetToContentWithHeader(f.GetHref(url))
 
-	content, err := f.s.client.R().GetToContent(f.GetHref(url))
+	//content, err := f.s.client.R().GetToContent(f.GetHref(url))
+
+	content, err := f.s.client.R().Get(f.GetHref(url))
 
 	if err != nil {
 
@@ -938,7 +943,7 @@ func (f *Form) GetHtml(url string) (string, error) {
 
 	}
 
-	html := content.ToString()
+	html := content.String()
 
 	//自动转码
 	if f.DisableAutoCoding == false {
