@@ -66,6 +66,17 @@ func (r *result) Push(i *Rows) {
 
 	default:
 
+		if r.s.form.Filter != nil {
+
+			ok := r.s.form.Filter(i.maps)
+
+			if !ok {
+
+				return
+			}
+
+		}
+
 		r.storage <- i
 	}
 

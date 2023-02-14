@@ -46,8 +46,6 @@ func (n *Notice) Debug(content ...interface{}) {
 
 func (n *Notice) Log(content ...interface{}) {
 
-	//fmt.Println("nice啊")
-
 	n.ch <- &message{types: Log, content: content}
 }
 

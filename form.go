@@ -47,6 +47,7 @@ type Form struct {
 	AutoNextSelector           string                                   //下一页选择器（用于自动化爬取）
 	FilterError                bool                                     //过滤错误的行
 	DetailUrls                 []string                                 //详情页列表
+	Filter                     func(map[string]string) bool             //数据过滤，返回false则放弃数据
 	s                          *Spider
 }
 
@@ -63,6 +64,7 @@ type Field struct {
 	ConversionFunc     func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 	LazyImageAttrName  string                                              //懒加载图片属性，默认为data-original
 	ImageResizePercent int                                                 //图片缩放百分比
+
 }
 
 // DealCoding 解决编码问题
