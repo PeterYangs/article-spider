@@ -187,6 +187,9 @@ func (s *Spider) getChannelList(callback func(listUrl string)) {
 
 			for pageCurrent = s.form.PageStart; pageCurrent < s.form.PageStart+s.form.Length; pageCurrent++ {
 
+				//当前页码赋值
+				s.form.PageCurrent = pageCurrent
+
 				//当前列表url
 				url := s.form.Host + strings.Replace(s.form.Channel, "[PAGE]", strconv.Itoa(pageCurrent), -1)
 
