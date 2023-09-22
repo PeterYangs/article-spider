@@ -21,6 +21,7 @@ type Form struct {
 	Channel                    string                                   //栏目链接，页码用[PAGE]替换
 	PageStart                  int                                      //页码起始页
 	PageCurrent                int                                      //当前页码
+	ListUrlCurrent             string                                   //当前列表链接
 	Length                     int                                      //爬取页码长度
 	ListSelector               string                                   //列表选择器
 	HrefSelector               string                                   //a链接选择器，相对于列表选择器
