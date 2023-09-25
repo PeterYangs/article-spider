@@ -50,6 +50,8 @@ type Form struct {
 	FilterError                bool                                     //过滤错误的行
 	DetailUrls                 []string                                 //详情页列表
 	Filter                     func(map[string]string) bool             //数据过滤，返回false则放弃数据
+	ListSleep                  time.Duration                            //列表等待时间（爬完一页后等待的时间）
+	DetailSleep                time.Duration                            //详情等待时间（爬完一个详情后等待的时间，注意多协程）
 	s                          *Spider
 }
 

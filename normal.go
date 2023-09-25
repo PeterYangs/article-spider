@@ -3,6 +3,7 @@ package article_spider
 import (
 	"github.com/PuerkitoBio/goquery"
 	"strings"
+	"time"
 )
 
 type normal struct {
@@ -20,6 +21,11 @@ func (n normal) Start() {
 	n.s.getChannelList(func(listUrl string) {
 
 		n.GetList(listUrl)
+
+		if n.s.form.ListSleep != 0 {
+
+			time.Sleep(n.s.form.ListSleep)
+		}
 
 	})
 
@@ -176,6 +182,12 @@ func (n normal) GetList(listUrl string) {
 func (n normal) GetDetail(detailUrl string, rows *Rows) {
 
 	defer func() {
+
+		if n.s.form.DetailSleep != 0 {
+
+			time.Sleep(n.s.form.DetailSleep)
+
+		}
 
 		<-n.s.detailCoroutineChan
 
