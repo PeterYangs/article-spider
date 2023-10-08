@@ -70,17 +70,17 @@ func (n normal) GetList(listUrl string) {
 
 	content, err := n.s.client.R().Get(listUrl)
 
-	if n.s.form.ProxyFunc != nil && n.s.form.ProxyFinishFunc != nil {
-
-		n.s.form.ProxyFinishFunc(proxy)
-
-	}
-
 	if err != nil {
 
 		n.s.notice.Error(err.Error())
 
 		return
+
+	}
+
+	if n.s.form.ProxyFunc != nil && n.s.form.ProxyFinishFunc != nil {
+
+		n.s.form.ProxyFinishFunc(proxy)
 
 	}
 
