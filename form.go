@@ -61,6 +61,7 @@ type Form struct {
 	Filter                     func(map[string]string) bool             //数据过滤，返回false则放弃数据
 	ListSleep                  time.Duration                            //列表等待时间（爬完一页后等待的时间）
 	DetailSleep                time.Duration                            //详情等待时间（爬完一个详情后等待的时间，注意多协程）
+	DisableMessage             bool                                     //禁用终端输出
 	s                          *Spider
 }
 

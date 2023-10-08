@@ -80,6 +80,8 @@ func (n *Notice) Service() {
 
 	defer n.s.wait.Done()
 
+	//n.s.form.
+
 	for {
 
 		select {
@@ -88,7 +90,12 @@ func (n *Notice) Service() {
 			switch m.types {
 
 			case Process:
-				//fmt.Print("\033[u\033[K")
+
+				if n.s.form.DisableMessage {
+
+					break
+				}
+
 				fmt.Print(m.content...)
 				fmt.Print(strings.Repeat(" ", 50))
 				fmt.Print("\r")
@@ -105,9 +112,13 @@ func (n *Notice) Service() {
 
 			default:
 
+				if n.s.form.DisableMessage {
+
+					break
+				}
+
 				fmt.Println()
 				fmt.Println()
-				//fmt.Print("\033[u\033[K")
 				fmt.Println(m.content...)
 				fmt.Println()
 			}
