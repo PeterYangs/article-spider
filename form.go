@@ -16,6 +16,13 @@ import (
 	"time"
 )
 
+type Proxy struct {
+	Scheme string //协议(如：http,https,sock)
+	Host   string
+	Port   int
+	Expire int64 //过期时间,时间戳
+}
+
 type Form struct {
 	Host                       string                                   //网站域名
 	Channel                    string                                   //栏目链接，页码用[PAGE]替换
@@ -31,7 +38,8 @@ type Form struct {
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
 	HttpProxy                  string                                   //代理
-	ProxyFunc                  func() (string, error)                   //动态获取代理ip，不要和HttpProxy一起用(每次翻页时切换ip)
+	ProxyFunc                  func() (Proxy, error)                    //动态获取代理ip，不要和HttpProxy一起用(每次翻页时切换ip)
+	ProxyFinishFunc            func(Proxy)                              //动态代理ip使用完毕后回调函数
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
 	DetailCoroutineNumber      int                                      //爬取详情页协程数
 	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original

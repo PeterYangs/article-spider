@@ -2,6 +2,7 @@ package article_spider
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"github.com/spf13/cast"
 	"strings"
 	"time"
 )
@@ -51,19 +52,29 @@ func (n normal) GetList(listUrl string) {
 
 	//content, err := n.s.client.R().GetToContent(listUrl)
 
+	var proxy Proxy
+
+	var err error
+
 	if n.s.form.ProxyFunc != nil {
 
-		proxy, err := n.s.form.ProxyFunc()
+		proxy, err = n.s.form.ProxyFunc()
 
 		if err == nil {
 
-			n.s.client.SetProxy(proxy)
+			n.s.client.SetProxy(proxy.Scheme + "://" + proxy.Host + ":" + cast.ToString(proxy.Port))
 
 		}
 
 	}
 
 	content, err := n.s.client.R().Get(listUrl)
+
+	if n.s.form.ProxyFunc != nil && n.s.form.ProxyFinishFunc != nil {
+
+		n.s.form.ProxyFinishFunc(proxy)
+
+	}
 
 	if err != nil {
 
