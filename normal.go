@@ -51,6 +51,18 @@ func (n normal) GetList(listUrl string) {
 
 	//content, err := n.s.client.R().GetToContent(listUrl)
 
+	if n.s.form.ProxyFunc != nil {
+
+		proxy, err := n.s.form.ProxyFunc()
+
+		if err == nil {
+
+			n.s.client.SetProxy(proxy)
+
+		}
+
+	}
+
 	content, err := n.s.client.R().Get(listUrl)
 
 	if err != nil {

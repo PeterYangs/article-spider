@@ -31,6 +31,7 @@ type Form struct {
 	HttpTimeout                time.Duration                            //请求超时时间
 	HttpHeader                 map[string]string                        //header
 	HttpProxy                  string                                   //代理
+	ProxyFunc                  func() (string, error)                   //动态获取代理ip，不要和HttpProxy一起用(每次翻页时切换ip)
 	ChannelFunc                func(form *Form) []string                //自定义栏目链接
 	DetailCoroutineNumber      int                                      //爬取详情页协程数
 	LazyImageAttrName          string                                   //懒加载图片属性，默认为data-original
