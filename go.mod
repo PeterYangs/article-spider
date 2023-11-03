@@ -13,4 +13,5 @@ require (
 	github.com/phpisfirstofworld/image v0.0.3
 	github.com/satori/go.uuid v1.2.0
 	github.com/shopspring/decimal v1.2.0
+	github.com/spf13/cast v1.5.0
 )

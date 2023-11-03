@@ -1,6 +1,7 @@
 package article_spider
 
 import (
+	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/spf13/cast"
 	"strings"
@@ -73,6 +74,12 @@ func (n normal) GetList(listUrl string) {
 	if err != nil {
 
 		n.s.notice.Error(err.Error())
+
+		if n.s.form.ListGetErrorFunc != nil {
+
+			n.s.form.ListGetErrorFunc(&n.s.form, err)
+
+		}
 
 		return
 
@@ -197,6 +204,12 @@ func (n normal) GetList(listUrl string) {
 	if size <= 0 {
 
 		n.s.notice.Error("a链接未发现")
+
+		if n.s.form.ListGetErrorFunc != nil {
+
+			n.s.form.ListGetErrorFunc(&n.s.form, errors.New("a链接未发现"))
+
+		}
 
 	}
 

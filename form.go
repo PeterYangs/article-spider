@@ -62,6 +62,7 @@ type Form struct {
 	ListSleep                  time.Duration                            //列表等待时间（爬完一页后等待的时间）
 	DetailSleep                time.Duration                            //详情等待时间（爬完一个详情后等待的时间，注意多协程）
 	DisableMessage             bool                                     //禁用终端输出
+	ListGetErrorFunc           func(form *Form, err error)              //列表获取失败回调函数（列表长度为0或状态码非200）
 	s                          *Spider
 }
 
