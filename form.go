@@ -340,6 +340,26 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			break
 
+		//多个元素属性
+		case Attrs:
+
+			var v []string
+
+			doc.Find(item.Selector).Each(func(i int, selection *goquery.Selection) {
+
+				ss, ok := selection.Attr(item.AttrKey)
+
+				if ok {
+
+					v = append(v, ss)
+				}
+
+			})
+
+			res.Store(field, tools.Join(",", v))
+
+			break
+
 		//只爬html（不包括图片）
 		case OnlyHtml:
 

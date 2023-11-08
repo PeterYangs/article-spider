@@ -12,4 +12,5 @@ const (
 	Fixed          FieldTypes = 0x00007 //固定数据，填什么返回什么,选择器就是返回的数据
 	Regular        FieldTypes = 0x00008 //正则（FindStringSubmatch,返回一个结果）
 	File           FieldTypes = 0x00009 //文件类型
+	Attrs          FieldTypes = 0x00010 //属性列表，如一个图片列表的所有图片链接
 )
