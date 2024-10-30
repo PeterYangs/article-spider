@@ -397,7 +397,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			wait.Add(1)
 
-			go func(_item Field, field string) {
+			go func(_item Field, _field string) {
 
 				defer wait.Done()
 
@@ -453,11 +453,11 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					waitImg.Add(1)
 
-					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field) {
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field, __field string) {
 
 						defer waitImg.Done()
 
-						imgName, e := f.DownImg(img, __item, res)
+						imgName, e := f.DownImg(img, __item, res, __field)
 
 						if e != nil {
 
@@ -469,7 +469,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						imgList.Store(imgName, img)
 
-					}(&waitImg, &imgList, _item)
+					}(&waitImg, &imgList, _item, _field)
 
 				})
 
@@ -484,7 +484,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					return true
 				})
 
-				res.Store(field, html_)
+				res.Store(_field, html_)
 
 			}(item, field)
 
@@ -493,7 +493,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			wait.Add(1)
 
-			go func(_item Field, field string) {
+			go func(_item Field, _field string) {
 
 				defer wait.Done()
 
@@ -508,7 +508,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					return
 				}
 
-				imgName, e := f.DownImg(imgUrl, _item, res)
+				imgName, e := f.DownImg(imgUrl, _item, res, _field)
 
 				globalErr = e
 
@@ -517,7 +517,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 					f.s.notice.Error(e.Error()+",源链接："+originUrl, ",选择器：", _item.Selector, "图片地址", imgUrl)
 				}
 
-				res.Store(field, imgName)
+				res.Store(_field, imgName)
 
 			}(item, field)
 
@@ -535,7 +535,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 				break
 			}
 
-			imgName, e := f.DownImg(v, item, res)
+			imgName, e := f.DownImg(v, item, res, field)
 
 			globalErr = e
 
@@ -548,7 +548,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 			wait.Add(1)
 
-			go func(_item Field, field string) {
+			go func(_item Field, _field string) {
 
 				defer wait.Done()
 
@@ -571,11 +571,11 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 					waitImg.Add(1)
 
-					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field) {
+					go func(waitImg *sync.WaitGroup, imgList *sync.Map, __item Field, __field string) {
 
 						defer waitImg.Done()
 
-						imgName, e := f.DownImg(imgUrl, __item, res)
+						imgName, e := f.DownImg(imgUrl, __item, res, __field)
 
 						if e != nil {
 
@@ -587,7 +587,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 						imgList.Store(imgName, "")
 
-					}(&waitImg, &imgList, _item)
+					}(&waitImg, &imgList, _item, _field)
 
 				})
 
@@ -604,7 +604,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 				array := tools.Join(",", strArray)
 
-				res.Store(field, array)
+				res.Store(_field, array)
 
 			}(item, field)
 
@@ -726,7 +726,7 @@ func (f *Form) completePath(path string) string {
 }
 
 // DownImg 下载图片（包括生成文件夹）
-func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
+func (f *Form) DownImg(url string, item Field, res *sync.Map, field string) (string, error) {
 
 	url = strings.Replace(url, "\n", "", -1)
 
@@ -813,7 +813,7 @@ func (f *Form) DownImg(url string, item Field, res *sync.Map) (string, error) {
 
 	if f.s.CustomDownloadFun != nil {
 
-		imgErr = f.s.CustomDownloadFun(imgUrl, imgName, f, item)
+		imgErr = f.s.CustomDownloadFun(imgUrl, imgName, f, item, field)
 
 	} else {
 
