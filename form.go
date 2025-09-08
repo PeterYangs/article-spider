@@ -79,7 +79,7 @@ type Field struct {
 	ConversionFunc     func(data string, resList map[string]string) string //转换格式函数,第一个参数是该字段数据，第二个参数是所有数据，跟web框架的获取器类似
 	LazyImageAttrName  string                                              //懒加载图片属性，默认为data-original
 	ImageResizePercent int                                                 //图片缩放百分比
-
+	CustomData         interface{}                                         //自定义参数
 }
 
 // DealCoding 解决编码问题
@@ -659,7 +659,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 
 }
 
-//获取图片链接
+// 获取图片链接
 func (f *Form) getImageLink(imageDoc *goquery.Selection, item Field, originUrl string) (string, error) {
 
 	//懒加载图片处理
