@@ -49,10 +49,6 @@ func (n normal) GetList(listUrl string) {
 
 	}
 
-	//content, header, err := n.s.client.R().GetToContentWithHeader(listUrl)
-
-	//content, err := n.s.client.R().GetToContent(listUrl)
-
 	var proxy Proxy
 
 	var err error
@@ -99,8 +95,6 @@ func (n normal) GetList(listUrl string) {
 		html, err = n.s.form.DealCoding(html, content.Header())
 
 		if err != nil {
-
-			//n.form.Notice.PushMessage(notice.NewError(err.Error()))
 
 			n.s.notice.Error(err.Error())
 

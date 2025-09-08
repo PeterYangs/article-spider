@@ -307,7 +307,7 @@ func (f *Form) ResolveSelector(html string, selector map[string]Field, originUrl
 		//单个文字字段
 		case Text:
 
-			selectors := doc.Find(item.Selector)
+			selectors := doc.Find(item.Selector).First()
 
 			//排除选择器
 			for _, s := range item.NotSelector {
